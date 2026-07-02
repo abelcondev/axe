@@ -86,11 +86,11 @@ describe('HookPlanner', () => {
     it('returns file path targets for instruction load events', () => {
       expect(
         getHookMatcherTarget(HookEventName.InstructionsLoaded, {
-          filePath: '/repo/.qwen/QWEN.local.md',
+          filePath: '/repo/.axe/QWEN.local.md',
         }),
       ).toEqual({
         kind: 'filePath',
-        target: '/repo/.qwen/QWEN.local.md',
+        target: '/repo/.axe/QWEN.local.md',
       });
     });
 
@@ -581,7 +581,7 @@ describe('HookPlanner', () => {
         config: { type: HookType.Command, command: 'echo test' },
         source: HooksConfigSource.Project,
         eventName: HookEventName.InstructionsLoaded,
-        matcher: '\\.qwen/QWEN\\.local\\.md$',
+        matcher: '\\.axe/QWEN\\.local\\.md$',
         enabled: true,
       };
       vi.mocked(mockRegistry.getHooksForEvent).mockReturnValue([entry]);
@@ -589,7 +589,7 @@ describe('HookPlanner', () => {
       const result = planner.createExecutionPlan(
         HookEventName.InstructionsLoaded,
         {
-          filePath: '/repo/.qwen/QWEN.local.md',
+          filePath: '/repo/.axe/QWEN.local.md',
         },
       );
 
@@ -601,7 +601,7 @@ describe('HookPlanner', () => {
         config: { type: HookType.Command, command: 'echo test' },
         source: HooksConfigSource.Project,
         eventName: HookEventName.InstructionsLoaded,
-        matcher: '\\.qwen/QWEN\\.local\\.md$',
+        matcher: '\\.axe/QWEN\\.local\\.md$',
         enabled: true,
       };
       vi.mocked(mockRegistry.getHooksForEvent).mockReturnValue([entry]);

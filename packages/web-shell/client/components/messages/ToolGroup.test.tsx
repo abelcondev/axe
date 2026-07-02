@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { DaemonSettingDescriptor } from '@qwen-code/webui/daemon-react-sdk';
+import type { DaemonSettingDescriptor } from '@axe/webui/daemon-react-sdk';
 import type { ACPToolCall } from '../../adapters/types';
 
 vi.mock('../../App', async () => {

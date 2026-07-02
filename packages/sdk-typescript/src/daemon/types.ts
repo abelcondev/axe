@@ -1582,7 +1582,7 @@ export interface HeartbeatResult {
 
 /** Auth device-flow wire types. */
 
-export type DaemonAuthProviderId = 'qwen-oauth' | (string & {});
+export type DaemonAuthProviderId = 'axe-oauth' | (string & {});
 
 // Sdk-prefixed aliases single-source the canonical definitions from
 // `./events.js` so a single source of truth governs both layers

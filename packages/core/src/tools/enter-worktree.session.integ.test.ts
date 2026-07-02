@@ -95,7 +95,7 @@ describe('EnterWorktreeTool — WorktreeSession sidecar', () => {
     // a fresh `enter_worktree` overwrites any stale sidecar.
     //
     // (The nested-worktree guard in execute() rejects this when cwd is
-    //  inside .qwen/worktrees/, but our test cwd is repoRoot, not the
+    //  inside .axe/worktrees/, but our test cwd is repoRoot, not the
     //  worktree, so the guard doesn't trip.)
     await tool.build({ name: 'second' }).execute(new AbortController().signal);
 

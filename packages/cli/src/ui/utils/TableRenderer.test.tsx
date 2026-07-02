@@ -274,7 +274,7 @@ describe('<TableRenderer />', () => {
     // This is the classic failure case: CJK chars counted as width 1
     // causes column misalignment
     const output = renderTable(
-      ['对比项', 'Claude Code', 'Qwen Code'],
+      ['对比项', 'Claude Code', 'Axe'],
       [
         ['性能', '优秀', '优秀'],
         ['中文支持', '一般', '很好'],
@@ -285,7 +285,7 @@ describe('<TableRenderer />', () => {
 
     expect(output).toContain('对比项');
     expect(output).toContain('Claude Code');
-    expect(output).toContain('Qwen Code');
+    expect(output).toContain('Axe');
     expect(output).toContain('性能');
     expect(output).toContain('中文支持');
     expect(output).toContain('开源');

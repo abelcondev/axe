@@ -16,7 +16,7 @@ import { getPersistScopeForModelSelection } from '../../config/modelProvidersSco
 import {
   normalizeReasoningEffort,
   REASONING_EFFORT_TIERS,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 const TIER_LIST = REASONING_EFFORT_TIERS.join(', ');
 

@@ -71,7 +71,7 @@ const makeFakeConfig = (overrides: Partial<Config> = {}): Config => {
     getCliVersion: () => '1.0.0',
     getProxy: () => undefined,
     getContentGeneratorConfig: () => ({ authType: 'test-auth' }),
-    getAuthType: () => AuthType.QWEN_OAUTH,
+    getAuthType: () => AuthType.AXE_OAUTH,
     getMcpServers: () => ({}),
     getModel: () => 'test-model',
     getEmbeddingModel: () => 'test-embedding',
@@ -661,7 +661,7 @@ describe('QwenLogger', () => {
       const event = new HookCallEvent(
         'PreToolUse',
         'command',
-        '/home/user/.qwen/hooks/check-secrets.sh --api-key=secret123',
+        '/home/user/.axe/hooks/check-secrets.sh --api-key=secret123',
         { tool_name: 'read_file' },
         100,
         true,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { createDebugLogger, isGitRepository } from '@qwen-code/qwen-code-core';
+import { createDebugLogger, isGitRepository } from '@axe/core';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as childProcess from 'node:child_process';
@@ -111,7 +111,7 @@ export function getInstallationInfo(
 
     // Check for pnpm
     if (realPath.includes('/.pnpm/global')) {
-      const updateCommand = 'pnpm add -g @qwen-code/qwen-code@latest';
+      const updateCommand = 'pnpm add -g @axe/axe@latest';
       return {
         packageManager: PackageManager.PNPM,
         isGlobal: true,
@@ -124,7 +124,7 @@ export function getInstallationInfo(
 
     // Check for yarn
     if (realPath.includes('/.yarn/global')) {
-      const updateCommand = 'yarn global add @qwen-code/qwen-code@latest';
+      const updateCommand = 'yarn global add @axe/axe@latest';
       return {
         packageManager: PackageManager.YARN,
         isGlobal: true,
@@ -144,7 +144,7 @@ export function getInstallationInfo(
       };
     }
     if (realPath.includes('/.bun/bin')) {
-      const updateCommand = 'bun add -g @qwen-code/qwen-code@latest';
+      const updateCommand = 'bun add -g @axe/axe@latest';
       return {
         packageManager: PackageManager.BUN,
         isGlobal: true,
@@ -198,11 +198,11 @@ export function getInstallationInfo(
         packageManager: PackageManager.NPM,
         isGlobal: true,
         updateMessage:
-          'Update requires sudo. Please run: sudo npm install -g @qwen-code/qwen-code@latest',
+          'Update requires sudo. Please run: sudo npm install -g @axe/axe@latest',
       };
     }
 
-    const updateCommand = 'npm install -g @qwen-code/qwen-code@latest';
+    const updateCommand = 'npm install -g @axe/axe@latest';
     return {
       packageManager: PackageManager.NPM,
       isGlobal: true,
@@ -290,7 +290,7 @@ function isStandaloneInstallDir(installDir: string): boolean {
     const qwenBin =
       process.platform === 'win32'
         ? path.join(installDir, 'bin', 'qwen.cmd')
-        : path.join(installDir, 'bin', 'qwen');
+        : path.join(installDir, 'bin', 'axe');
     const nodeBin =
       process.platform === 'win32'
         ? path.join(installDir, 'node', 'node.exe')

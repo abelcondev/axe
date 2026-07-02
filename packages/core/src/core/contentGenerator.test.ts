@@ -40,8 +40,8 @@ vi.mock('./openaiContentGenerator/index.js', () => {
   };
 });
 
-vi.mock('../qwen/qwenOAuth2.js', () => ({
-  getQwenOAuthClient: async () => {
+vi.mock('../qwen/axeOAuth2.js', () => ({
+  getAxeOAuthClient: async () => {
     if (qwenMockState.oauthError) {
       throw qwenMockState.oauthError;
     }
@@ -232,7 +232,7 @@ describe('createContentGenerator - ERR_MODULE_NOT_FOUND handling', () => {
       await createContentGenerator(
         {
           model: 'test-model',
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
         },
         mockConfig,
       );
@@ -243,7 +243,7 @@ describe('createContentGenerator - ERR_MODULE_NOT_FOUND handling', () => {
       expect(err.message).toMatch(
         /updated in the background and needs to be restarted/,
       );
-      expect(err.message).toMatch(/qwen-oauth/);
+      expect(err.message).toMatch(/axe-oauth/);
       expect(err.cause).toBe(moduleError);
     }
   });
@@ -254,21 +254,21 @@ describe('createContentGeneratorConfig', () => {
     getProxy: () => undefined,
   } as unknown as Config;
 
-  it('should preserve provided fields and set authType for QWEN_OAUTH', () => {
-    const cfg = createContentGeneratorConfig(mockConfig, AuthType.QWEN_OAUTH, {
+  it('should preserve provided fields and set authType for AXE_OAUTH', () => {
+    const cfg = createContentGeneratorConfig(mockConfig, AuthType.AXE_OAUTH, {
       model: 'coder-model',
-      apiKey: 'QWEN_OAUTH_DYNAMIC_TOKEN',
+      apiKey: 'AXE_OAUTH_DYNAMIC_TOKEN',
     });
-    expect(cfg.authType).toBe(AuthType.QWEN_OAUTH);
+    expect(cfg.authType).toBe(AuthType.AXE_OAUTH);
     expect(cfg.model).toBe('coder-model');
-    expect(cfg.apiKey).toBe('QWEN_OAUTH_DYNAMIC_TOKEN');
+    expect(cfg.apiKey).toBe('AXE_OAUTH_DYNAMIC_TOKEN');
   });
 
-  it('should not warn or fallback for QWEN_OAUTH (resolution handled by ModelConfigResolver)', () => {
+  it('should not warn or fallback for AXE_OAUTH (resolution handled by ModelConfigResolver)', () => {
     const warnSpy = vi
       .spyOn(console, 'warn')
       .mockImplementation(() => undefined);
-    const cfg = createContentGeneratorConfig(mockConfig, AuthType.QWEN_OAUTH, {
+    const cfg = createContentGeneratorConfig(mockConfig, AuthType.AXE_OAUTH, {
       model: 'some-random-model',
     });
     expect(cfg.model).toBe('some-random-model');

@@ -49,9 +49,9 @@ import {
   Storage,
   TrustGateError,
   type Extension,
-} from '@qwen-code/qwen-code-core';
-import * as qwenCore from '@qwen-code/qwen-code-core';
-import type { DaemonStatusProvider } from '@qwen-code/acp-bridge';
+} from '@axe/core';
+import * as qwenCore from '@axe/core';
+import type { DaemonStatusProvider } from '@axe/acp-bridge';
 import {
   CancelSentinelCollisionError,
   InvalidClientIdError,
@@ -85,7 +85,7 @@ import {
 import type {
   BridgeEvent,
   SubscribeOptions,
-} from '@qwen-code/acp-bridge/eventBus';
+} from '@axe/acp-bridge/eventBus';
 import type {
   ServeSessionContextStatus,
   ServeSessionContextUsageStatus,
@@ -104,7 +104,7 @@ import type {
   ServeWorkspaceProvidersStatus,
   ServeWorkspaceSkillsStatus,
   ServeWorkspaceToolsStatus,
-} from '@qwen-code/acp-bridge/status';
+} from '@axe/acp-bridge/status';
 import { CAPABILITIES_SCHEMA_VERSION, type ServeOptions } from './types.js';
 import type { DaemonLogger } from './daemon-logger.js';
 import { FsError, type WorkspaceFileSystemFactory } from './fs/index.js';
@@ -2021,7 +2021,7 @@ describe('createServeApp', () => {
   describe('Web Shell static serving', () => {
     let webShellDir: string;
     const INDEX_HTML =
-      '<!doctype html><html><head><title>Qwen Code Web terminal</title>' +
+      '<!doctype html><html><head><title>Axe Web terminal</title>' +
       '<script type="module" src="/assets/app.js"></script></head>' +
       '<body><div id="root"></div></body></html>';
     const host = `127.0.0.1:${baseOpts.port}`;
@@ -10921,7 +10921,7 @@ describe('createServeApp', () => {
             },
           },
           auth: {
-            supportedDeviceFlowProviders: ['qwen-oauth'],
+            supportedDeviceFlowProviders: ['axe-oauth'],
             pendingDeviceFlowCount: 0,
           },
         },
@@ -12353,7 +12353,7 @@ describe('GET /session/:id/events (SSE)', () => {
     // UI consumers can render "retry" on init_timeout vs "show stack
     // trace" on unknown errors, without regex-matching the message
     // string.
-    const { BridgeTimeoutError } = await import('@qwen-code/acp-bridge');
+    const { BridgeTimeoutError } = await import('@axe/acp-bridge');
     const bridge = fakeBridge({
       async *subscribeImpl(_sessionId, _opts) {
         yield { id: 1, v: 1, type: 'session_update', data: 'first' };
@@ -12518,7 +12518,7 @@ describe('GET /session/:id/events (SSE)', () => {
     // BridgeTimeoutError → classified as `init_timeout`. The log line
     // must include `[init_timeout]` so operators can `grep '\[init_'`
     // for that specific failure class.
-    const { BridgeTimeoutError } = await import('@qwen-code/acp-bridge');
+    const { BridgeTimeoutError } = await import('@axe/acp-bridge');
     const stderrSpy = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
     try {
       const bridge = fakeBridge({
@@ -13052,7 +13052,7 @@ describe('auth device-flow routes', () => {
     let starts = 0;
     return {
       provider: {
-        providerId: 'qwen-oauth' as const,
+        providerId: 'axe-oauth' as const,
         async start() {
           starts += 1;
           return {
@@ -13099,9 +13099,9 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(res.status).toBe(201);
-    expect(res.body.providerId).toBe('qwen-oauth');
+    expect(res.body.providerId).toBe('axe-oauth');
     expect(res.body.userCode).toBe('USER-1');
     expect(res.body.attached).toBe(false);
     expect(typeof res.body.deviceFlowId).toBe('string');
@@ -13117,7 +13117,7 @@ describe('auth device-flow routes', () => {
     const res = await request(app)
       .post('/workspace/auth/device-flow')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(res.status).toBe(401);
     expect(res.body.code).toBe('token_required');
   });
@@ -13131,7 +13131,7 @@ describe('auth device-flow routes', () => {
       .send({ providerId: 'totally-fake' });
     expect(res.status).toBe(400);
     expect(res.body.code).toBe('unsupported_provider');
-    expect(res.body.supportedProviders).toContain('qwen-oauth');
+    expect(res.body.supportedProviders).toContain('axe-oauth');
   });
 
   it('POST is idempotent take-over for the same providerId — second POST returns 200 + attached:true', async () => {
@@ -13140,13 +13140,13 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(first.status).toBe(201);
     const second = await request(app)
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(second.status).toBe(200);
     expect(second.body.attached).toBe(true);
     expect(second.body.deviceFlowId).toBe(first.body.deviceFlowId);
@@ -13171,7 +13171,7 @@ describe('auth device-flow routes', () => {
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
       .set('X-Qwen-Client-Id', 'sdk-A')
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(first.status).toBe(201);
     // Fresh starter MUST see the verification material — they ARE
     // the initiator.
@@ -13185,7 +13185,7 @@ describe('auth device-flow routes', () => {
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
       .set('X-Qwen-Client-Id', 'sdk-B')
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(takeoverDifferent.status).toBe(200);
     expect(takeoverDifferent.body.attached).toBe(true);
     expect(takeoverDifferent.body.deviceFlowId).toBe(first.body.deviceFlowId);
@@ -13202,7 +13202,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(takeoverAnon.status).toBe(200);
     expect(takeoverAnon.body.attached).toBe(true);
     expect(takeoverAnon.body).not.toHaveProperty('userCode');
@@ -13213,7 +13213,7 @@ describe('auth device-flow routes', () => {
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
       .set('X-Qwen-Client-Id', 'sdk-A')
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(takeoverSame.status).toBe(200);
     expect(takeoverSame.body.attached).toBe(true);
     expect(takeoverSame.body.userCode).toBe('USER-1');
@@ -13231,7 +13231,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(first.status).toBe(201);
     expect(first.body.userCode).toBe('USER-1');
 
@@ -13239,7 +13239,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(reattach.status).toBe(200);
     expect(reattach.body.attached).toBe(true);
     expect(reattach.body.deviceFlowId).toBe(first.body.deviceFlowId);
@@ -13257,7 +13257,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     const id = post.body.deviceFlowId as string;
     const ok = await request(app)
       .get(`/workspace/auth/device-flow/${id}`)
@@ -13281,7 +13281,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     const id = post.body.deviceFlowId as string;
     const first = await request(app)
       .delete(`/workspace/auth/device-flow/${id}`)
@@ -13307,7 +13307,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     const id = start.body.deviceFlowId as string;
     const status = await request(app)
       .get('/workspace/auth/status')
@@ -13315,7 +13315,7 @@ describe('auth device-flow routes', () => {
       .set('Host', `127.0.0.1:${baseOpts.port}`);
     expect(status.status).toBe(200);
     expect(status.body.v).toBe(1);
-    expect(status.body.supportedDeviceFlowProviders).toContain('qwen-oauth');
+    expect(status.body.supportedDeviceFlowProviders).toContain('axe-oauth');
     expect(status.body.pendingDeviceFlows).toHaveLength(1);
     expect(status.body.pendingDeviceFlows[0].deviceFlowId).toBe(id);
     // Status payload MUST NOT echo userCode/verificationUri.
@@ -13349,7 +13349,7 @@ describe('auth device-flow routes', () => {
       .send({
         providerId: 'custom-openai-compatible',
         apiKey: 'sk-test',
-        protocol: 'qwen-oauth',
+        protocol: 'axe-oauth',
       });
 
     expect(res.status).toBe(400);
@@ -13548,7 +13548,7 @@ describe('auth device-flow routes', () => {
     const { UpstreamDeviceFlowError } = await import('./auth/device-flow.js');
     const failingProvider: import('./auth/device-flow.js').DeviceFlowProvider =
       {
-        providerId: 'qwen-oauth',
+        providerId: 'axe-oauth',
         async start() {
           throw new UpstreamDeviceFlowError('mocked upstream outage');
         },
@@ -13565,7 +13565,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(res.status).toBe(502);
     expect(res.body.code).toBe('upstream_error');
     expect(res.body.error).toContain('mocked upstream outage');
@@ -13578,7 +13578,7 @@ describe('auth device-flow routes', () => {
       './auth/device-flow.js'
     );
     const fakeProvider: import('./auth/device-flow.js').DeviceFlowProvider = {
-      providerId: 'qwen-oauth',
+      providerId: 'axe-oauth',
       async start() {
         return {
           deviceCode: brandSecret('device-1'),
@@ -13598,7 +13598,7 @@ describe('auth device-flow routes', () => {
     const intervalsRegistered: Array<{ cb: () => void }> = [];
     const registry = new DeviceFlowRegistry({
       events: { publish: () => {} },
-      resolveProvider: (id) => (id === 'qwen-oauth' ? fakeProvider : undefined),
+      resolveProvider: (id) => (id === 'axe-oauth' ? fakeProvider : undefined),
       now: () => now,
       // Run polls forever-deferred; sweeper interval is what we drive.
       schedule: (_ms, _cb) => ({ cancelled: false }) as never,
@@ -13621,7 +13621,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(startRes.status).toBe(201);
     const id = startRes.body.deviceFlowId as string;
 
@@ -13700,7 +13700,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     expect(res.status).toBe(409);
     expect(res.body.code).toBe('too_many_active_flows');
   });
@@ -13749,7 +13749,7 @@ describe('auth device-flow routes', () => {
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
       .set('X-Qwen-Client-Id', 'sdk-A')
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     const id = post.body.deviceFlowId as string;
     expect(typeof id).toBe('string');
 
@@ -13803,7 +13803,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     const id = post.body.deviceFlowId as string;
 
     // Over-length: 129 chars.
@@ -13844,7 +13844,7 @@ describe('auth device-flow routes', () => {
       .post('/workspace/auth/device-flow')
       .set('Authorization', 'Bearer tkn')
       .set('Host', `127.0.0.1:${baseOpts.port}`)
-      .send({ providerId: 'qwen-oauth' });
+      .send({ providerId: 'axe-oauth' });
     const id = post.body.deviceFlowId as string;
     expect(typeof id).toBe('string');
     // Anonymous GET — must still see the verification fields.
@@ -14766,7 +14766,7 @@ describe('T2.9 serve-side errorKind taxonomy (issue #4514)', () => {
     // (different package, no cross-package import). Together they
     // guarantee a PR adding a kind on one side without the other
     // fails CI.
-    const { SERVE_ERROR_KINDS } = await import('@qwen-code/acp-bridge/status');
+    const { SERVE_ERROR_KINDS } = await import('@axe/acp-bridge/status');
     expect(SERVE_ERROR_KINDS).toContain('prompt_deadline_exceeded');
     expect(SERVE_ERROR_KINDS).toContain('writer_idle_timeout');
   });

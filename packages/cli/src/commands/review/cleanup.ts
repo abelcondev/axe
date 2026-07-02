@@ -5,9 +5,9 @@
  */
 
 // Post-review cleanup for /review Step 9.
-//   - Remove the temporary worktree at .qwen/tmp/review-pr-<n>.
+//   - Remove the temporary worktree at .axe/tmp/review-pr-<n>.
 //   - Delete the local branch ref qwen-review/pr-<n>.
-//   - Remove any .qwen/tmp/qwen-review-<target>-* side files.
+//   - Remove any .axe/tmp/qwen-review-<target>-* side files.
 //
 // The command is idempotent — missing files / branches are silent OK.
 
@@ -65,7 +65,7 @@ function runCleanup(target: string): void {
     }
   }
 
-  // --- Per-target side files (under .qwen/tmp/) -------------------------
+  // --- Per-target side files (under .axe/tmp/) -------------------------
   const prefix = tmpPrefix(target);
   let tmpEntries: string[] = [];
   try {

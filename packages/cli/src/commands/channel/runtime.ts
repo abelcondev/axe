@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { Storage } from '@qwen-code/qwen-code-core';
+import { Storage } from '@axe/core';
 import type {
   SessionRouter,
   ChannelAgentBridge,
@@ -8,8 +8,8 @@ import type {
   ChannelBaseOptions,
   ChannelPlugin,
   ToolCallEvent,
-} from '@qwen-code/channel-base';
-import { sanitizeLogText } from '@qwen-code/channel-base';
+} from '@axe/channel-base';
+import { sanitizeLogText } from '@axe/channel-base';
 import { loadSettings, type LoadedSettings } from '../../config/settings.js';
 import { writeStderrLine, writeStdoutLine } from '../../utils/stdioHelpers.js';
 import { getExtensionManager } from '../extensions/utils.js';

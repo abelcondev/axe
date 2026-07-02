@@ -21,11 +21,11 @@ import {
   useDaemonMidTurnInjected,
   type DaemonSessionActions,
   type DaemonStreamingState,
-} from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
 import type {
   DaemonPendingPromptSummary,
   DaemonTranscriptStore,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import type { PromptImage } from '../adapters/promptTypes';
 import type { EditorHandle } from './useComposerCore';
 import { removeInjectedFromQueue } from '../midTurnDedup';

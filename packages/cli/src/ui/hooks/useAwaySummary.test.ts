@@ -1,19 +1,19 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import * as core from '@qwen-code/qwen-code-core';
+import * as core from '@axe/core';
 import { useAwaySummary } from './useAwaySummary.js';
 import type { HistoryItem } from '../types.js';
 
-vi.mock('@qwen-code/qwen-code-core', async () => {
+vi.mock('@axe/core', async () => {
   const actual = await vi.importActual<
-    typeof import('@qwen-code/qwen-code-core')
-  >('@qwen-code/qwen-code-core');
+    typeof import('@axe/core')
+  >('@axe/core');
   return {
     ...actual,
     generateSessionRecap: vi.fn(),

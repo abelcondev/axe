@@ -123,10 +123,10 @@ const {
   mockClipboardWriteText: vi.fn(),
 }));
 
-vi.mock('@qwen-code/qwen-code-core', async () => {
+vi.mock('@axe/core', async () => {
   const actual = await vi.importActual<
-    typeof import('@qwen-code/qwen-code-core')
-  >('@qwen-code/qwen-code-core');
+    typeof import('@axe/core')
+  >('@axe/core');
   return {
     ...actual,
     Storage: {

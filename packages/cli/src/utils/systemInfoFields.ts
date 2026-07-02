@@ -9,7 +9,7 @@ import { t } from '../i18n/index.js';
 import {
   findProviderByCredentials,
   resolveMetadataKey,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 /**
  * Field configuration for system information display
@@ -29,7 +29,7 @@ export function getSystemInfoFields(
 ): SystemInfoDisplayField[] {
   const fields: SystemInfoDisplayField[] = [];
 
-  addField(fields, t('Qwen Code'), formatCliVersion(info));
+  addField(fields, t('Axe'), formatCliVersion(info));
   addField(fields, t('Runtime'), formatRuntime(info));
   addField(fields, t('IDE Client'), info.ideClient);
   addField(fields, 'LSP', info.lspStatus ?? '');
@@ -104,7 +104,7 @@ function formatAuth(info: ExtendedSystemInfo): string {
 
   if (
     info.selectedAuthType.startsWith('oauth') ||
-    info.selectedAuthType === 'qwen-oauth'
+    info.selectedAuthType === 'axe-oauth'
   ) {
     return 'Qwen OAuth';
   }
@@ -119,7 +119,7 @@ function formatBaseUrl(info: ExtendedSystemInfo): string {
 
   if (
     info.selectedAuthType.startsWith('oauth') ||
-    info.selectedAuthType === 'qwen-oauth'
+    info.selectedAuthType === 'axe-oauth'
   ) {
     return '';
   }

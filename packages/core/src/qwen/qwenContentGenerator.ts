@@ -6,7 +6,7 @@
 
 import { OpenAIContentGenerator } from '../core/openaiContentGenerator/index.js';
 import { DashScopeOpenAICompatibleProvider } from '../core/openaiContentGenerator/provider/dashscope.js';
-import type { IQwenOAuth2Client } from './qwenOAuth2.js';
+import type { IAxeOAuth2Client } from './axeOAuth2.js';
 import { SharedTokenManager } from './sharedTokenManager.js';
 import { type Config } from '../config/config.js';
 import type {
@@ -26,12 +26,12 @@ import { createDebugLogger } from '../utils/debugLogger.js';
  */
 export class QwenContentGenerator extends OpenAIContentGenerator {
   private readonly debugLogger = createDebugLogger('QWEN');
-  private qwenClient: IQwenOAuth2Client;
+  private qwenClient: IAxeOAuth2Client;
   private sharedManager: SharedTokenManager;
   private currentToken?: string;
 
   constructor(
-    qwenClient: IQwenOAuth2Client,
+    qwenClient: IAxeOAuth2Client,
     contentGeneratorConfig: ContentGeneratorConfig,
     cliConfig: Config,
   ) {

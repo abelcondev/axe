@@ -575,7 +575,7 @@ export class BaseLlmClient {
   /**
    * Resolve a model across all authTypes. Handles the case where the target
    * model is registered under a different authType than the main model
-   * (e.g. main=QWEN_OAUTH, fast=USE_ANTHROPIC).
+   * (e.g. main=AXE_OAUTH, fast=USE_ANTHROPIC).
    */
   private resolveModelAcrossAuthTypes(
     model: string,
@@ -596,7 +596,7 @@ export class BaseLlmClient {
     }
 
     const allAuthTypes: AuthType[] = [
-      AuthType.QWEN_OAUTH,
+      AuthType.AXE_OAUTH,
       AuthType.USE_OPENAI,
       AuthType.USE_VERTEX_AI,
       AuthType.USE_ANTHROPIC,

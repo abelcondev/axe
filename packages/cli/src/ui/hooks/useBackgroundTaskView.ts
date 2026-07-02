@@ -34,7 +34,7 @@ import {
   type ShellTask,
   type TaskState,
   type WorkflowTask,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 // Cap on retained terminal dream entries surfaced via the dialog.
 // `MemoryManager.tasks` has no eviction; without this cap the list
@@ -45,7 +45,7 @@ import {
 const MAX_RETAINED_TERMINAL_DREAMS = 3;
 
 /**
- * @deprecated Use {@link AgentTask} from `@qwen-code/qwen-code-core`
+ * @deprecated Use {@link AgentTask} from `@axe/core`
  * directly. Kept as a one-release alias while UI consumers migrate.
  */
 export type AgentDialogEntry = AgentTask;

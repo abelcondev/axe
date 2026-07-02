@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { dp } from './dialogStyles';
-import { useConnection, useSessions } from '@qwen-code/webui/daemon-react-sdk';
+import { useConnection, useSessions } from '@axe/webui/daemon-react-sdk';
 import { useI18n } from '../../i18n';
 import { useListboxKeyboard } from '../../hooks/useListboxKeyboard';
 import { useFilterInput } from '../../hooks/useFilterInput';

@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import path from 'path';
 import fs from 'fs/promises';
-import { Storage, type Config } from '@qwen-code/qwen-code-core';
+import { Storage, type Config } from '@axe/core';
 import { StaticInsightGenerator } from './StaticInsightGenerator.js';
 
 vi.mock('fs/promises', () => ({
@@ -64,7 +64,7 @@ describe('StaticInsightGenerator', () => {
     const projectsDir = path.resolve(
       'workspace',
       'project-a',
-      '.qwen',
+      '.axe',
       'projects',
     );
     const outputDir = path.join(Storage.getRuntimeBaseDir(), 'insights');

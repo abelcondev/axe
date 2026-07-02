@@ -13,7 +13,7 @@ import type {
   BridgeWorkspaceMemoryRememberRequest,
   BridgeWorkspaceMemoryRememberResult,
 } from './acp-session-bridge.js';
-import type { BridgeEvent } from '@qwen-code/acp-bridge/eventBus';
+import type { BridgeEvent } from '@axe/acp-bridge/eventBus';
 import {
   mountWorkspaceMemoryRememberRoutes,
   WorkspaceRememberTaskLane,

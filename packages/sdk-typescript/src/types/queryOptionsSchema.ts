@@ -162,7 +162,7 @@ export const QueryOptionsSchema = z
     excludeTools: z.array(z.string()).optional(),
     allowedTools: z.array(z.string()).optional(),
     authType: z
-      .enum(['openai', 'anthropic', 'qwen-oauth', 'gemini', 'vertex-ai'])
+      .enum(['openai', 'anthropic', 'axe-oauth', 'gemini', 'vertex-ai'])
       .optional(),
     agents: z
       .array(

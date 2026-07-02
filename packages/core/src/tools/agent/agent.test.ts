@@ -106,14 +106,14 @@ describe('AgentTool', () => {
       description: 'Specialized agent for searching and analyzing files',
       systemPrompt: 'You are a file search specialist.',
       level: 'project',
-      filePath: '/project/.qwen/agents/file-search.md',
+      filePath: '/project/.axe/agents/file-search.md',
     },
     {
       name: 'code-review',
       description: 'Agent for reviewing code quality and best practices',
       systemPrompt: 'You are a code review specialist.',
       level: 'user',
-      filePath: '/home/user/.qwen/agents/code-review.md',
+      filePath: '/home/user/.axe/agents/code-review.md',
     },
   ];
 
@@ -743,7 +743,7 @@ describe('AgentTool', () => {
           description: 'A brand new agent',
           systemPrompt: 'Do new things.',
           level: 'project',
-          filePath: '/project/.qwen/agents/new-agent.md',
+          filePath: '/project/.axe/agents/new-agent.md',
         },
       ];
 
@@ -768,7 +768,7 @@ describe('AgentTool', () => {
           description: 'A test agent',
           systemPrompt: 'Test prompt',
           level: 'project',
-          filePath: '/project/.qwen/agents/test-agent.md',
+          filePath: '/project/.axe/agents/test-agent.md',
         },
       ];
 
@@ -1010,7 +1010,7 @@ describe('AgentTool', () => {
         expect(agentConfig.getProjectRoot()).not.toBe(repo);
         expect(
           agentConfig.getFileService().getQwenIgnoreFileNamesDisplay(),
-        ).toBe('.qwenignore, .cursorignore');
+        ).toBe('.axeignore, .cursorignore');
         expect(
           agentConfig.getFileService().shouldQwenIgnoreFile('secret.txt'),
         ).toBe(true);
@@ -2695,7 +2695,7 @@ describe('AgentTool', () => {
       description: 'Background monitor agent',
       systemPrompt: 'You are a monitor.',
       level: 'project',
-      filePath: '/project/.qwen/agents/monitor.md',
+      filePath: '/project/.axe/agents/monitor.md',
       background: true,
     };
 

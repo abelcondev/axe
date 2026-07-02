@@ -404,7 +404,7 @@ function createMemoryTypeClassifier(
 
 /**
  * Loads hierarchical QWEN.md files and concatenates their content.
- * Also loads path-based context rules from `.qwen/rules/` directories.
+ * Also loads path-based context rules from `.axe/rules/` directories.
  * This function is intended for use by the server.
  *
  * @param contextRuleExcludes - Glob patterns to skip when loading rules.
@@ -444,7 +444,7 @@ export async function loadServerHierarchicalMemory(
   const effectiveRoot = foundRoot ?? resolvedCwd;
 
   // Append the per-developer local context file slot:
-  // `<projectRoot>/.qwen/QWEN.local.md`. Loaded after all hierarchical
+  // `<projectRoot>/.axe/QWEN.local.md`. Loaded after all hierarchical
   // QWEN.md / AGENTS.md files so local instructions can supplement or
   // override shared ones. Same trust + explicit-only gating as the rest
   // of the project-level discovery.
@@ -453,7 +453,7 @@ export async function loadServerHierarchicalMemory(
   // fallback). Without that gate, two failure modes appear:
   //   * Deep cwd in a non-git workspace turns the slot into a per-cwd
   //     file, breaking the "single fixed slot" invariant.
-  //   * `cwd === homedir` resolves the slot path to `~/.qwen/QWEN.local.md`,
+  //   * `cwd === homedir` resolves the slot path to `~/.axe/QWEN.local.md`,
   //     colliding with the global Qwen directory.
   if (implicitDiscoveryEnabled && folderTrust && foundRoot) {
     const localContextPath = path.join(
@@ -507,7 +507,7 @@ export async function loadServerHierarchicalMemory(
     ).length;
   }
 
-  // Load path-based context rules from .qwen/rules/ directories.
+  // Load path-based context rules from .axe/rules/ directories.
   const {
     content: rulesContent,
     ruleCount,

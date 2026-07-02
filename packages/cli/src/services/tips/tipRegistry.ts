@@ -8,7 +8,7 @@
  * Contextual tip registry — defines tips, their conditions, and display rules.
  */
 
-import { type CompactionThresholds } from '@qwen-code/qwen-code-core';
+import { type CompactionThresholds } from '@axe/core';
 
 export type TipTrigger = 'startup' | 'post-response';
 
@@ -84,7 +84,7 @@ export const tipRegistry: ContextualTip[] = [
   },
   {
     id: 'new-user-qwenmd',
-    content: 'Add a QWEN.md file to give Qwen Code persistent project context.',
+    content: 'Add a QWEN.md file to give Axe persistent project context.',
     trigger: 'startup',
     isRelevant: (ctx) => ctx.sessionCount < 10,
     cooldownPrompts: 0,
@@ -102,7 +102,7 @@ export const tipRegistry: ContextualTip[] = [
   {
     id: 'shell-commands',
     content:
-      'You can run any shell commands from Qwen Code using ! (e.g. !ls).',
+      'You can run any shell commands from Axe using ! (e.g. !ls).',
     trigger: 'startup',
     isRelevant: (ctx) => ctx.sessionCount < 15,
     cooldownPrompts: 0,

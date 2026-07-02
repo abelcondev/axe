@@ -11,13 +11,13 @@ import path from 'node:path';
 export default defineConfig({
   resolve: {
     alias: {
-      '@qwen-code/qwen-code-core': path.resolve(__dirname, '../core/index.ts'),
+      '@axe/core': path.resolve(__dirname, '../core/index.ts'),
       // cli's daemon-status-provider.test.ts imports `FakeAgent` /
       // `makeChannel` from acp-bridge's package-private
       // `internal/testUtils` module. This alias overrides the runtime
       // resolution so vitest reads the .ts source directly instead of
       // the build-then-stale `dist/` copy.
-      '@qwen-code/acp-bridge/internal/testUtils': path.resolve(
+      '@axe/acp-bridge/internal/testUtils': path.resolve(
         __dirname,
         '../acp-bridge/src/internal/testUtils.ts',
       ),
@@ -25,51 +25,51 @@ export default defineConfig({
       // resolve to dist/ via package.json exports, but tests in the
       // monorepo worktree need the live source (dist may be stale or
       // absent during development).
-      '@qwen-code/acp-bridge/bridgeErrors': path.resolve(
+      '@axe/acp-bridge/bridgeErrors': path.resolve(
         __dirname,
         '../acp-bridge/src/bridgeErrors.ts',
       ),
-      '@qwen-code/acp-bridge/status': path.resolve(
+      '@axe/acp-bridge/status': path.resolve(
         __dirname,
         '../acp-bridge/src/status.ts',
       ),
-      '@qwen-code/acp-bridge/bridge': path.resolve(
+      '@axe/acp-bridge/bridge': path.resolve(
         __dirname,
         '../acp-bridge/src/bridge.ts',
       ),
-      '@qwen-code/acp-bridge/spawnChannel': path.resolve(
+      '@axe/acp-bridge/spawnChannel': path.resolve(
         __dirname,
         '../acp-bridge/src/spawnChannel.ts',
       ),
-      '@qwen-code/acp-bridge/logRedaction': path.resolve(
+      '@axe/acp-bridge/logRedaction': path.resolve(
         __dirname,
         '../acp-bridge/src/logRedaction.ts',
       ),
-      '@qwen-code/acp-bridge/bridgeClient': path.resolve(
+      '@axe/acp-bridge/bridgeClient': path.resolve(
         __dirname,
         '../acp-bridge/src/bridgeClient.ts',
       ),
-      '@qwen-code/acp-bridge/bridgeOptions': path.resolve(
+      '@axe/acp-bridge/bridgeOptions': path.resolve(
         __dirname,
         '../acp-bridge/src/bridgeOptions.ts',
       ),
-      '@qwen-code/acp-bridge/bridgeTypes': path.resolve(
+      '@axe/acp-bridge/bridgeTypes': path.resolve(
         __dirname,
         '../acp-bridge/src/bridgeTypes.ts',
       ),
-      '@qwen-code/acp-bridge/bridgeFileSystem': path.resolve(
+      '@axe/acp-bridge/bridgeFileSystem': path.resolve(
         __dirname,
         '../acp-bridge/src/bridgeFileSystem.ts',
       ),
-      '@qwen-code/acp-bridge/eventBus': path.resolve(
+      '@axe/acp-bridge/eventBus': path.resolve(
         __dirname,
         '../acp-bridge/src/eventBus.ts',
       ),
-      '@qwen-code/acp-bridge/workspacePaths': path.resolve(
+      '@axe/acp-bridge/workspacePaths': path.resolve(
         __dirname,
         '../acp-bridge/src/workspacePaths.ts',
       ),
-      '@qwen-code/audio-capture': path.resolve(
+      '@axe/audio-capture': path.resolve(
         __dirname,
         '../audio-capture/src/index.ts',
       ),

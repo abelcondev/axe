@@ -18,7 +18,7 @@ import {
   shouldShowStep,
   providerMatchesCredentials,
   type ProviderConfig,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 function makeConfig(overrides: Partial<ProviderConfig> = {}): ProviderConfig {
   return {
@@ -771,7 +771,7 @@ describe('customHeaders in ProviderConfig', () => {
     const config = makeConfig({
       customHeaders: {
         'HTTP-Referer': 'https://github.com/QwenLM/qwen-code.git',
-        'X-Title': 'Qwen Code',
+        'X-Title': 'Axe',
       },
     });
     const plan = buildInstallPlan(config, {
@@ -783,7 +783,7 @@ describe('customHeaders in ProviderConfig', () => {
     const gc = plan.modelProviders?.[0]?.models[0]?.generationConfig;
     expect(gc?.customHeaders).toEqual({
       'HTTP-Referer': 'https://github.com/QwenLM/qwen-code.git',
-      'X-Title': 'Qwen Code',
+      'X-Title': 'Axe',
     });
     // existing fields preserved
     expect(gc?.extra_body).toEqual({ enable_thinking: true });

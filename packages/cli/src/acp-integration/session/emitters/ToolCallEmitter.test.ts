@@ -12,8 +12,8 @@ import type {
   ToolRegistry,
   AnyDeclarativeTool,
   AnyToolInvocation,
-} from '@qwen-code/qwen-code-core';
-import { Kind, ToolNames } from '@qwen-code/qwen-code-core';
+} from '@axe/core';
+import { Kind, ToolNames } from '@axe/core';
 import type { Part } from '@google/genai';
 
 // Helper to create mock message parts for tests

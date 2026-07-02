@@ -473,7 +473,7 @@ export interface FileHistorySnapshotRecordPayload {
  * - Linear history reconstruction
  * - Future conversation branching (fork from any historical point)
  *
- * File location: ~/.qwen/tmp/<project_id>/chats/
+ * File location: ~/.axe/tmp/<project_id>/chats/
  *
  * For session management (list, load, remove), use SessionService.
  */

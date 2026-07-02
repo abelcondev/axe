@@ -9,14 +9,14 @@ import { act } from '@testing-library/react';
 import { render } from 'ink-testing-library';
 
 vi.mock('../../hooks/useKeypress.js', () => ({ useKeypress: vi.fn() }));
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
   return { ...actual, saveWorkflowScript: vi.fn() };
 });
 
 import { useKeypress, type Key } from '../../hooks/useKeypress.js';
-import { saveWorkflowScript, type Config } from '@qwen-code/qwen-code-core';
+import { saveWorkflowScript, type Config } from '@axe/core';
 import { WorkflowSaveOverlay } from './workflow-save-overlay.js';
 
 const mockedUseKeypress = vi.mocked(useKeypress);
@@ -85,7 +85,7 @@ describe('WorkflowSaveOverlay', () => {
       status: 'saved',
       name: 'flow',
       scope: 'project',
-      path: '/proj/.qwen/workflows/flow.js',
+      path: '/proj/.axe/workflows/flow.js',
     });
     const { lastFrame, type, press, onClose } = setup();
     await type('flow');
@@ -100,7 +100,7 @@ describe('WorkflowSaveOverlay', () => {
       }),
     );
     expect(lastFrame() ?? '').toContain(
-      'Saved to /proj/.qwen/workflows/flow.js',
+      'Saved to /proj/.axe/workflows/flow.js',
     );
     await press({ name: 'return' });
     expect(onClose).toHaveBeenCalledWith('flow');
@@ -111,7 +111,7 @@ describe('WorkflowSaveOverlay', () => {
       status: 'saved',
       name: 'flow',
       scope: 'user',
-      path: '/home/.qwen/workflows/flow.js',
+      path: '/home/.axe/workflows/flow.js',
     });
     const { type, press } = setup();
     await type('flow');
@@ -144,13 +144,13 @@ describe('WorkflowSaveOverlay', () => {
         status: 'exists',
         name: 'flow',
         scope: 'project',
-        path: '/proj/.qwen/workflows/flow.js',
+        path: '/proj/.axe/workflows/flow.js',
       })
       .mockResolvedValueOnce({
         status: 'saved',
         name: 'flow',
         scope: 'project',
-        path: '/proj/.qwen/workflows/flow.js',
+        path: '/proj/.axe/workflows/flow.js',
       });
     const { type, press, lastFrame } = setup();
     await type('flow');

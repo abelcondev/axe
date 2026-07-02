@@ -32,7 +32,7 @@ import {
   type AgentResultDisplay,
   ToolDisplayNames,
   ToolNames,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { IndividualToolCallDisplay } from '../../types.js';
 import { ConfigContext } from '../../contexts/ConfigContext.js';
 import { theme } from '../../semantic-colors.js';

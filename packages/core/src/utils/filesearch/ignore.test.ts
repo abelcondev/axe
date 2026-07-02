@@ -114,9 +114,9 @@ describe('loadIgnoreRules', () => {
     expect(fileFilter('test.txt')).toBe(false);
   });
 
-  it('should load rules from .qwenignore', async () => {
+  it('should load rules from .axeignore', async () => {
     tmpDir = await createTmpDir({
-      '.qwenignore': '*.log',
+      '.axeignore': '*.log',
     });
     const ignore = loadIgnoreRules({
       projectRoot: tmpDir,
@@ -161,9 +161,9 @@ describe('loadIgnoreRules', () => {
     expect(dirFilter('src/')).toBe(false);
   });
 
-  it('should not let custom ignore negations unignore .qwenignore matches', async () => {
+  it('should not let custom ignore negations unignore .axeignore matches', async () => {
     tmpDir = await createTmpDir({
-      '.qwenignore': 'secrets/**',
+      '.axeignore': 'secrets/**',
       '.agentignore': '!secrets/**',
     });
     const ignore = loadIgnoreRules({
@@ -178,7 +178,7 @@ describe('loadIgnoreRules', () => {
 
   it('should keep negations scoped to the same ignore file', async () => {
     tmpDir = await createTmpDir({
-      '.qwenignore': 'secrets/**\n!secrets/public.txt',
+      '.axeignore': 'secrets/**\n!secrets/public.txt',
     });
     const ignore = loadIgnoreRules({
       projectRoot: tmpDir,
@@ -209,10 +209,10 @@ describe('loadIgnoreRules', () => {
     expect(fileFilter('visible.txt')).toBe(false);
   });
 
-  it('should combine rules from .gitignore and .qwenignore', async () => {
+  it('should combine rules from .gitignore and .axeignore', async () => {
     tmpDir = await createTmpDir({
       '.gitignore': '*.log',
-      '.qwenignore': '*.txt',
+      '.axeignore': '*.txt',
     });
     const ignore = loadIgnoreRules({
       projectRoot: tmpDir,
@@ -253,14 +253,14 @@ describe('loadIgnoreRules', () => {
 
   it('should handle ignore files that cannot be read gracefully', async () => {
     tmpDir = await createTmpDir({
-      '.qwenignore': '*.log',
+      '.axeignore': '*.log',
     });
     const originalReadFileSync = fs.readFileSync;
     vi.spyOn(fs, 'readFileSync').mockImplementation(((
       filePath: fs.PathOrFileDescriptor,
       options?: BufferEncoding | null,
     ) => {
-      if (String(filePath).endsWith('.qwenignore')) {
+      if (String(filePath).endsWith('.axeignore')) {
         throw new Error('ignore file disappeared');
       }
       return originalReadFileSync(filePath, options);

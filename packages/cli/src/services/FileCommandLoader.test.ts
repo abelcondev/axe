@@ -5,8 +5,8 @@
  */
 
 import * as path from 'node:path';
-import type { Config } from '@qwen-code/qwen-code-core';
-import { Storage } from '@qwen-code/qwen-code-core';
+import type { Config } from '@axe/core';
+import { Storage } from '@axe/core';
 import mock from 'mock-fs';
 import { FileCommandLoader } from './FileCommandLoader.js';
 import { assert, vi } from 'vitest';
@@ -57,9 +57,9 @@ vi.mock('./prompt-processors/argumentProcessor.js', async (importOriginal) => {
       .mockImplementation(() => new original.DefaultArgumentProcessor()),
   };
 });
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const original =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
   return {
     ...original,
     Storage: original.Storage,
@@ -558,7 +558,7 @@ describe('FileCommandLoader', () => {
       ).getProjectCommandsDir();
       const extensionDir = path.join(
         process.cwd(),
-        '.qwen/extensions/test-ext',
+        '.axe/extensions/test-ext',
       );
 
       mock({
@@ -611,7 +611,7 @@ describe('FileCommandLoader', () => {
       ).getProjectCommandsDir();
       const extensionDir = path.join(
         process.cwd(),
-        '.qwen/extensions/test-ext',
+        '.axe/extensions/test-ext',
       );
 
       mock({
@@ -707,11 +707,11 @@ describe('FileCommandLoader', () => {
     it('only loads commands from active extensions', async () => {
       const extensionDir1 = path.join(
         process.cwd(),
-        '.qwen/extensions/active-ext',
+        '.axe/extensions/active-ext',
       );
       const extensionDir2 = path.join(
         process.cwd(),
-        '.qwen/extensions/inactive-ext',
+        '.axe/extensions/inactive-ext',
       );
 
       mock({
@@ -766,7 +766,7 @@ describe('FileCommandLoader', () => {
     it('handles missing extension commands directory gracefully', async () => {
       const extensionDir = path.join(
         process.cwd(),
-        '.qwen/extensions/no-commands',
+        '.axe/extensions/no-commands',
       );
 
       mock({
@@ -798,7 +798,7 @@ describe('FileCommandLoader', () => {
     });
 
     it('handles nested command structure in extensions', async () => {
-      const extensionDir = path.join(process.cwd(), '.qwen/extensions/a');
+      const extensionDir = path.join(process.cwd(), '.axe/extensions/a');
 
       mock({
         [extensionDir]: {

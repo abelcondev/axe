@@ -22,8 +22,8 @@ import {
   Storage,
   writeRuntimeStatus,
   writeWorktreeSessionMarker,
-} from '@qwen-code/qwen-code-core';
-import type { Config } from '@qwen-code/qwen-code-core';
+} from '@axe/core';
+import type { Config } from '@axe/core';
 
 const exec = promisify(execFile);
 
@@ -104,7 +104,7 @@ describe('setupStartupWorktree', () => {
       expect(res!.context.slug).toMatch(/^[a-z]+-[a-z]+-[0-9a-f]{6}$/);
       expect(res!.context.branch).toBe(`worktree-${res!.context.slug}`);
       expect(res!.context.worktreePath).toContain(
-        path.join('.qwen', 'worktrees', res!.context.slug),
+        path.join('.axe', 'worktrees', res!.context.slug),
       );
       expect(res!.context.repoRoot).toBe(tempRepo);
       expect(res!.context.originalBranch).toBe('main');
@@ -132,7 +132,7 @@ describe('setupStartupWorktree', () => {
       expect(res!.context.slug).toBe('my-feature');
       expect(res!.context.branch).toBe('worktree-my-feature');
       expect(res!.context.worktreePath).toBe(
-        path.join(tempRepo, '.qwen', 'worktrees', 'my-feature'),
+        path.join(tempRepo, '.axe', 'worktrees', 'my-feature'),
       );
     }
   });
@@ -152,7 +152,7 @@ describe('setupStartupWorktree', () => {
 
     // No worktree directory was created.
     const exists = await fs
-      .stat(path.join(tempRepo, '.qwen', 'worktrees'))
+      .stat(path.join(tempRepo, '.axe', 'worktrees'))
       .then(() => true)
       .catch(() => false);
     expect(exists).toBe(false);
@@ -177,7 +177,7 @@ describe('setupStartupWorktree', () => {
 
     // No worktree directory was created — fail-close means no side effect.
     const exists = await fs
-      .stat(path.join(tempRepo, '.qwen', 'worktrees'))
+      .stat(path.join(tempRepo, '.axe', 'worktrees'))
       .then(() => true)
       .catch(() => false);
     expect(exists).toBe(false);
@@ -243,7 +243,7 @@ describe('setupStartupWorktree', () => {
         expect(res!.context.branch).toBe('worktree-pr-42');
         expect(res!.context.isPullRequest).toBe(true);
         expect(res!.context.worktreePath).toBe(
-          path.join(tempRepo, '.qwen', 'worktrees', 'pr-42'),
+          path.join(tempRepo, '.axe', 'worktrees', 'pr-42'),
         );
 
         // The PR file lives inside the worktree (proving FETCH_HEAD was
@@ -315,7 +315,7 @@ describe('setupStartupWorktree', () => {
     // is NOT a git worktree (just a plain dir with a file in it).
     const slotPath = path.join(
       tempRepo,
-      '.qwen',
+      '.axe',
       'worktrees',
       'plain-dir-conflict',
     );
@@ -345,11 +345,11 @@ describe('setupStartupWorktree', () => {
     expect(survived).toBe('oops');
   });
 
-  it('refuses nested worktree creation from inside .qwen/worktrees/', async () => {
+  it('refuses nested worktree creation from inside .axe/worktrees/', async () => {
     tempRepo = await makeTempRepo();
     // Pre-create a fake worktree path and chdir into it. We don't need a
     // real git worktree — the guard fires on path shape, not git state.
-    const nestedPath = path.join(tempRepo, '.qwen', 'worktrees', 'outer');
+    const nestedPath = path.join(tempRepo, '.axe', 'worktrees', 'outer');
     await fs.mkdir(nestedPath, { recursive: true });
     process.chdir(nestedPath);
 
@@ -461,7 +461,7 @@ describe('persistStartupWorktreeSidecar', () => {
     process.chdir(tempRepo);
     const packageDir = path.join(tempRepo, 'packages', 'app');
     await fs.mkdir(packageDir, { recursive: true });
-    Storage.setRuntimeBaseDir('.qwen', packageDir);
+    Storage.setRuntimeBaseDir('.axe', packageDir);
 
     const setup = await setupStartupWorktree('owner-subdir-runtime');
     expect(setup?.ok).toBe(true);
@@ -476,7 +476,7 @@ describe('persistStartupWorktreeSidecar', () => {
       },
     );
 
-    Storage.setRuntimeBaseDir('.qwen', setup.context.worktreePath);
+    Storage.setRuntimeBaseDir('.axe', setup.context.worktreePath);
     await persistStartupWorktreeSidecar(
       makeConfig(setup.context.worktreePath, 'new-session'),
       { ...setup.context, wasReattached: true },
@@ -493,7 +493,7 @@ describe('buildStartupWorktreeNotice', () => {
   // signature lets us keep the fixture minimal so adding new
   // StartupWorktreeContext fields doesn't churn this file.
   const baseContext = {
-    worktreePath: '/repo/.qwen/worktrees/foo',
+    worktreePath: '/repo/.axe/worktrees/foo',
     slug: 'foo',
     branch: 'worktree-foo',
     wasReattached: false,
@@ -504,7 +504,7 @@ describe('buildStartupWorktreeNotice', () => {
     expect(notice).toContain('[Startup]');
     expect(notice).toContain('Active worktree');
     expect(notice).toContain('"foo"');
-    expect(notice).toContain('/repo/.qwen/worktrees/foo');
+    expect(notice).toContain('/repo/.axe/worktrees/foo');
     expect(notice).toContain('worktree-foo');
     expect(notice).not.toContain('Re-attached');
     expect(notice).not.toContain('overrode');

@@ -1,11 +1,11 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { useCallback, useRef, useState } from 'react';
-import type { Config } from '@qwen-code/qwen-code-core';
+import type { Config } from '@axe/core';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 import { t } from '../../i18n/index.js';
 

@@ -1,16 +1,16 @@
 {
-  "name": "@qwen-code/qwen-code",
+  "name": "@axe/cli",
   "version": "0.19.5",
-  "description": "Qwen Code",
+  "description": "Axe",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/QwenLM/qwen-code.git"
+    "url": "git+https://github.com/abelcondev/axe.git"
   },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "qwen": "dist/index.js"
+    "axe": "dist/index.js"
   },
   "exports": {
     ".": {
@@ -44,17 +44,17 @@
     "@google/genai": "2.6.0",
     "@iarna/toml": "^2.2.5",
     "@modelcontextprotocol/sdk": "^1.25.2",
-    "@qwen-code/acp-bridge": "file:../acp-bridge",
-    "@qwen-code/audio-capture": "file:../audio-capture",
-    "@qwen-code/channel-base": "file:../channels/base",
-    "@qwen-code/channel-dingtalk": "file:../channels/dingtalk",
-    "@qwen-code/channel-qqbot": "file:../channels/qqbot",
-    "@qwen-code/channel-feishu": "file:../channels/feishu",
-    "@qwen-code/channel-telegram": "file:../channels/telegram",
-    "@qwen-code/channel-weixin": "file:../channels/weixin",
-    "@qwen-code/qwen-code-core": "file:../core",
-    "@qwen-code/sdk": "file:../sdk-typescript",
-    "@qwen-code/web-templates": "file:../web-templates",
+    "@axe/acp-bridge": "file:../acp-bridge",
+    "@axe/audio-capture": "file:../audio-capture",
+    "@axe/channel-base": "file:../channels/base",
+    "@axe/channel-dingtalk": "file:../channels/dingtalk",
+    "@axe/channel-qqbot": "file:../channels/qqbot",
+    "@axe/channel-feishu": "file:../channels/feishu",
+    "@axe/channel-telegram": "file:../channels/telegram",
+    "@axe/channel-weixin": "file:../channels/weixin",
+    "@axe/core": "file:../core",
+    "@axe/sdk": "file:../sdk-typescript",
+    "@axe/web-templates": "file:../web-templates",
     "@types/update-notifier": "^6.0.8",
     "ansi-regex": "^6.2.2",
     "chokidar": "^4.0.3",

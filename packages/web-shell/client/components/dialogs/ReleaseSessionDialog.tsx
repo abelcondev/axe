@@ -4,7 +4,7 @@ import {
   useConnection,
   useSessions,
   type DaemonSessionSummary,
-} from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
 import { useI18n } from '../../i18n';
 import { useListboxKeyboard } from '../../hooks/useListboxKeyboard';
 import { useFilterInput } from '../../hooks/useFilterInput';

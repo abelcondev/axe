@@ -11,8 +11,8 @@ import {
   QWEN_DAEMON_WORKSPACE_ENV,
   QWEN_SERVER_TOKEN_ENV,
 } from './channel-worker-env.js';
-import { sanitizeLogText } from '@qwen-code/channel-base';
-import { redactLogCredentials } from '@qwen-code/acp-bridge/logRedaction';
+import { sanitizeLogText } from '@axe/channel-base';
+import { redactLogCredentials } from '@axe/acp-bridge/logRedaction';
 
 const DEFAULT_CHANNEL_WORKER_STARTUP_TIMEOUT_MS = 30_000;
 const DEFAULT_CHANNEL_WORKER_HEARTBEAT_TIMEOUT_MS = 45_000;

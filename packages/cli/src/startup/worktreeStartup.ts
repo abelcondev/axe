@@ -31,8 +31,8 @@ import {
   worktreeBranchForSlug,
   writeWorktreeSession,
   writeWorktreeSessionMarker,
-} from '@qwen-code/qwen-code-core';
-import type { Config, WorktreeSession } from '@qwen-code/qwen-code-core';
+} from '@axe/core';
+import type { Config, WorktreeSession } from '@axe/core';
 
 const debugLogger = createDebugLogger('WORKTREE_STARTUP');
 
@@ -128,7 +128,7 @@ export async function setupStartupWorktree(
   }
 
   // Refuse nested creation: launching with --worktree from inside an existing
-  // worktree creates `<otherRepo>/.qwen/worktrees/<slug>/`, which is rarely
+  // worktree creates `<otherRepo>/.axe/worktrees/<slug>/`, which is rarely
   // what the user wants and corrupts ownership tracking.
   if (/[\\/]\.qwen[\\/]worktrees[\\/]/.test(launchCwd)) {
     return {

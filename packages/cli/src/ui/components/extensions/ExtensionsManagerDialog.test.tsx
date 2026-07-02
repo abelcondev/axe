@@ -22,8 +22,8 @@ import type {
   Extension,
   DiscoveredPlugin,
   ExtensionSource,
-} from '@qwen-code/qwen-code-core';
-import { mcpServerRequiresOAuth } from '@qwen-code/qwen-code-core';
+} from '@axe/core';
+import { mcpServerRequiresOAuth } from '@axe/core';
 import type { ExtensionUpdateState } from '../../state/extensions.js';
 
 // The Installed tab reads real user/workspace settings from disk when MCP
@@ -45,7 +45,7 @@ const mockExtension = (name: string, isActive = true): Extension =>
     id: name,
     name,
     version: '1.0.0',
-    path: `/home/user/.qwen/extensions/${name}`,
+    path: `/home/user/.axe/extensions/${name}`,
     isActive,
     installMetadata: { type: 'git', source: `github:user/${name}` },
     mcpServers: {},

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -18,7 +18,7 @@ import {
   buildBtwCacheSafeParams,
   buildBtwPrompt,
   runForkedAgent,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 function formatBtwError(error: unknown): string {
   return t('Failed to answer btw question: {{error}}', {

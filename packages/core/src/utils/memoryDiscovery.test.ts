@@ -926,7 +926,7 @@ describe('loadServerHierarchicalMemory', () => {
   });
 
   describe('QWEN.local.md (project-local context file)', () => {
-    // The local-context-file slot is anchored at `<projectRoot>/.qwen/`, where
+    // The local-context-file slot is anchored at `<projectRoot>/.axe/`, where
     // projectRoot is the nearest ancestor containing a `.git` directory OR a
     // `.git` file (the latter is how git worktrees and submodules are marked).
     // Most tests in this block use the directory form; a few below cover the
@@ -935,7 +935,7 @@ describe('loadServerHierarchicalMemory', () => {
       await createEmptyDir(path.join(projectRoot, '.git'));
     });
 
-    it('loads .qwen/QWEN.local.md from project root when present', async () => {
+    it('loads .axe/QWEN.local.md from project root when present', async () => {
       const localFile = await createTestFile(
         path.join(projectRoot, QWEN_DIR, 'QWEN.local.md'),
         'local context content',
@@ -1052,7 +1052,7 @@ describe('loadServerHierarchicalMemory', () => {
       expect(localIdx).toBeGreaterThan(cwdIdx);
     });
 
-    it('silently ignores absent .qwen/QWEN.local.md', async () => {
+    it('silently ignores absent .axe/QWEN.local.md', async () => {
       await createTestFile(
         path.join(projectRoot, DEFAULT_CONTEXT_FILENAME),
         'project content',
@@ -1110,10 +1110,10 @@ describe('loadServerHierarchicalMemory', () => {
       expect(result.memoryContent).not.toContain('local content');
     });
 
-    it('does not search .qwen/QWEN.local.md in CWD subdirectories', async () => {
-      // A `.qwen/QWEN.local.md` placed inside a nested directory (not the
+    it('does not search .axe/QWEN.local.md in CWD subdirectories', async () => {
+      // A `.axe/QWEN.local.md` placed inside a nested directory (not the
       // project root) must NOT be picked up — the slot is single, fixed,
-      // and lives at <projectRoot>/.qwen/QWEN.local.md.
+      // and lives at <projectRoot>/.axe/QWEN.local.md.
       await createTestFile(
         path.join(cwd, QWEN_DIR, 'QWEN.local.md'),
         'misplaced local content',
@@ -1223,7 +1223,7 @@ describe('loadServerHierarchicalMemory', () => {
 
     it('skips QWEN.local.md when cwd === homedir without .git (avoids global-dir collision)', async () => {
       // When cwd is the home directory and there is no `.git` there, the
-      // would-be slot path resolves to `<homedir>/.qwen/QWEN.local.md` —
+      // would-be slot path resolves to `<homedir>/.axe/QWEN.local.md` —
       // i.e. inside the GLOBAL Qwen dir. Loading that as a project-local
       // override is wrong: there is no project. Pin the "skip" behavior.
       await fsPromises.rm(path.join(projectRoot, '.git'), {
@@ -1243,7 +1243,7 @@ describe('loadServerHierarchicalMemory', () => {
         DEFAULT_FOLDER_TRUST,
       );
 
-      // Allowed: global QWEN.md / AGENTS.md in ~/.qwen/ may still load via
+      // Allowed: global QWEN.md / AGENTS.md in ~/.axe/ may still load via
       // the existing global-discovery path. The assertion here is narrow —
       // the LOCAL slot specifically must not have been loaded.
       expect(result.memoryContent).not.toContain(

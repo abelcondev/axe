@@ -595,7 +595,7 @@ describe('runForkedAgent (cache path)', () => {
       getModel: vi.fn().mockReturnValue('parent-model'),
       getContentGeneratorConfig: vi.fn().mockReturnValue({
         model: 'parent-model',
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
       }),
       getFastModel: vi.fn().mockReturnValue(undefined),
       getAllConfiguredModels: vi.fn(() => []),

@@ -11,7 +11,7 @@ function readBundle(): string {
 describe('build artifact — package boundary', () => {
   it('externalizes @qwen-code/webui/daemon-react-sdk', () => {
     const bundle = readBundle();
-    expect(bundle).toContain('from "@qwen-code/webui/daemon-react-sdk"');
+    expect(bundle).toContain('from "@axe/webui/daemon-react-sdk"');
   });
 
   it('does not inline DaemonSessionProvider source code', () => {

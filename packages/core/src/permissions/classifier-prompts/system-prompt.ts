@@ -35,7 +35,7 @@ export const BUILTIN_ALLOW: readonly string[] = Object.freeze([
  * user's most recent explicit request asked for that exact action and scope.
  *
  * "Soft" means user intent CAN unblock — e.g. the user explicitly asking
- * "edit my .qwen/settings.json and add envKey FOO=bar" authorizes the
+ * "edit my .axe/settings.json and add envKey FOO=bar" authorizes the
  * specific edit named, but does not authorize unrelated changes to the
  * same file.
  */
@@ -43,7 +43,7 @@ export const BUILTIN_SOFT_DENY: readonly string[] = Object.freeze([
   'Irreversible system destruction (rm -rf /, rm -rf ~, fdisk, mkfs, dd of=/dev/...).',
   'Code-from-external execution (curl ... | sh, wget ... | bash, eval of remote content).',
   'Unauthorized persistence (.bashrc / .zshrc / .profile edits, crontab modifications, systemd units, scheduled tasks, registry Run keys, WMI subscriptions).',
-  'Self-modification: modifying files or directories that affect Qwen Code behavior, permissions, startup context, commands, hooks, agents, skills, MCP servers, or project/user instructions, including .qwen/settings*.json, QWEN.md, AGENTS.md, QWEN.local.md, configured context filenames, .qwen/rules/, .qwen/commands/, .qwen/agents/, .qwen/skills/, .qwen/hooks/, and .mcp.json, unless the user explicitly requested that exact change. Includes adding or widening permission allow rules (e.g. wildcard "Bash(prefix:*)" entries, broad path allows in .qwen/settings*.json) that the user did not explicitly request, even while making a user-requested edit to the same file.',
+  'Self-modification: modifying files or directories that affect Axe behavior, permissions, startup context, commands, hooks, agents, skills, MCP servers, or project/user instructions, including .axe/settings*.json, QWEN.md, AGENTS.md, QWEN.local.md, configured context filenames, .axe/rules/, .axe/commands/, .axe/agents/, .axe/skills/, .axe/hooks/, and .mcp.json, unless the user explicitly requested that exact change. Includes adding or widening permission allow rules (e.g. wildcard "Bash(prefix:*)" entries, broad path allows in .axe/settings*.json) that the user did not explicitly request, even while making a user-requested edit to the same file.',
   'Security weakening (chmod 777 on system paths, sudo without explicit user context, disabling firewall or SIP, weakening TLS verification).',
   'Destructive git operations (force-push to main/master, rewriting public history, deleting remote branches or tags).',
   // Cloud instance metadata services (IMDS) are SSRF targets that hand out

@@ -97,7 +97,7 @@ const WORKFLOW_PARAM_SCHEMA = {
         'a terminal error "subagent completed without calling StructuredOutput ' +
         '(after 2 in-conversation nudges)". ' +
         '`agentType` (string): resolves against the declarative-agents registry ' +
-        '(`.qwen/agents/<name>.md`, project then user then built-in). Unresolved ' +
+        '(`.axe/agents/<name>.md`, project then user then built-in). Unresolved ' +
         'names throw "agent({agentType}): agent type ' +
         "'X'" +
         ' not found". ' +
@@ -106,7 +106,7 @@ const WORKFLOW_PARAM_SCHEMA = {
         '`isolation`: `' +
         "'worktree'" +
         '` provisions a fresh git worktree under ' +
-        '`<projectRoot>/.qwen/worktrees/agent-<7hex>`; the worktree is auto-removed ' +
+        '`<projectRoot>/.axe/worktrees/agent-<7hex>`; the worktree is auto-removed ' +
         'if no changes, otherwise the path and branch are returned alongside the ' +
         "result. `'remote'` throws \"agent({isolation:'remote'}) is not available " +
         'in this build" (parity with upstream). isolation=worktree refuses to ' +
@@ -266,7 +266,7 @@ class WorkflowToolInvocation extends BaseToolInvocation<
       // `null` when no env override.
       tokenBudgetTotal: budget.total,
       // P7b: carry the script source so a completed run can be snapshotted
-      // to disk and saved to `.qwen/workflows/<name>.js` from the dialog.
+      // to disk and saved to `.axe/workflows/<name>.js` from the dialog.
       // `scriptPath` is set when the run was launched from a saved file (run
       // provenance for the snapshot).
       script: resolvedScript,
@@ -321,7 +321,7 @@ class WorkflowToolInvocation extends BaseToolInvocation<
         emitter,
         budget,
         // P-nested: resolve `workflow('<name>')` / `workflow({scriptPath})`
-        // against the saved-workflow scripts in `.qwen/workflows/`.
+        // against the saved-workflow scripts in `.axe/workflows/`.
         resolveSavedWorkflow: (ref) =>
           resolveSavedWorkflowScript(ref, this.config),
         // P6: resume journal (always wired) + replay maps (resume only).

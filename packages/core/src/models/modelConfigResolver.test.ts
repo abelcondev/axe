@@ -146,20 +146,20 @@ describe('modelConfigResolver', () => {
     describe('Qwen OAuth auth type', () => {
       it('uses default model for Qwen OAuth', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {},
           settings: {},
           env: {},
         });
 
         expect(result.config.model).toBe(DEFAULT_QWEN_MODEL);
-        expect(result.config.apiKey).toBe('QWEN_OAUTH_DYNAMIC_TOKEN');
+        expect(result.config.apiKey).toBe('AXE_OAUTH_DYNAMIC_TOKEN');
         expect(result.sources['apiKey'].kind).toBe('computed');
       });
 
       it('allows coder-model for Qwen OAuth', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {
             model: 'coder-model',
           },
@@ -173,7 +173,7 @@ describe('modelConfigResolver', () => {
 
       it('warns and falls back for unsupported Qwen OAuth models', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {
             model: 'unsupported-model',
           },
@@ -188,7 +188,7 @@ describe('modelConfigResolver', () => {
 
       it('QWEN_CODE_API_TIMEOUT_MS applies in Qwen OAuth path', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {},
           settings: {},
           env: {
@@ -207,14 +207,14 @@ describe('modelConfigResolver', () => {
 
       it('modelProvider timeout takes precedence over QWEN_CODE_API_TIMEOUT_MS in OAuth', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {},
           settings: {},
           env: {
             QWEN_CODE_API_TIMEOUT_MS: '45000',
           },
           modelProvider: {
-            id: 'qwen-oauth',
+            id: 'axe-oauth',
             name: 'Qwen OAuth',
             generationConfig: {
               timeout: 120000,
@@ -228,7 +228,7 @@ describe('modelConfigResolver', () => {
 
       it('invalid QWEN_CODE_API_TIMEOUT_MS ignored in OAuth path', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {},
           settings: {},
           env: {
@@ -242,7 +242,7 @@ describe('modelConfigResolver', () => {
 
       it('negative QWEN_CODE_API_TIMEOUT_MS ignored in OAuth path', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {},
           settings: {},
           env: {
@@ -255,7 +255,7 @@ describe('modelConfigResolver', () => {
 
       it('zero QWEN_CODE_API_TIMEOUT_MS ignored in OAuth path', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {},
           settings: {},
           env: {
@@ -268,7 +268,7 @@ describe('modelConfigResolver', () => {
 
       it('fractional QWEN_CODE_API_TIMEOUT_MS ignored in OAuth', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {},
           settings: {},
           env: {
@@ -281,7 +281,7 @@ describe('modelConfigResolver', () => {
 
       it('QWEN_CODE_API_TIMEOUT_MS works with proxy in OAuth path', () => {
         const result = resolveModelConfig({
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
           cli: {},
           settings: {},
           env: {
@@ -650,9 +650,9 @@ describe('modelConfigResolver', () => {
 
     it('always passes for Qwen OAuth', () => {
       const result = validateModelConfig({
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
         model: DEFAULT_QWEN_MODEL,
-        apiKey: 'QWEN_OAUTH_DYNAMIC_TOKEN',
+        apiKey: 'AXE_OAUTH_DYNAMIC_TOKEN',
       });
 
       expect(result.valid).toBe(true);
@@ -688,10 +688,10 @@ describe('modelConfigResolver', () => {
 
   describe('[Regression] timeout env override refactor', () => {
     it('[Regression] OAuth path must apply QWEN_CODE_API_TIMEOUT_MS (was broken before fix #3629)', () => {
-      // Guards against the original bug where resolveQwenOAuthConfig()
+      // Guards against the original bug where resolveAxeOAuthConfig()
       // returned before applying the env override.
       const result = resolveModelConfig({
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
         cli: {},
         settings: {},
         env: {
@@ -745,14 +745,14 @@ describe('modelConfigResolver', () => {
 
       // OAuth
       const oauth = resolveModelConfig({
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
         cli: {},
         settings: {},
         env: {
           QWEN_CODE_API_TIMEOUT_MS: '45000',
         },
         modelProvider: {
-          id: 'qwen-oauth',
+          id: 'axe-oauth',
           name: 'Qwen OAuth',
           generationConfig: { timeout: 120000 },
         },
@@ -902,7 +902,7 @@ describe('modelConfigResolver', () => {
 
     it('Qwen OAuth path: modalities auto-detected for default coder-model', () => {
       // resolveGenerationConfig is shared by both the OpenAI and Qwen OAuth
-      // paths; the latter (resolveQwenOAuthConfig) passes the resolved Qwen
+      // paths; the latter (resolveAxeOAuthConfig) passes the resolved Qwen
       // OAuth model name (defaults to DEFAULT_QWEN_MODEL = 'coder-model') as
       // modelId, so the new modalities fallback also fires here.
       //
@@ -911,7 +911,7 @@ describe('modelConfigResolver', () => {
       // text at modelConfigResolver.ts ~L330). This test pins that down so a
       // future edit to MODALITY_PATTERNS doesn't silently regress OAuth.
       const result = resolveModelConfig({
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
         cli: {},
         settings: {},
         env: {},

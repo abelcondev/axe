@@ -1,7 +1,7 @@
 import {
   DAEMON_APPROVAL_MODES,
   type DaemonApprovalMode,
-} from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
 
 type PromptSessionActions = {
   createSession: () => Promise<unknown>;

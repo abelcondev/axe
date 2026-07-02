@@ -12,7 +12,7 @@
  * user input being lost during startup.
  */
 
-import { createDebugLogger } from '@qwen-code/qwen-code-core';
+import { createDebugLogger } from '@axe/core';
 
 const debugLogger = createDebugLogger('EARLY_INPUT');
 

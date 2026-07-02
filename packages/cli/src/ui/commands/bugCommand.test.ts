@@ -8,15 +8,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { bugCommand } from './bugCommand.js';
 import { createMockCommandContext } from '../../test-utils/mockCommandContext.js';
 import { GIT_COMMIT_INFO } from '../../generated/git-commit.js';
-import { AuthType } from '@qwen-code/qwen-code-core';
+import { AuthType } from '@axe/core';
 import * as systemInfoUtils from '../../utils/systemInfo.js';
 
 const mockOpenBrowserSecurely = vi.hoisted(() => vi.fn());
 
 // Mock dependencies
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
   return {
     ...actual,
     openBrowserSecurely: mockOpenBrowserSecurely,
@@ -68,8 +68,8 @@ describe('bugCommand', () => {
 
     const qwenCodeLine =
       GIT_COMMIT_INFO && !['N/A'].includes(GIT_COMMIT_INFO)
-        ? `Qwen Code: 0.1.0 (${GIT_COMMIT_INFO})`
-        : 'Qwen Code: 0.1.0';
+        ? `Axe: 0.1.0 (${GIT_COMMIT_INFO})`
+        : 'Axe: 0.1.0';
     const expectedInfo = `${qwenCodeLine}
 Runtime: Node.js v20.0.0 / npm 10.0.0
 IDE Client: VSCode
@@ -113,8 +113,8 @@ Memory Usage: 100 MB`;
 
     const qwenCodeLine =
       GIT_COMMIT_INFO && !['N/A'].includes(GIT_COMMIT_INFO)
-        ? `Qwen Code: 0.1.0 (${GIT_COMMIT_INFO})`
-        : 'Qwen Code: 0.1.0';
+        ? `Axe: 0.1.0 (${GIT_COMMIT_INFO})`
+        : 'Axe: 0.1.0';
     const expectedInfo = `${qwenCodeLine}
 Runtime: Node.js v20.0.0 / npm 10.0.0
 IDE Client: VSCode
@@ -175,8 +175,8 @@ Memory Usage: 100 MB`;
 
     const qwenCodeLine =
       GIT_COMMIT_INFO && !['N/A'].includes(GIT_COMMIT_INFO)
-        ? `Qwen Code: 0.1.0 (${GIT_COMMIT_INFO})`
-        : 'Qwen Code: 0.1.0';
+        ? `Axe: 0.1.0 (${GIT_COMMIT_INFO})`
+        : 'Axe: 0.1.0';
     const expectedInfo = `${qwenCodeLine}
 Runtime: Node.js v20.0.0 / npm 10.0.0
 IDE Client: VSCode

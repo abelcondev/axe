@@ -14,11 +14,11 @@ import {
   Storage,
   createDebugLogger,
   stripRuntimeSnapshotPrefix,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type {
   MCPServerConfig,
   McpServerScope,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import stripJsonComments from 'strip-json-comments';
 import { isWorkspaceTrusted } from './trustedFolders.js';
 import { hasOwnModelProviders } from './modelProvidersScope.js';
@@ -91,7 +91,7 @@ function getMergeStrategyForPath(path: string[]): MergeStrategy | undefined {
 export type { Settings, MemoryImportFormat };
 
 // Lazy getters: must NOT be top-level consts. `QWEN_HOME` may be resolved
-// from `~/.env` or `~/.qwen/.env` by `preResolveHomeEnvOverrides()` in
+// from `~/.env` or `~/.axe/.env` by `preResolveHomeEnvOverrides()` in
 // `loadSettings()`, which runs after this module is imported. A const
 // captured here would freeze the pre-bootstrap value and split state across
 // callers.
@@ -656,7 +656,7 @@ export const CORRUPTED_SUFFIX = '.corrupted';
 
 /**
  * Load and merge settings from all scopes:
- * System Defaults → User (~/.qwen/settings.json) → Workspace → System.
+ * System Defaults → User (~/.axe/settings.json) → Workspace → System.
  */
 export interface LoadSettingsOptions {
   consumeCorruptionEnvVars?: boolean;

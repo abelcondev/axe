@@ -227,8 +227,8 @@ describe('runAutoMemoryExtractionByAgent', () => {
       status: 'completed',
       finalText: '',
       filesTouched: [
-        'C:/Users/foo/.qwen/projects/proj/memory/project/release.md',
-        'C:/Users/foo/.qwen/memories/user/role.md',
+        'C:/Users/foo/.axe/projects/proj/memory/project/release.md',
+        'C:/Users/foo/.axe/memories/user/role.md',
       ],
     });
 

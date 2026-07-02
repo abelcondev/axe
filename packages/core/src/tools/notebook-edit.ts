@@ -576,7 +576,7 @@ class NotebookEditInvocation extends BaseToolInvocation<
     }
 
     // Scan the serialized notebook that will hit disk: a notebook under
-    // .qwen/team-memory/ could otherwise carry credentials past the guard
+    // .axe/team-memory/ could otherwise carry credentials past the guard
     // that write-file.ts/edit.ts enforce. Block before any disk side effects.
     const teamMemoryError = checkTeamMemorySecrets(
       this.params.notebook_path,

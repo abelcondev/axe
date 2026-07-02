@@ -5,7 +5,7 @@
  */
 
 import type { Application, Request, RequestHandler, Response } from 'express';
-import { createDebugLogger } from '@qwen-code/qwen-code-core';
+import { createDebugLogger } from '@axe/core';
 import { randomUUID } from 'node:crypto';
 import type {
   AcpSessionBridge,

@@ -37,7 +37,7 @@ function makeSettings(
   return {
     isTrusted,
     workspace: {
-      path: path.join(workspaceDir, '.qwen', 'settings.json'),
+      path: path.join(workspaceDir, '.axe', 'settings.json'),
       settings: { general: workspaceVoiceSettings },
     },
     system: { settings: { general: systemVoiceSettings } },
@@ -67,7 +67,7 @@ describe('buildVoiceKeyterms', () => {
 
     beforeEach(() => {
       workspaceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'voice-keyterms-'));
-      qwenDir = path.join(workspaceDir, '.qwen');
+      qwenDir = path.join(workspaceDir, '.axe');
       fs.mkdirSync(qwenDir, { recursive: true });
     });
 
@@ -76,7 +76,7 @@ describe('buildVoiceKeyterms', () => {
       fs.rmSync(workspaceDir, { recursive: true, force: true });
     });
 
-    it('auto-loads .qwen/voice-keyterms.txt and merges with the globals', () => {
+    it('auto-loads .axe/voice-keyterms.txt and merges with the globals', () => {
       fs.writeFileSync(
         path.join(qwenDir, 'voice-keyterms.txt'),
         'Kubernetes\nGraphQL\n',

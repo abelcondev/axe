@@ -18,10 +18,10 @@ import {
   vi,
   type MockInstance,
 } from 'vitest';
-import { QWEN_DIR, Storage } from '@qwen-code/qwen-code-core';
+import { QWEN_DIR, Storage } from '@axe/core';
 import { createMutationGate } from './auth.js';
 import type { AcpSessionBridge } from './acp-session-bridge.js';
-import type { BridgeEvent } from '@qwen-code/acp-bridge/eventBus';
+import type { BridgeEvent } from '@axe/acp-bridge/eventBus';
 import { mountWorkspaceAgentsRoutes } from './workspace-agents.js';
 
 type RecordedEvent = Omit<BridgeEvent, 'id' | 'v'>;

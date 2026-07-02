@@ -40,26 +40,26 @@
 export {
   createAcpSessionBridge,
   createHttpAcpBridge,
-} from '@qwen-code/acp-bridge/bridge';
-export { defaultSpawnChannelFactory } from '@qwen-code/acp-bridge/spawnChannel';
+} from '@axe/acp-bridge/bridge';
+export { defaultSpawnChannelFactory } from '@axe/acp-bridge/spawnChannel';
 // `MAX_RESOLVED_PERMISSION_RECORDS`, `PendingPermission`,
 // `PermissionResolutionRecord` re-exports were removed alongside the
 // source definitions — the mediator now owns pending+resolved state.
-export { BridgeClient } from '@qwen-code/acp-bridge/bridgeClient';
-export type { BridgeClientSessionEntry } from '@qwen-code/acp-bridge/bridgeClient';
+export { BridgeClient } from '@axe/acp-bridge/bridgeClient';
+export type { BridgeClientSessionEntry } from '@axe/acp-bridge/bridgeClient';
 
 export type {
   AcpChannel,
   AcpChannelExitInfo,
   ChannelFactory,
-} from '@qwen-code/acp-bridge';
+} from '@axe/acp-bridge';
 
 export type {
   BridgeOptions,
   DaemonStatusProvider,
-} from '@qwen-code/acp-bridge/bridgeOptions';
+} from '@axe/acp-bridge/bridgeOptions';
 
-export type { BridgeFileSystem } from '@qwen-code/acp-bridge/bridgeFileSystem';
+export type { BridgeFileSystem } from '@axe/acp-bridge/bridgeFileSystem';
 
 export type {
   BridgeSpawnRequest,
@@ -80,7 +80,7 @@ export type {
   BridgeDaemonStatusSnapshot,
   AcpSessionBridge,
   HttpAcpBridge,
-} from '@qwen-code/acp-bridge/bridgeTypes';
+} from '@axe/acp-bridge/bridgeTypes';
 
 export {
   BranchWhilePromptActiveError,
@@ -112,9 +112,9 @@ export {
   PermissionPolicyNotImplementedError,
   SessionShellClientRequiredError,
   SessionShellDisabledError,
-} from '@qwen-code/acp-bridge/bridgeErrors';
+} from '@axe/acp-bridge/bridgeErrors';
 
 export {
   MAX_WORKSPACE_PATH_LENGTH,
   canonicalizeWorkspace,
-} from '@qwen-code/acp-bridge/workspacePaths';
+} from '@axe/acp-bridge/workspacePaths';

@@ -5,8 +5,8 @@ import type {
   DaemonWorkspaceMcpToolStatus,
   DaemonWorkspaceMcpToolsStatus,
   DaemonWorkspaceMcpResourcesStatus,
-} from '@qwen-code/webui/daemon-react-sdk';
-import { useMcp } from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
+import { useMcp } from '@axe/webui/daemon-react-sdk';
 import { useDelayedGlobalKeyDown } from '../../hooks/useDelayedGlobalKeyDown';
 import { useI18n } from '../../i18n';
 import { createSentinelSerializer } from '../../utils/sentinelMessage';

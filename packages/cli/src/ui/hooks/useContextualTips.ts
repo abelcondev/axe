@@ -14,7 +14,7 @@ import {
   type Config,
   DEFAULT_TOKEN_LIMIT,
   computeThresholds,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   StreamingState,
   MessageType,

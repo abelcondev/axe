@@ -13,8 +13,8 @@ import { DescriptiveRadioButtonSelect } from './shared/DescriptiveRadioButtonSel
 import { ConfigContext } from '../contexts/ConfigContext.js';
 import { SettingsContext } from '../contexts/SettingsContext.js';
 import { UIStateContext, type UIState } from '../contexts/UIStateContext.js';
-import type { Config } from '@qwen-code/qwen-code-core';
-import { AuthType, DEFAULT_QWEN_MODEL } from '@qwen-code/qwen-code-core';
+import type { Config } from '@axe/core';
+import { AuthType, DEFAULT_QWEN_MODEL } from '@axe/core';
 import type { LoadedSettings } from '../../config/settings.js';
 import { SettingScope } from '../../config/settings.js';
 import { getFilteredQwenModels } from '../models/availableModels.js';
@@ -31,11 +31,11 @@ vi.mock('./shared/DescriptiveRadioButtonSelect.js', () => ({
 // Helper to create getAvailableModelsForAuthType mock
 const createMockGetAvailableModelsForAuthType = () =>
   vi.fn((t: AuthType) => {
-    if (t === AuthType.QWEN_OAUTH) {
+    if (t === AuthType.AXE_OAUTH) {
       return getFilteredQwenModels().map((m) => ({
         id: m.id,
         label: m.label,
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
       }));
     }
     return [];
@@ -65,13 +65,13 @@ const renderComponent = (
     getModel: vi.fn(() => DEFAULT_QWEN_MODEL),
     setModel: vi.fn().mockResolvedValue(undefined),
     switchModel: vi.fn().mockResolvedValue(undefined),
-    getAuthType: vi.fn(() => 'qwen-oauth'),
+    getAuthType: vi.fn(() => 'axe-oauth'),
     getAllConfiguredModels: vi.fn(() =>
       getFilteredQwenModels().map((m) => ({
         id: m.id,
         label: m.label,
         description: m.description || '',
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
       })),
     ),
     getModelsConfig: vi.fn(() => ({
@@ -84,7 +84,7 @@ const renderComponent = (
     getSessionId: vi.fn(() => 'mock-session-id'),
     getDebugMode: vi.fn(() => false),
     getContentGeneratorConfig: vi.fn(() => ({
-      authType: AuthType.QWEN_OAUTH,
+      authType: AuthType.AXE_OAUTH,
       model: DEFAULT_QWEN_MODEL,
     })),
     getUseModelRouter: vi.fn(() => false),
@@ -146,12 +146,12 @@ describe('<ModelDialog />', () => {
     expect(props.items).toHaveLength(getFilteredQwenModels().length);
     // coder-model is the only model and it has vision capability
     expect(props.items[0].value).toBe(
-      `${AuthType.QWEN_OAUTH}::${DEFAULT_QWEN_MODEL}`,
+      `${AuthType.AXE_OAUTH}::${DEFAULT_QWEN_MODEL}`,
     );
     expect(props.showNumbers).toBe(true);
   });
 
-  it('hides discontinued qwen-oauth models for other auth types', () => {
+  it('hides discontinued axe-oauth models for other auth types', () => {
     renderComponent(
       {},
       {
@@ -160,7 +160,7 @@ describe('<ModelDialog />', () => {
           {
             id: DEFAULT_QWEN_MODEL,
             label: DEFAULT_QWEN_MODEL,
-            authType: AuthType.QWEN_OAUTH,
+            authType: AuthType.AXE_OAUTH,
           },
           {
             id: 'gpt-4',
@@ -236,16 +236,16 @@ describe('<ModelDialog />', () => {
     expect(mockedSelect).toHaveBeenCalledTimes(1);
   });
 
-  it('blocks qwen-oauth model selection with an error message (discontinued)', async () => {
+  it('blocks axe-oauth model selection with an error message (discontinued)', async () => {
     const { props, mockConfig } = renderComponent(
       {},
       {
         getAvailableModelsForAuthType: vi.fn((t: AuthType) => {
-          if (t === AuthType.QWEN_OAUTH) {
+          if (t === AuthType.AXE_OAUTH) {
             return getFilteredQwenModels().map((m) => ({
               id: m.id,
               label: m.label,
-              authType: AuthType.QWEN_OAUTH,
+              authType: AuthType.AXE_OAUTH,
             }));
           }
           return [];
@@ -256,9 +256,9 @@ describe('<ModelDialog />', () => {
     const childOnSelect = mockedSelect.mock.calls[0][0].onSelect;
     expect(childOnSelect).toBeDefined();
 
-    await childOnSelect(`${AuthType.QWEN_OAUTH}::${DEFAULT_QWEN_MODEL}`);
+    await childOnSelect(`${AuthType.AXE_OAUTH}::${DEFAULT_QWEN_MODEL}`);
 
-    // qwen-oauth is discontinued — switchModel should NOT be called
+    // axe-oauth is discontinued — switchModel should NOT be called
     expect(mockConfig?.switchModel).not.toHaveBeenCalled();
     // Dialog should NOT close (user stays in the dialog to see the error)
     expect(props.onClose).not.toHaveBeenCalled();
@@ -271,11 +271,11 @@ describe('<ModelDialog />', () => {
       if (t === AuthType.USE_OPENAI) {
         return [{ id: 'gpt-4', label: 'GPT-4', authType: t }];
       }
-      if (t === AuthType.QWEN_OAUTH) {
+      if (t === AuthType.AXE_OAUTH) {
         return getFilteredQwenModels().map((m) => ({
           id: m.id,
           label: m.label,
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
         }));
       }
       return [];
@@ -291,7 +291,7 @@ describe('<ModelDialog />', () => {
           id: m.id,
           label: m.label,
           description: m.description || '',
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
         })),
         {
           id: 'gpt-4',
@@ -1039,7 +1039,7 @@ describe('<ModelDialog />', () => {
 
   it('updates initialIndex when config context changes', () => {
     const mockGetModel = vi.fn(() => DEFAULT_QWEN_MODEL);
-    const mockGetAuthType = vi.fn(() => 'qwen-oauth');
+    const mockGetAuthType = vi.fn(() => 'axe-oauth');
     const mockGetModelsConfig = vi.fn(() => ({
       getGenerationConfig: vi.fn(() => ({ baseUrl: undefined })),
     }));
@@ -1064,7 +1064,7 @@ describe('<ModelDialog />', () => {
                   id: m.id,
                   label: m.label,
                   description: m.description || '',
-                  authType: AuthType.QWEN_OAUTH,
+                  authType: AuthType.AXE_OAUTH,
                 })),
               ),
               getModelsConfig: mockGetModelsConfig,
@@ -1090,7 +1090,7 @@ describe('<ModelDialog />', () => {
           id: m.id,
           label: m.label,
           description: m.description || '',
-          authType: AuthType.QWEN_OAUTH,
+          authType: AuthType.AXE_OAUTH,
         })),
       ),
       getModelsConfig: mockGetModelsConfig,

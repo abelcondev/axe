@@ -11,9 +11,9 @@
 
 import { join } from 'node:path';
 
-export const REVIEW_TMP_DIR = join('.qwen', 'tmp');
-export const REVIEWS_DIR = join('.qwen', 'reviews');
-export const REVIEW_CACHE_DIR = join('.qwen', 'review-cache');
+export const REVIEW_TMP_DIR = join('.axe', 'tmp');
+export const REVIEWS_DIR = join('.axe', 'reviews');
+export const REVIEW_CACHE_DIR = join('.axe', 'review-cache');
 
 /** Worktree path for a given PR review session. */
 export function worktreePath(prNumber: string | number): string {
@@ -28,7 +28,7 @@ export function reviewBranch(prNumber: string | number): string {
 /**
  * Per-target side-file path (review JSON, PR context, presubmit report).
  *
- * Files live under `.qwen/tmp/` rather than the OS temp dir so the path is
+ * Files live under `.axe/tmp/` rather than the OS temp dir so the path is
  * stable across platforms (macOS's `os.tmpdir()` returns `/var/folders/...`,
  * not `/tmp` — using the project-local dir avoids that mismatch entirely)
  * and so they're scoped to the project rather than the user's whole machine.

@@ -20,7 +20,7 @@ import yargs from 'yargs';
 describe('sessions command', () => {
   it('should have correct command definition', () => {
     expect(sessionsCommand.command).toBe('sessions');
-    expect(sessionsCommand.describe).toBe('Manage Qwen Code sessions');
+    expect(sessionsCommand.describe).toBe('Manage Axe sessions');
     expect(typeof sessionsCommand.builder).toBe('function');
     expect(typeof sessionsCommand.handler).toBe('function');
   });

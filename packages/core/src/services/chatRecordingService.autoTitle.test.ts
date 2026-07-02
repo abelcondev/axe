@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -91,10 +91,10 @@ describe('ChatRecordingService - auto-title trigger', () => {
       storage: {
         getProjectTempDir: vi
           .fn()
-          .mockReturnValue('/test/project/root/.qwen/tmp/hash'),
+          .mockReturnValue('/test/project/root/.axe/tmp/hash'),
         getProjectDir: vi
           .fn()
-          .mockReturnValue('/test/project/root/.qwen/projects/test-project'),
+          .mockReturnValue('/test/project/root/.axe/projects/test-project'),
       },
       getModel: vi.fn().mockReturnValue('qwen-plus'),
       getFastModel: vi.fn(() => fastModelValue),

@@ -12,7 +12,7 @@
  * 2. Signal toggle: SIGUSR1 — first signal starts, second stops and writes
  * 3. Command: /doctor cpu-profile [--duration N] — records for N seconds
  *
- * Output: ~/.qwen/cpu-profiles/qwen-code-cpu-<pid>-<timestamp>.cpuprofile
+ * Output: ~/.axe/cpu-profiles/qwen-code-cpu-<pid>-<timestamp>.cpuprofile
  * Zero overhead when disabled (single env var check at init).
  */
 
@@ -279,7 +279,7 @@ export function clearCpuProfileRateLimit(): void {
 // ---------------------------------------------------------------------------
 
 function defaultOutputDir(): string {
-  return path.join(os.homedir(), '.qwen', 'cpu-profiles');
+  return path.join(os.homedir(), '.axe', 'cpu-profiles');
 }
 
 function formatTimestamp(now: Date): string {

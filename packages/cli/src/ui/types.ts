@@ -14,7 +14,7 @@ import type {
   ToolResultDisplay,
   AgentStatus,
   ArenaDiffSummary,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { PartListUnion } from '@google/genai';
 import { type ReactNode } from 'react';
 

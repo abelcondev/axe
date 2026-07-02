@@ -68,7 +68,7 @@ import {
   GitWorktreeService,
   readWorktreeSessionMarker,
   isSessionRuntimeActive,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   applyCollapsePolicyAndSummary,
   buildResumedHistoryItems,
@@ -1440,7 +1440,7 @@ export const AppContainer = (props: AppContainerProps) => {
           // Anchor at the repo top-level (captured at enter time) rather
           // than the current targetDir — when the CLI was launched from
           // a monorepo subdirectory, `config.getTargetDir()` is that
-          // subdir but the worktree lives at `<repoRoot>/.qwen/worktrees/`,
+          // subdir but the worktree lives at `<repoRoot>/.axe/worktrees/`,
           // so a service rooted at the subdir would never find it. (PR
           // #4174 review finding 3252368637.)
           const svc = new GitWorktreeService(activeWorktree.originalCwd);
@@ -3152,7 +3152,7 @@ export const AppContainer = (props: AppContainerProps) => {
       const name = entry.meta?.name ?? entry.runId;
       const verb = entry.status === 'failed' ? 'failed' : 'completed';
       sendNotification(
-        { message: `Workflow '${name}' ${verb}`, title: 'Qwen Code' },
+        { message: `Workflow '${name}' ${verb}`, title: 'Axe' },
         terminal,
         workflowBellEnabled,
       );

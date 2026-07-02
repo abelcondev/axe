@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { ApprovalMode } from '@qwen-code/qwen-code-core';
+import type { ApprovalMode } from '@axe/core';
 import type {
   CancelNotification,
   LoadSessionResponse,

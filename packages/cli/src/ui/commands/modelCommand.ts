@@ -21,7 +21,7 @@ import {
   isImageCapable,
   parseVisionModelSetting,
   resolveModelId,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { LoadedSettings } from '../../config/settings.js';
 import {
   isInlineModelOverrideAllowed,
@@ -70,7 +70,7 @@ async function switchMainModel(
       parsed.authType,
       parsed.modelId,
       parsed.authType !== currentAuthType &&
-        parsed.authType === AuthType.QWEN_OAUTH
+        parsed.authType === AuthType.AXE_OAUTH
         ? { requireCachedCredentials: true }
         : undefined,
     );

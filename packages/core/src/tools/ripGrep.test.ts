@@ -468,9 +468,9 @@ describe('RipGrepTool', () => {
       expect(result.returnDisplay).toBe('Found 1 match');
     });
 
-    it('should pass .qwenignore to ripgrep when respected', async () => {
+    it('should pass .axeignore to ripgrep when respected', async () => {
       await fs.writeFile(
-        path.join(tempRootDir, '.qwenignore'),
+        path.join(tempRootDir, '.axeignore'),
         'ignored.txt\n',
       );
       (runRipgrep as Mock).mockResolvedValue({
@@ -488,8 +488,8 @@ describe('RipGrepTool', () => {
       expect(result.returnDisplay).toBe('No matches found');
     });
 
-    it('should include .qwenignore matches when disabled in config', async () => {
-      await fs.writeFile(path.join(tempRootDir, '.qwenignore'), 'kept.txt\n');
+    it('should include .axeignore matches when disabled in config', async () => {
+      await fs.writeFile(path.join(tempRootDir, '.axeignore'), 'kept.txt\n');
       await fs.writeFile(path.join(tempRootDir, 'kept.txt'), 'keep me');
       Object.assign(mockConfig, {
         getFileFilteringOptions: () => ({
@@ -760,13 +760,13 @@ describe('RipGrepTool', () => {
       await fs.rm(secondDir, { recursive: true, force: true });
     });
 
-    it('should load .qwenignore from each workspace directory', async () => {
+    it('should load .axeignore from each workspace directory', async () => {
       const secondDir = await fs.mkdtemp(
         path.join(os.tmpdir(), 'grep-tool-second-'),
       );
-      await fs.writeFile(path.join(secondDir, '.qwenignore'), 'ignored.txt\n');
+      await fs.writeFile(path.join(secondDir, '.axeignore'), 'ignored.txt\n');
       await fs.writeFile(
-        path.join(tempRootDir, '.qwenignore'),
+        path.join(tempRootDir, '.axeignore'),
         'other-ignored.txt\n',
       );
 
@@ -788,13 +788,13 @@ describe('RipGrepTool', () => {
       const invocation = multiDirGrepTool.build(params);
       await invocation.execute(abortSignal);
 
-      // Verify both .qwenignore files were passed
+      // Verify both .axeignore files were passed
       const rgArgs = (runRipgrep as Mock).mock.calls[0][0] as string[];
       const ignoreFileArgs = rgArgs.filter(
         (a: string, i: number) => i > 0 && rgArgs[i - 1] === '--ignore-file',
       );
-      expect(ignoreFileArgs).toContain(path.join(tempRootDir, '.qwenignore'));
-      expect(ignoreFileArgs).toContain(path.join(secondDir, '.qwenignore'));
+      expect(ignoreFileArgs).toContain(path.join(tempRootDir, '.axeignore'));
+      expect(ignoreFileArgs).toContain(path.join(secondDir, '.axeignore'));
 
       await fs.rm(secondDir, { recursive: true, force: true });
     });
@@ -828,7 +828,7 @@ describe('RipGrepTool', () => {
     });
 
     it('should pass non-qwen ignore files unchanged so ripgrep preserves negations', async () => {
-      const qwenIgnorePath = path.join(tempRootDir, '.qwenignore');
+      const qwenIgnorePath = path.join(tempRootDir, '.axeignore');
       const agentIgnorePath = path.join(tempRootDir, '.agentignore');
 
       await fs.writeFile(qwenIgnorePath, '*.env\n');
@@ -887,8 +887,8 @@ describe('RipGrepTool', () => {
       ]);
     });
 
-    it('should not let a custom ignore negation expose .qwenignore matches in grep output', async () => {
-      const qwenIgnorePath = path.join(tempRootDir, '.qwenignore');
+    it('should not let a custom ignore negation expose .axeignore matches in grep output', async () => {
+      const qwenIgnorePath = path.join(tempRootDir, '.axeignore');
       const agentIgnorePath = path.join(tempRootDir, '.agentignore');
       await fs.writeFile(qwenIgnorePath, '*.env\n');
       await fs.writeFile(agentIgnorePath, '!*.env\n');
@@ -913,12 +913,12 @@ describe('RipGrepTool', () => {
       expect(ignoreFileArgs).toEqual([agentIgnorePath, qwenIgnorePath]);
     });
 
-    it('should post-filter matches ignored by another workspace .qwenignore', async () => {
+    it('should post-filter matches ignored by another workspace .axeignore', async () => {
       const secondDir = await fs.mkdtemp(
         path.join(os.tmpdir(), 'grep-tool-second-'),
       );
-      await fs.writeFile(path.join(tempRootDir, '.qwenignore'), '*.env\n');
-      await fs.writeFile(path.join(secondDir, '.qwenignore'), '!*.env\n');
+      await fs.writeFile(path.join(tempRootDir, '.axeignore'), '*.env\n');
+      await fs.writeFile(path.join(secondDir, '.axeignore'), '!*.env\n');
       await fs.writeFile(path.join(tempRootDir, 'secret.env'), 'API_KEY=1');
       await fs.writeFile(path.join(tempRootDir, 'visible.txt'), 'API_KEY=2');
 
@@ -949,9 +949,9 @@ describe('RipGrepTool', () => {
       await fs.rm(secondDir, { recursive: true, force: true });
     });
 
-    it('should preserve negation semantics within the same .qwenignore', async () => {
+    it('should preserve negation semantics within the same .axeignore', async () => {
       await fs.writeFile(
-        path.join(tempRootDir, '.qwenignore'),
+        path.join(tempRootDir, '.axeignore'),
         '*.env\n!allowed.env\n',
       );
       await fs.writeFile(path.join(tempRootDir, 'blocked.env'), 'API_KEY=1');
@@ -975,11 +975,11 @@ describe('RipGrepTool', () => {
       ]);
     });
 
-    it('should post-filter matches unignored by a custom nested .qwenignore', async () => {
+    it('should post-filter matches unignored by a custom nested .axeignore', async () => {
       await fs.mkdir(path.join(tempRootDir, 'nested'));
-      await fs.writeFile(path.join(tempRootDir, '.qwenignore'), '*.env\n');
+      await fs.writeFile(path.join(tempRootDir, '.axeignore'), '*.env\n');
       await fs.writeFile(
-        path.join(tempRootDir, 'nested', '.qwenignore'),
+        path.join(tempRootDir, 'nested', '.axeignore'),
         '!*.env\n',
       );
       await fs.writeFile(path.join(tempRootDir, 'secret.env'), 'API_KEY=1');
@@ -988,7 +988,7 @@ describe('RipGrepTool', () => {
         getFileFilteringOptions: () => ({
           respectGitIgnore: true,
           respectQwenIgnore: true,
-          customIgnoreFiles: ['nested/.qwenignore'],
+          customIgnoreFiles: ['nested/.axeignore'],
         }),
       });
 
@@ -1014,8 +1014,8 @@ describe('RipGrepTool', () => {
         (a: string, i: number) => i > 0 && rgArgs[i - 1] === '--ignore-file',
       );
       expect(ignoreFileArgs).toEqual([
-        path.join(tempRootDir, 'nested', '.qwenignore'),
-        path.join(tempRootDir, '.qwenignore'),
+        path.join(tempRootDir, 'nested', '.axeignore'),
+        path.join(tempRootDir, '.axeignore'),
       ]);
     });
 

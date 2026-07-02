@@ -183,7 +183,7 @@ async function writeWorkspaceVoiceEnabled(
   h: Harness,
   enabled: boolean,
 ): Promise<void> {
-  await writeJson(path.join(h.workspace, '.qwen', 'settings.json'), {
+  await writeJson(path.join(h.workspace, '.axe', 'settings.json'), {
     general: { voice: { enabled } },
   });
 }

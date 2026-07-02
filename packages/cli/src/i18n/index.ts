@@ -8,7 +8,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { writeStderrLine } from '../utils/stdioHelpers.js';
-import { Storage, resolveBundleDir } from '@qwen-code/qwen-code-core';
+import { Storage, resolveBundleDir } from '@axe/core';
 import {
   type SupportedLanguage,
   SUPPORTED_LANGUAGES,
@@ -52,7 +52,7 @@ const getUserLocalesDir = (): string =>
 /**
  * Get the path to the user's custom locales directory.
  * Users can place custom language packs (e.g., es.js, fr.js) in this directory.
- * @returns The path to ~/.qwen/locales
+ * @returns The path to ~/.axe/locales
  */
 export function getUserLocalesDirectory(): string {
   return getUserLocalesDir();

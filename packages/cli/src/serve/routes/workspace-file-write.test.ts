@@ -15,7 +15,7 @@ import {
   canonicalizeWorkspace,
   createWorkspaceFileSystemFactory,
 } from '../fs/index.js';
-import type { BridgeEvent } from '@qwen-code/acp-bridge/eventBus';
+import type { BridgeEvent } from '@axe/acp-bridge/eventBus';
 import type { ServeOptions } from '../types.js';
 
 const baseOpts: ServeOptions = {

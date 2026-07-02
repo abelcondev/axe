@@ -21,7 +21,7 @@ import {
   getAllProviderBaseUrls,
   getOrCreateSharedDispatcher,
   redactProxyCredentials,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { fetch as undiciFetch } from 'undici';
 
 const debugLogger = createDebugLogger('PRECONNECT');
@@ -33,7 +33,7 @@ let preconnectFired = false;
  */
 const DEFAULT_BASE_URLS: Record<string, string> = {
   openai: 'https://api.openai.com',
-  'qwen-oauth': 'https://coding.dashscope.aliyuncs.com',
+  'axe-oauth': 'https://coding.dashscope.aliyuncs.com',
   anthropic: 'https://api.anthropic.com',
   dashscope: 'https://dashscope.aliyuncs.com',
 };
@@ -125,7 +125,7 @@ function getPreconnectTargetUrl(
  * Use HEAD request to establish TCP+TLS connection without sending actual request body.
  * Uses the shared undici dispatcher to ensure connection pool is shared with SDK clients.
  *
- * @param authType - Authentication type (openai, qwen-oauth, anthropic, etc.)
+ * @param authType - Authentication type (openai, axe-oauth, anthropic, etc.)
  * @param options - Configuration options
  */
 export function preconnectApi(

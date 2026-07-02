@@ -14,7 +14,7 @@ import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 import { TestRig, validateModelOutput } from '../test-helper.js';
 import { join, resolve } from 'node:path';
 import { writeFileSync } from 'node:fs';
-import { hashMcpServerConfig } from '@qwen-code/qwen-code-core';
+import { hashMcpServerConfig } from '@axe/core';
 
 // Create a minimal MCP server that doesn't require external dependencies
 // This implements the MCP protocol directly using Node.js built-ins

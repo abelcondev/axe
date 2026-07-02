@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useWorkspace } from '@qwen-code/webui/daemon-react-sdk';
+import { useWorkspace } from '@axe/webui/daemon-react-sdk';
 import { useVoiceCapture } from './useVoiceCapture';
 import styles from './VoiceButton.module.css';
 

@@ -365,7 +365,7 @@ Valid skill.
 
       // Symlink target — realpath returns wherever the link points.
       // Out-of-tree targets are allowed (the supported user workflow
-      // is symlinking into ~/.qwen/skills/ from a separate repo).
+      // is symlinking into ~/.axe/skills/ from a separate repo).
       vi.mocked(fs.realpath).mockResolvedValue(
         '/elsewhere/skills-repo/symlinked-skill',
       );

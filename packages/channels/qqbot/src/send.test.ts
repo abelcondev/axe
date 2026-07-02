@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type {
   ChannelAgentBridge,
   ChannelTaskLifecycleEvent,
-} from '@qwen-code/channel-base';
+} from '@axe/channel-base';
 import { isValidChatId, hasMarkdownSyntax, splitText } from './QQChannel.js';
 
 const {
@@ -79,13 +79,13 @@ vi.mock('./login.js', () => ({
   qrCodeLogin: vi.fn(),
 }));
 
-vi.mock('@qwen-code/channel-base', async () => {
+vi.mock('@axe/channel-base', async () => {
   // Pull the REAL sanitizeSenderName from the shared helper so a trojan-source
   // or control-char regression is caught here, not masked by a stub. The vitest
   // config aliases @qwen-code/channel-base to its SOURCE, so this resolves with
   // no prior channel-base build (dist may be absent/stale in package-local runs).
-  const real = await vi.importActual<typeof import('@qwen-code/channel-base')>(
-    '@qwen-code/channel-base',
+  const real = await vi.importActual<typeof import('@axe/channel-base')>(
+    '@axe/channel-base',
   );
   return {
     ChannelBase: class {

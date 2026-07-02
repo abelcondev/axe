@@ -8,8 +8,8 @@ import {
   AuthType,
   type Config,
   type AvailableModel as CoreAvailableModel,
-  QWEN_OAUTH_MODELS,
-} from '@qwen-code/qwen-code-core';
+  AXE_OAUTH_MODELS,
+} from '@axe/core';
 import { t } from '../../i18n/index.js';
 
 export type AvailableModel = {
@@ -19,7 +19,7 @@ export type AvailableModel = {
   isVision?: boolean;
 };
 
-const CACHED_QWEN_OAUTH_MODELS: AvailableModel[] = QWEN_OAUTH_MODELS.map(
+const CACHED_AXE_OAUTH_MODELS: AvailableModel[] = AXE_OAUTH_MODELS.map(
   (model) => ({
     id: model.id,
     label: model.name ?? model.id,
@@ -28,8 +28,8 @@ const CACHED_QWEN_OAUTH_MODELS: AvailableModel[] = QWEN_OAUTH_MODELS.map(
   }),
 );
 
-function getQwenOAuthModels(): readonly AvailableModel[] {
-  return CACHED_QWEN_OAUTH_MODELS;
+function getAxeOAuthModels(): readonly AvailableModel[] {
+  return CACHED_AXE_OAUTH_MODELS;
 }
 
 /**
@@ -37,7 +37,7 @@ function getQwenOAuthModels(): readonly AvailableModel[] {
  * coder-model now has vision capabilities by default.
  */
 export function getFilteredQwenModels(): AvailableModel[] {
-  return [...getQwenOAuthModels()];
+  return [...getAxeOAuthModels()];
 }
 
 /**
@@ -112,8 +112,8 @@ export function getAvailableModelsForAuthType(
 
   // Fall back to environment variables for specific auth types (no config provided)
   switch (authType) {
-    case AuthType.QWEN_OAUTH: {
-      return [...getQwenOAuthModels()];
+    case AuthType.AXE_OAUTH: {
+      return [...getAxeOAuthModels()];
     }
     case AuthType.USE_OPENAI: {
       const openAIModel = getOpenAIAvailableModelFromEnv();

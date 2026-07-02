@@ -40,7 +40,7 @@ import {
 import {
   buildInstallPlan,
   parseInsightMessage,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 /** Threshold (ms) before a completed task triggers a notification. */
 const LONG_TASK_THRESHOLD_MS = 20_000;
@@ -1355,8 +1355,8 @@ export class WebViewProvider {
    * Mirrors the CLI's `qwen auth coding-plan` / `qwen auth` flow.
    */
   private async handleAuthInteractive(
-    providerConfig: import('@qwen-code/qwen-code-core').ProviderConfig,
-    inputs: import('@qwen-code/qwen-code-core').ProviderSetupInputs,
+    providerConfig: import('@axe/core').ProviderConfig,
+    inputs: import('@axe/core').ProviderSetupInputs,
   ): Promise<void> {
     if (!inputs.apiKey) {
       this.sendMessageToWebView({

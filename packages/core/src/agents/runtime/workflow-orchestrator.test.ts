@@ -87,7 +87,7 @@ const worktreeStubs = vi.hoisted(() => {
       ) => ({
         success: true,
         worktree: {
-          path: `/fake/repo/.qwen/worktrees/${slug}`,
+          path: `/fake/repo/.axe/worktrees/${slug}`,
           branch: `worktree-${slug}`,
         },
       }),
@@ -2569,7 +2569,7 @@ describe('WorkflowOrchestrator P3 — agentType / model / isolation / schema', (
     });
     // Override getTargetDir to look nested-worktree-ish.
     (config as unknown as { getTargetDir: () => string }).getTargetDir = () =>
-      '/some/repo/.qwen/worktrees/agent-existing/inner';
+      '/some/repo/.axe/worktrees/agent-existing/inner';
     const dispatch = createProductionDispatch(config);
     await expect(dispatch('hi', { isolation: 'worktree' })).rejects.toThrow(
       /already inside a worktree/,

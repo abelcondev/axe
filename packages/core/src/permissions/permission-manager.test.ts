@@ -2187,8 +2187,8 @@ describe('buildHumanReadableRuleLabel', () => {
   });
 
   it('converts Read with absolute path specifier', () => {
-    const label = buildHumanReadableRuleLabel(['Read(//Users/mochi/.qwen/**)']);
-    expect(label).toBe('read files in /Users/mochi/.qwen/');
+    const label = buildHumanReadableRuleLabel(['Read(//Users/mochi/.axe/**)']);
+    expect(label).toBe('read files in /Users/mochi/.axe/');
   });
 
   it('converts Read with relative path specifier', () => {
@@ -2487,7 +2487,7 @@ describe('PermissionManager — compound shell write attribution', () => {
   it('deny rule matches a write after `cd` into a subdir', async () => {
     const pm = new PermissionManager(
       makeConfig({
-        permissionsDeny: ['WriteFileTool(.qwen/settings.json)'],
+        permissionsDeny: ['WriteFileTool(.axe/settings.json)'],
         cwd: '/repo',
         projectRoot: '/repo',
       }),
@@ -2505,7 +2505,7 @@ describe('PermissionManager — compound shell write attribution', () => {
   it('deny rule matches a write through a `bash -lc` wrapper after `cd`', async () => {
     const pm = new PermissionManager(
       makeConfig({
-        permissionsDeny: ['WriteFileTool(.qwen/settings.json)'],
+        permissionsDeny: ['WriteFileTool(.axe/settings.json)'],
         cwd: '/repo',
         projectRoot: '/repo',
       }),
@@ -2541,12 +2541,12 @@ describe('PermissionManager — compound shell write attribution', () => {
   it('allow rule on the same shell command does NOT downgrade a virtual-op deny', async () => {
     // The Bash allow rule covers the literal command, but the cross-command
     // virtual-op pass surfaces the write target and the deny rule on
-    // .qwen/settings.json escalates the verdict. Allow + virtual-op deny
+    // .axe/settings.json escalates the verdict. Allow + virtual-op deny
     // → deny, matching the "deny > ask > allow" priority.
     const pm = new PermissionManager(
       makeConfig({
         permissionsAllow: ['Bash(*)'],
-        permissionsDeny: ['WriteFileTool(.qwen/settings.json)'],
+        permissionsDeny: ['WriteFileTool(.axe/settings.json)'],
         cwd: '/repo',
         projectRoot: '/repo',
       }),
@@ -2564,7 +2564,7 @@ describe('PermissionManager — compound shell write attribution', () => {
   it('ordinary writes after `cd` into project subdirs stay unmatched by self-mod rules', () => {
     const pm = new PermissionManager(
       makeConfig({
-        permissionsDeny: ['WriteFileTool(.qwen/settings.json)'],
+        permissionsDeny: ['WriteFileTool(.axe/settings.json)'],
         cwd: '/repo',
         projectRoot: '/repo',
       }),
@@ -2582,7 +2582,7 @@ describe('PermissionManager — compound shell write attribution', () => {
   it('hasRelevantRules sees protected writes after sibling shell-wrapper segments', () => {
     const pm = new PermissionManager(
       makeConfig({
-        permissionsDeny: ['WriteFileTool(.qwen/settings.json)'],
+        permissionsDeny: ['WriteFileTool(.axe/settings.json)'],
         cwd: '/repo',
         projectRoot: '/repo',
       }),
@@ -2591,7 +2591,7 @@ describe('PermissionManager — compound shell write attribution', () => {
     expect(
       pm.hasRelevantRules({
         toolName: 'run_shell_command',
-        command: "bash -lc 'echo ok' && echo hi > .qwen/settings.json",
+        command: "bash -lc 'echo ok' && echo hi > .axe/settings.json",
         cwd: '/repo',
       }),
     ).toBe(true);
@@ -2600,7 +2600,7 @@ describe('PermissionManager — compound shell write attribution', () => {
   it('hasRelevantRules sees protected writes after `cd` before compound recursion', () => {
     const pm = new PermissionManager(
       makeConfig({
-        permissionsDeny: ['Write(.qwen/settings.json)'],
+        permissionsDeny: ['Write(.axe/settings.json)'],
         cwd: '/repo',
         projectRoot: '/repo',
       }),
@@ -2618,7 +2618,7 @@ describe('PermissionManager — compound shell write attribution', () => {
   it('hasMatchingAskRule sees writes after `cd` into a subdir', () => {
     const pm = new PermissionManager(
       makeConfig({
-        permissionsAsk: ['WriteFileTool(.qwen/settings.json)'],
+        permissionsAsk: ['WriteFileTool(.axe/settings.json)'],
         cwd: '/repo',
         projectRoot: '/repo',
       }),
@@ -2637,7 +2637,7 @@ describe('PermissionManager — compound shell write attribution', () => {
     const pm = new PermissionManager(
       makeConfig({
         permissionsAllow: ['Bash(*)'],
-        permissionsDeny: ['WriteFileTool(.qwen/settings.json)'],
+        permissionsDeny: ['WriteFileTool(.axe/settings.json)'],
         cwd: '/repo',
         projectRoot: '/repo',
       }),

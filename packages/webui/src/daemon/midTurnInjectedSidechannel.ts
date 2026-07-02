@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { MID_TURN_MESSAGE_INJECTED_EVENT } from '@qwen-code/sdk/daemon';
-import type { DaemonMidTurnMessageInjectedData } from '@qwen-code/sdk/daemon';
+import { MID_TURN_MESSAGE_INJECTED_EVENT } from '@axe/sdk/daemon';
+import type { DaemonMidTurnMessageInjectedData } from '@axe/sdk/daemon';
 
 /**
  * Side channel for `mid_turn_message_injected` daemon events. Patterned on

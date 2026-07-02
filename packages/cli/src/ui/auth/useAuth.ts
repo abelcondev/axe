@@ -14,7 +14,7 @@ import {
   applyProviderInstallPlan,
   type ProviderConfig,
   type ProviderSetupInputs,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { LoadedSettings } from '../../config/settings.js';
 import { createLoadedSettingsAdapter } from '../../config/loadedSettingsAdapter.js';
@@ -214,7 +214,7 @@ export const useAuthCommand = (
   }, []);
 
   const cancelAuthentication = useCallback(() => {
-    if (isAuthenticating && pendingAuthType === AuthType.QWEN_OAUTH) {
+    if (isAuthenticating && pendingAuthType === AuthType.AXE_OAUTH) {
       cancelQwenAuth();
     }
     if (isAuthenticating && pendingAuthType) {
@@ -231,7 +231,7 @@ export const useAuthCommand = (
   useEffect(() => {
     const val = process.env['QWEN_DEFAULT_AUTH_TYPE'];
     const valid = [
-      AuthType.QWEN_OAUTH,
+      AuthType.AXE_OAUTH,
       AuthType.USE_OPENAI,
       AuthType.USE_ANTHROPIC,
       AuthType.USE_GEMINI,

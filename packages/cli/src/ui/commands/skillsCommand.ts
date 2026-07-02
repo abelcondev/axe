@@ -12,7 +12,7 @@ import {
 } from './types.js';
 import { MessageType } from '../types.js';
 import { t } from '../../i18n/index.js';
-import { normalizeSkillPriority } from '@qwen-code/qwen-code-core';
+import { normalizeSkillPriority } from '@axe/core';
 import { levelLabel } from '../utils/skill-level-label.js';
 
 export const skillsCommand: SlashCommand = {
@@ -77,7 +77,7 @@ export const skillsCommand: SlashCommand = {
           : userInvocableSkills.length === 0
             ? t('No skills are currently available.')
             : t(
-                'All available skills are disabled. Edit ~/.qwen/settings.json or .qwen/settings.json (skills.disabled) to re-enable.',
+                'All available skills are disabled. Edit ~/.axe/settings.json or .axe/settings.json (skills.disabled) to re-enable.',
               );
       return {
         type: 'message' as const,

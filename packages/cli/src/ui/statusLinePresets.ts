@@ -5,7 +5,7 @@
  */
 
 import nodePath from 'node:path';
-import type { ReasoningEffort } from '@qwen-code/qwen-code-core';
+import type { ReasoningEffort } from '@axe/core';
 import { StreamingState } from './types.js';
 
 export const STATUS_LINE_PRESET_ITEM_IDS = [
@@ -21,7 +21,7 @@ export const STATUS_LINE_PRESET_ITEM_IDS = [
   'branch-changes',
   'context-used',
   'run-state',
-  'qwen-version',
+  'axe-version',
   'context-window-size',
   'used-tokens',
   'session-id',
@@ -149,9 +149,9 @@ export const STATUS_LINE_PRESET_ITEMS: readonly StatusLinePresetItem[] = [
     description: 'Compact session run-state text',
   },
   {
-    id: 'qwen-version',
-    label: 'qwen-version',
-    description: 'Qwen Code application version',
+    id: 'axe-version',
+    label: 'axe-version',
+    description: 'Axe application version',
   },
   {
     id: 'context-window-size',
@@ -388,7 +388,7 @@ function formatPresetItem(
       return undefined;
     case 'run-state':
       return getRunStateLabel(data.streamingState);
-    case 'qwen-version':
+    case 'axe-version':
       return `v${data.version}`;
     case 'context-window-size':
       if (data.contextWindowSize > 0) {

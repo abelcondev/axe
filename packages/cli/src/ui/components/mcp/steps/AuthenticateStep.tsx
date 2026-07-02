@@ -15,8 +15,8 @@ import {
   MCPOAuthProvider,
   MCPOAuthTokenStorage,
   getErrorMessage,
-} from '@qwen-code/qwen-code-core';
-import type { OAuthDisplayPayload } from '@qwen-code/qwen-code-core';
+} from '@axe/core';
+import type { OAuthDisplayPayload } from '@axe/core';
 import { appEvents, AppEvent } from '../../../../utils/events.js';
 import {
   osc8Hyperlink,

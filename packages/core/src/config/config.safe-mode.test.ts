@@ -114,7 +114,7 @@ vi.mock('../core/contentGenerator.js', () => ({
   AuthType: { QWEN_API_KEY: 'qwen_api_key' },
   Protocol: {
     OPENAI: 'openai',
-    QWEN_OAUTH: 'qwen-oauth',
+    AXE_OAUTH: 'axe-oauth',
     GEMINI: 'gemini',
     ANTHROPIC: 'anthropic',
   },

@@ -60,7 +60,7 @@ async function writeSkillFile(
   skillName: string,
   content: string,
 ): Promise<string> {
-  const dir = path.join(projectRoot, '.qwen', 'skills', skillName);
+  const dir = path.join(projectRoot, '.axe', 'skills', skillName);
   await fs.mkdir(dir, { recursive: true });
   const filePath = path.join(dir, 'SKILL.md');
   await fs.writeFile(filePath, content, 'utf-8');
@@ -122,7 +122,7 @@ describe('skillReviewAgentPlanner — write_file collision deny (#4437)', () => 
   it('allows write_file to a fresh path that does not yet exist', async () => {
     const fresh = path.join(
       projectRoot,
-      '.qwen',
+      '.axe',
       'skills',
       'brand-new',
       'SKILL.md',
@@ -191,7 +191,7 @@ describe('skillReviewAgentPlanner — write_file collision deny (#4437)', () => 
     // hard guard for that.
     const aux = path.join(
       projectRoot,
-      '.qwen',
+      '.axe',
       'skills',
       'my-skill',
       'NOTES.md',
@@ -212,7 +212,7 @@ describe('skillReviewAgentPlanner — write_file collision deny (#4437)', () => 
     // agent write outside the project; the realpath check stops it.
     const outside = path.join(tempDir, 'outside');
     await fs.mkdir(outside, { recursive: true });
-    const skillsRoot = path.join(projectRoot, '.qwen', 'skills');
+    const skillsRoot = path.join(projectRoot, '.axe', 'skills');
     await fs.mkdir(skillsRoot, { recursive: true });
     await fs.symlink(outside, path.join(skillsRoot, 'escape'));
     const target = path.join(skillsRoot, 'escape', 'SKILL.md');
@@ -234,7 +234,7 @@ describe('skillReviewAgentPlanner — write_file collision deny (#4437)', () => 
     // write, but the permission layer catches it earlier here.
     const dirAsFile = path.join(
       projectRoot,
-      '.qwen',
+      '.axe',
       'skills',
       'is-a-directory',
       'SKILL.md',
@@ -287,7 +287,7 @@ describe('listExistingSkillDirNames', () => {
 
   it('skips directories without SKILL.md so half-built dirs do not reserve names', async () => {
     await writeSkillFile(projectRoot, 'real', AUTO_SKILL);
-    await fs.mkdir(path.join(projectRoot, '.qwen', 'skills', 'empty'), {
+    await fs.mkdir(path.join(projectRoot, '.axe', 'skills', 'empty'), {
       recursive: true,
     });
     expect(await listExistingSkillDirNames(projectRoot)).toEqual(['real']);
@@ -305,7 +305,7 @@ describe('listExistingSkillDirNames', () => {
     const external = path.join(tempDir, 'external-skills', 'linked');
     await fs.mkdir(external, { recursive: true });
     await fs.writeFile(path.join(external, 'SKILL.md'), AUTO_SKILL, 'utf-8');
-    const skillsRoot = path.join(projectRoot, '.qwen', 'skills');
+    const skillsRoot = path.join(projectRoot, '.axe', 'skills');
     await fs.mkdir(skillsRoot, { recursive: true });
     await fs.symlink(external, path.join(skillsRoot, 'linked'));
     await writeSkillFile(projectRoot, 'regular', AUTO_SKILL);
@@ -349,18 +349,18 @@ describe('buildTaskPrompt', () => {
     // the enumerated names always come from the same source.
     await writeSkillFile(projectRoot, 'real', AUTO_SKILL);
     const prompt = await buildTaskPrompt(projectRoot);
-    expect(prompt).toContain(path.join(projectRoot, '.qwen', 'skills'));
+    expect(prompt).toContain(path.join(projectRoot, '.axe', 'skills'));
     expect(prompt).toContain('real');
   });
 
   it('instructs the agent to use the auto-skill- directory prefix (#4837)', async () => {
-    // The `.gitignore` re-ignores `.qwen/skills/auto-skill-*/`, so new
+    // The `.gitignore` re-ignores `.axe/skills/auto-skill-*/`, so new
     // auto-generated skills must land under an `auto-skill-`-prefixed
     // directory to stay out of version control. The prompt is the soft
     // guard that steers the agent there.
     const prompt = await buildTaskPrompt(projectRoot);
     expect(prompt).toContain(AUTO_SKILL_DIR_PREFIX);
-    expect(prompt).toContain(`.qwen/skills/${AUTO_SKILL_DIR_PREFIX}<name>/`);
+    expect(prompt).toContain(`.axe/skills/${AUTO_SKILL_DIR_PREFIX}<name>/`);
     expect(prompt).toMatch(/mandatory/i);
   });
 });
@@ -373,7 +373,7 @@ describe('SKILL_REVIEW_SYSTEM_PROMPT', () => {
     // drop the prefix mandate from the other.
     expect(SKILL_REVIEW_SYSTEM_PROMPT).toContain(AUTO_SKILL_DIR_PREFIX);
     expect(SKILL_REVIEW_SYSTEM_PROMPT).toContain(
-      `.qwen/skills/${AUTO_SKILL_DIR_PREFIX}<name>/`,
+      `.axe/skills/${AUTO_SKILL_DIR_PREFIX}<name>/`,
     );
     expect(SKILL_REVIEW_SYSTEM_PROMPT).toMatch(/MUST use/i);
   });

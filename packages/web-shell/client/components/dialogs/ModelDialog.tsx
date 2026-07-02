@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useConnection } from '@qwen-code/webui/daemon-react-sdk';
+import { useConnection } from '@axe/webui/daemon-react-sdk';
 import { useI18n } from '../../i18n';
 import { useListboxKeyboard } from '../../hooks/useListboxKeyboard';
 import { dp } from './dialogStyles';
@@ -225,7 +225,7 @@ export function ModelDialog({
               label={t('model.contextWindow')}
               value={formatContextWindow(selectedModel.contextWindow, t)}
             />
-            {getAuthType(selectedModel) !== 'qwen-oauth' ? (
+            {getAuthType(selectedModel) !== 'axe-oauth' ? (
               <>
                 <DetailRow
                   label={t('model.baseUrl')}

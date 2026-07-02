@@ -21,8 +21,8 @@ import type {
   ToolCallStats,
   SkillCallStats,
   SkillMetrics,
-} from '@qwen-code/qwen-code-core';
-import { uiTelemetryService } from '@qwen-code/qwen-code-core';
+} from '@axe/core';
+import { uiTelemetryService } from '@axe/core';
 
 const EMPTY_SKILL_METRICS: SkillMetrics = {
   totalCalls: 0,

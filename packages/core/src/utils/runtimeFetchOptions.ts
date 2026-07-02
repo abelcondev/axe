@@ -25,7 +25,7 @@ export type Runtime = 'node' | 'bun' | 'unknown';
  * outbound API connections.
  *
  * This is an opt-in escape hatch for self-hosted / lab environments that use
- * self-signed certificates. Because Qwen Code installs its own undici
+ * self-signed certificates. Because Axe installs its own undici
  * dispatcher (to control timeouts), Node's global `NODE_TLS_REJECT_UNAUTHORIZED`
  * is not automatically honored by that dispatcher — this helper feeds the
  * setting back into the dispatcher's TLS connect options.
@@ -687,7 +687,7 @@ function buildFetchOptionsWithDispatcher(
     const redactedMessage = redactProxyCredentials(errorMessage);
     const logMessage = `Failed to create proxy dispatcher for ${hostname} (${failureLabel}), falling back to direct connection: ${redactedMessage}`;
     debugLogger.warn(logMessage);
-    // Dual logging: debugLogger writes to ~/.qwen/debug/ (for local debugging),
+    // Dual logging: debugLogger writes to ~/.axe/debug/ (for local debugging),
     // console.error writes to stderr (captured by container orchestrators and log aggregators).
     // This ensures visibility in production even when debug sessions are inactive.
     // eslint-disable-next-line no-console

@@ -13,7 +13,7 @@ import {
   canUseRipgrep,
   getMCPServerStatus,
   MCPServerStatus,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { CommandContext } from '../ui/commands/types.js';
 import type { DoctorCheckResult } from '../ui/types.js';
 import { t } from '../i18n/index.js';

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { DaemonFollowupSuggestionData } from '@qwen-code/sdk/daemon';
+import type { DaemonFollowupSuggestionData } from '@axe/sdk/daemon';
 
 const listeners = new Set<() => void>();
 let lastFollowupSuggestion: DaemonFollowupSuggestionData | undefined;

@@ -113,7 +113,7 @@ vi.mock('node:stream', async (importOriginal) => {
 });
 
 // Mock core dependencies
-vi.mock('@qwen-code/qwen-code-core', () => ({
+vi.mock('@axe/core', () => ({
   createDebugLogger: () => ({
     debug: vi.fn(),
     error: vi.fn(),
@@ -123,7 +123,7 @@ vi.mock('@qwen-code/qwen-code-core', () => ({
   APPROVAL_MODE_INFO: {},
   APPROVAL_MODES: [],
   AuthType: {
-    QWEN_OAUTH: 'qwen-oauth',
+    AXE_OAUTH: 'axe-oauth',
     USE_OPENAI: 'openai',
     USE_ANTHROPIC: 'anthropic',
     USE_GEMINI: 'gemini',
@@ -300,11 +300,11 @@ vi.mock('@qwen-code/qwen-code-core', () => ({
   clearCachedCredentialFile: vi.fn(),
   getAllGeminiMdFilenames: vi.fn(() => ['QWEN.md', 'AGENTS.md']),
   getAutoMemoryRoot: vi.fn(
-    (projectRoot: string) => `${projectRoot}/.qwen/memory`,
+    (projectRoot: string) => `${projectRoot}/.axe/memory`,
   ),
   getUserAutoMemoryRoot: vi.fn(() => '/tmp/user-memory'),
-  QwenOAuth2Event: {},
-  qwenOAuth2Events: { on: vi.fn(), off: vi.fn() },
+  AxeOAuth2Event: {},
+  axeOAuth2Events: { on: vi.fn(), off: vi.fn() },
   MCPDiscoveryState: {
     NOT_STARTED: 'not_started',
     IN_PROGRESS: 'in_progress',
@@ -549,13 +549,13 @@ vi.mock('../utils/languageUtils.js', () => ({
     ) => {
       const p = config?.getOutputLanguageFilePath();
       if (!p) {
-        config?.setOutputLanguageFilePath('/mock/.qwen/output-language.md');
+        config?.setOutputLanguageFilePath('/mock/.axe/output-language.md');
       }
     },
   ),
   getOutputLanguageFilePath: vi
     .fn()
-    .mockReturnValue('/mock/.qwen/output-language.md'),
+    .mockReturnValue('/mock/.axe/output-language.md'),
   resolveOutputLanguage: vi.fn((v: string) => v),
   isAutoLanguage: vi.fn(() => false),
   OUTPUT_LANGUAGE_AUTO: 'auto',
@@ -581,7 +581,7 @@ import {
   deliverClientMcpMessage,
 } from './acpAgent.js';
 import { gzipSync } from 'node:zlib';
-import type { Config } from '@qwen-code/qwen-code-core';
+import type { Config } from '@axe/core';
 import type { LoadedSettings } from '../config/settings.js';
 import type { CliArgs } from '../config/config.js';
 import {
@@ -598,7 +598,7 @@ import {
   applyProviderInstallPlan,
   Storage,
   unregisterGoalHook,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { McpServer } from '@agentclientprotocol/sdk';
 import { AgentSideConnection } from '@agentclientprotocol/sdk';
 import { loadSettings, SettingScope } from '../config/settings.js';
@@ -613,7 +613,7 @@ import { Session, buildAvailableCommandsSnapshot } from './session/Session.js';
 import {
   SERVE_STATUS_EXT_METHODS,
   SERVE_CONTROL_EXT_METHODS,
-} from '@qwen-code/acp-bridge/status';
+} from '@axe/acp-bridge/status';
 import {
   updateOutputLanguageFile,
   writeOutputLanguageAndRegisterPath,
@@ -1238,9 +1238,9 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
       getFileSystemService: vi.fn().mockReturnValue(fallbackFileSystem),
       setFileSystemService: vi.fn(),
       storage: {
-        getProjectTempDir: vi.fn().mockReturnValue('/project/.qwen/tmp'),
+        getProjectTempDir: vi.fn().mockReturnValue('/project/.axe/tmp'),
         getProjectDir: vi.fn().mockReturnValue('/project'),
-        getUserSkillsDirs: vi.fn().mockReturnValue(['/home/test/.qwen/skills']),
+        getUserSkillsDirs: vi.fn().mockReturnValue(['/home/test/.axe/skills']),
       },
     };
     vi.mocked(loadSettings).mockReturnValue(makeSessionSettings());
@@ -1284,12 +1284,12 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
       fallbackFileSystem,
       {
         localReadRoots: [
-          '/project/.qwen/tmp',
+          '/project/.axe/tmp',
           path.join('/project', 'subagents'),
           '/tmp/qwen-global-temp',
-          '/project/.qwen/memory',
+          '/project/.axe/memory',
           '/tmp/user-memory',
-          '/home/test/.qwen/skills',
+          '/home/test/.axe/skills',
           '/tmp/qwen-extensions',
         ],
       },
@@ -1300,7 +1300,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
     await agentPromise;
   });
 
-  it('does not return discontinued qwen-oauth as the only ACP auth option', async () => {
+  it('does not return discontinued axe-oauth as the only ACP auth option', async () => {
     vi.mocked(buildAuthMethods).mockReturnValue([
       {
         id: 'openai',
@@ -1311,10 +1311,10 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
 
     const innerConfig = makeInnerConfig();
     vi.mocked(innerConfig.getModelsConfig).mockReturnValue({
-      getCurrentAuthType: vi.fn().mockReturnValue('qwen-oauth'),
+      getCurrentAuthType: vi.fn().mockReturnValue('axe-oauth'),
     } as unknown as ReturnType<Config['getModelsConfig']>);
     vi.mocked(innerConfig.refreshAuth).mockRejectedValue(
-      new Error('qwen-oauth token expired'),
+      new Error('axe-oauth token expired'),
     );
     vi.mocked(loadSettings).mockReturnValue(makeSessionSettings());
     vi.mocked(loadCliConfig).mockResolvedValue(
@@ -1442,7 +1442,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
     mergedMemory: Record<string, unknown> = memory,
   ) {
     const user = {
-      path: '/home/test/.qwen/settings.json',
+      path: '/home/test/.axe/settings.json',
       settings: { memory },
     };
     const merged = { mcpServers: {}, memory: { ...mergedMemory } };
@@ -1534,11 +1534,11 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
     return {
       merged: mergedSettings,
       user: {
-        path: '/home/test/.qwen/settings.json',
+        path: '/home/test/.axe/settings.json',
         settings: userSettings,
       },
       workspace: {
-        path: '/work/.qwen/settings.json',
+        path: '/work/.axe/settings.json',
         settings: workspaceSettings,
       },
       isTrusted: true,
@@ -1972,7 +1972,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
 
   it('extMethod preflight surfaces SkillError as parse_error errorKind', async () => {
     const skillError = new (
-      await import('@qwen-code/qwen-code-core')
+      await import('@axe/core')
     ).SkillError('bad frontmatter', 'PARSE_ERROR');
     mockConfig = {
       ...mockConfig,
@@ -3354,7 +3354,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
 
     await expect(agent.extMethod('qwen/settings/getPath', {})).resolves.toEqual(
       {
-        path: '/home/test/.qwen/settings.json',
+        path: '/home/test/.axe/settings.json',
       },
     );
     await expect(
@@ -3378,7 +3378,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
       paths: {
         userMemoryFile: path.join('/tmp/qwen-global-test', 'QWEN.md'),
         projectMemoryFile: path.join('/tmp/qwen-memory-cwd-test', 'QWEN.md'),
-        autoMemoryDir: '/tmp/qwen-memory-root-test/.qwen/memory',
+        autoMemoryDir: '/tmp/qwen-memory-root-test/.axe/memory',
       },
     });
     await expect(
@@ -3475,7 +3475,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
     expect(result).toEqual({
       v: 1,
       user: {
-        path: '/home/test/.qwen/settings.json',
+        path: '/home/test/.axe/settings.json',
         rules: {
           allow: ['ShellTool(git status)'],
           ask: [],
@@ -3483,7 +3483,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
         },
       },
       workspace: {
-        path: '/work/.qwen/settings.json',
+        path: '/work/.axe/settings.json',
         rules: {
           allow: ['ShellTool(npm test)'],
           ask: [],
@@ -5114,7 +5114,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
     const userSkill = await writeSkill(tempHome, '.agents/skills', 'course');
     const projectSkill = await writeSkill(
       tempProject,
-      '.qwen/skills',
+      '.axe/skills',
       'project-course',
     );
 
@@ -5242,7 +5242,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
     const tempProject = await fs.mkdtemp(
       path.join(os.tmpdir(), 'qwen-project-cwd-skill-'),
     );
-    const skillDir = path.join(tempProject, '.qwen', 'skills', 'issue-fixer');
+    const skillDir = path.join(tempProject, '.axe', 'skills', 'issue-fixer');
     const skillFile = path.join(skillDir, 'SKILL.md');
     await fs.mkdir(skillDir, { recursive: true });
     await fs.writeFile(
@@ -5318,7 +5318,7 @@ describe('QwenAgent MCP SSE/HTTP support', () => {
         'disable-model-invocation: true',
       );
       expect(loadSkillsFromDir).toHaveBeenCalledWith(
-        path.join(tempProject, '.qwen', 'skills'),
+        path.join(tempProject, '.axe', 'skills'),
         'project',
       );
       expect(listSkills).not.toHaveBeenCalled();
@@ -7605,13 +7605,13 @@ describe('sessionLanguage multi-session propagation', () => {
       getSessionId: vi.fn().mockReturnValue('s-a'),
       getOutputLanguageFilePath: vi
         .fn()
-        .mockReturnValue('/proj-a/.qwen/output-language.md'),
+        .mockReturnValue('/proj-a/.axe/output-language.md'),
     });
     const cfgB = makeConfig({
       getSessionId: vi.fn().mockReturnValue('s-b'),
       getOutputLanguageFilePath: vi
         .fn()
-        .mockReturnValue('/proj-b/.qwen/output-language.md'),
+        .mockReturnValue('/proj-b/.axe/output-language.md'),
     });
     const cfgC = makeConfig({
       getSessionId: vi.fn().mockReturnValue('s-c'),
@@ -7684,7 +7684,7 @@ describe('sessionLanguage multi-session propagation', () => {
     // Session B (different project path): updateOutputLanguageFile called
     expect(updateOutputLanguageFile).toHaveBeenCalledWith(
       'zh',
-      '/proj-b/.qwen/output-language.md',
+      '/proj-b/.axe/output-language.md',
     );
 
     // Session C (no path): writeOutputLanguageAndRegisterPath called
@@ -7716,7 +7716,7 @@ describe('sessionLanguage multi-session propagation', () => {
       getSessionId: vi.fn().mockReturnValue('s-fail'),
       getOutputLanguageFilePath: vi
         .fn()
-        .mockReturnValue('/readonly/.qwen/output-language.md'),
+        .mockReturnValue('/readonly/.axe/output-language.md'),
     });
 
     const sessionConfigs = [cfgOk, cfgFail];
@@ -7767,7 +7767,7 @@ describe('sessionLanguage multi-session propagation', () => {
     // Make writes for cfgFail's path throw
     vi.mocked(updateOutputLanguageFile).mockImplementation(
       (_value: string, path?: string) => {
-        if (path === '/readonly/.qwen/output-language.md') {
+        if (path === '/readonly/.axe/output-language.md') {
           throw new Error('EACCES');
         }
       },

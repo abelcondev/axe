@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeDaemonEvent } from '@qwen-code/sdk/daemon';
+import { normalizeDaemonEvent } from '@axe/sdk/daemon';
 import type { ACPToolCall, Message, TodoItem } from '../adapters/types';
 import {
   computeTodoDetails,

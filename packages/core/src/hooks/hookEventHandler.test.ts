@@ -184,7 +184,7 @@ describe('HookEventHandler', () => {
       );
 
       await hookEventHandler.fireInstructionsLoadedEvent(
-        '/repo/.qwen/QWEN.local.md',
+        '/repo/.axe/QWEN.local.md',
         'local',
         'include',
         {
@@ -195,7 +195,7 @@ describe('HookEventHandler', () => {
       expect(mockHookPlanner.createExecutionPlan).toHaveBeenCalledWith(
         HookEventName.InstructionsLoaded,
         {
-          filePath: '/repo/.qwen/QWEN.local.md',
+          filePath: '/repo/.axe/QWEN.local.md',
         },
       );
 
@@ -207,7 +207,7 @@ describe('HookEventHandler', () => {
         load_reason: string;
         parent_file_path?: string;
       };
-      expect(input.file_path).toBe('/repo/.qwen/QWEN.local.md');
+      expect(input.file_path).toBe('/repo/.axe/QWEN.local.md');
       expect(input.memory_type).toBe('local');
       expect(input.load_reason).toBe('include');
       expect(input.parent_file_path).toBe('/repo/QWEN.md');
@@ -2030,7 +2030,7 @@ describe('HookEventHandler', () => {
       );
 
       await hookEventHandler.fireNotificationEvent(
-        'Qwen Code needs your permission to use Bash',
+        'Axe needs your permission to use Bash',
         NotificationType.PermissionPrompt,
         'Permission needed',
       );
@@ -2043,7 +2043,7 @@ describe('HookEventHandler', () => {
         title?: string;
       };
 
-      expect(input.message).toBe('Qwen Code needs your permission to use Bash');
+      expect(input.message).toBe('Axe needs your permission to use Bash');
       expect(input.notification_type).toBe('permission_prompt');
       expect(input.title).toBe('Permission needed');
     });
@@ -2059,7 +2059,7 @@ describe('HookEventHandler', () => {
       );
 
       await hookEventHandler.fireNotificationEvent(
-        'Qwen Code is waiting for your input',
+        'Axe is waiting for your input',
         NotificationType.IdlePrompt,
         'Waiting for input',
       );

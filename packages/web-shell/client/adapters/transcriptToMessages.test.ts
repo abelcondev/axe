@@ -6,7 +6,7 @@ import type {
   DaemonToolTranscriptBlock,
   DaemonTranscriptBlock,
   DaemonUserShellTranscriptBlock,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import { transcriptBlocksToDaemonMessages } from './transcriptToMessages.js';
 
 function textBlock(

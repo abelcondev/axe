@@ -63,7 +63,7 @@ function makeSettings(workspaceDir: string): LoadedSettings {
   return {
     isTrusted: true,
     workspace: {
-      path: path.join(workspaceDir, '.qwen', 'settings.json'),
+      path: path.join(workspaceDir, '.axe', 'settings.json'),
       settings: {},
     },
     merged: {},
@@ -86,7 +86,7 @@ describe('buildVoiceKeyterms race checks', () => {
 
   it('does not read a keyterms file swapped in before open', async () => {
     workspaceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'voice-keyterms-'));
-    const qwenDir = path.join(workspaceDir, '.qwen');
+    const qwenDir = path.join(workspaceDir, '.axe');
     fs.mkdirSync(qwenDir, { recursive: true });
     const target = path.join(qwenDir, 'voice-keyterms.txt');
     fs.writeFileSync(target, 'SafeTerm\n');
@@ -105,7 +105,7 @@ describe('buildVoiceKeyterms race checks', () => {
 
   it('does not read a keyterms file rewritten in place before open', async () => {
     workspaceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'voice-keyterms-'));
-    const qwenDir = path.join(workspaceDir, '.qwen');
+    const qwenDir = path.join(workspaceDir, '.axe');
     fs.mkdirSync(qwenDir, { recursive: true });
     const target = path.join(qwenDir, 'voice-keyterms.txt');
     fs.writeFileSync(target, 'SafeTerm\n');
@@ -126,7 +126,7 @@ describe('buildVoiceKeyterms race checks', () => {
 
   it('does not read content larger than the file size cap after open', async () => {
     workspaceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'voice-keyterms-'));
-    const qwenDir = path.join(workspaceDir, '.qwen');
+    const qwenDir = path.join(workspaceDir, '.axe');
     fs.mkdirSync(qwenDir, { recursive: true });
     const target = path.join(qwenDir, 'voice-keyterms.txt');
     fs.writeFileSync(target, 'Small\n');

@@ -39,7 +39,7 @@ const sessions = [
   },
 ];
 
-vi.mock('@qwen-code/webui/daemon-react-sdk', () => ({
+vi.mock('@axe/webui/daemon-react-sdk', () => ({
   useConnection: () => ({ sessionId: 'me' }),
   useSessions: () => ({
     sessions,

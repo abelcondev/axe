@@ -15,8 +15,8 @@ import WebSocket from 'ws';
 import type {
   BridgeSessionSummary,
   HttpAcpBridge,
-} from '@qwen-code/acp-bridge/bridgeTypes';
-import type { BridgeEvent } from '@qwen-code/acp-bridge/eventBus';
+} from '@axe/acp-bridge/bridgeTypes';
+import type { BridgeEvent } from '@axe/acp-bridge/eventBus';
 import {
   CancelSentinelCollisionError,
   InvalidClientIdError,
@@ -26,8 +26,8 @@ import {
   PromptQueueFullError,
   SessionShellClientRequiredError,
   SessionShellDisabledError,
-} from '@qwen-code/acp-bridge/bridgeErrors';
-import { SessionService, Storage } from '@qwen-code/qwen-code-core';
+} from '@axe/acp-bridge/bridgeErrors';
+import { SessionService, Storage } from '@axe/core';
 import {
   resetHomeEnvBootstrapForTesting,
   SettingScope,
@@ -462,8 +462,8 @@ const fakeWorkspace = {
   async getWorkspacePermissionsStatus() {
     return {
       v: 1,
-      user: { path: '/home/.qwen/settings.json', rules: emptyRules() },
-      workspace: { path: '/ws/.qwen/settings.json', rules: emptyRules() },
+      user: { path: '/home/.axe/settings.json', rules: emptyRules() },
+      workspace: { path: '/ws/.axe/settings.json', rules: emptyRules() },
       merged: emptyRules(),
       isTrusted: true,
     };
@@ -476,9 +476,9 @@ const fakeWorkspace = {
     };
     return {
       v: 1,
-      user: { path: '/home/.qwen/settings.json', rules: emptyRules() },
+      user: { path: '/home/.axe/settings.json', rules: emptyRules() },
       workspace: {
-        path: '/ws/.qwen/settings.json',
+        path: '/ws/.axe/settings.json',
         rules: {
           ...emptyRules(),
           ...(scope === 'workspace' ? { [ruleType]: rules } : {}),
@@ -4216,7 +4216,7 @@ describe('ACP Streamable HTTP transport (over the wire)', () => {
       result: {
         v: 1,
         isTrusted: true,
-        workspace: { path: '/ws/.qwen/settings.json' },
+        workspace: { path: '/ws/.axe/settings.json' },
       },
     });
   });

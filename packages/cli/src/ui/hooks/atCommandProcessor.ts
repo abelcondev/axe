@@ -7,7 +7,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import type { Part, PartListUnion } from '@google/genai';
-import type { Config, Extension } from '@qwen-code/qwen-code-core';
+import type { Config, Extension } from '@axe/core';
 import {
   getErrorMessage,
   isNodeError,
@@ -19,7 +19,7 @@ import {
   emptyMcpResourceText,
   formatMcpResourceContents,
   summarizeMcpResource,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type {
   HistoryItemToolGroup,
   HistoryItemWithoutId,
@@ -201,7 +201,7 @@ export async function resolveAtCommandQuery({
   const contentLabelsForDisplay: string[] = [];
   const ignoredByReason: Record<string, string[]> = {
     git: [],
-    qwen: [],
+    axe: [],
     both: [],
   };
 
@@ -302,11 +302,11 @@ export async function resolveAtCommandQuery({
 
     if (gitIgnored || qwenIgnored) {
       const reason =
-        gitIgnored && qwenIgnored ? 'both' : gitIgnored ? 'git' : 'qwen';
+        gitIgnored && qwenIgnored ? 'both' : gitIgnored ? 'git' : 'axe';
       ignoredByReason[reason].push(pathName);
       const reasonText =
         reason === 'both'
-          ? 'ignored by both git and qwen'
+          ? 'ignored by both git and axe'
           : reason === 'git'
             ? 'git-ignored'
             : 'qwen-ignored';
@@ -398,7 +398,7 @@ export async function resolveAtCommandQuery({
   // Inform user about ignored paths
   const totalIgnored =
     ignoredByReason['git'].length +
-    ignoredByReason['qwen'].length +
+    ignoredByReason['axe'].length +
     ignoredByReason['both'].length;
 
   if (totalIgnored > 0) {
@@ -406,8 +406,8 @@ export async function resolveAtCommandQuery({
     if (ignoredByReason['git'].length) {
       messages.push(`Git-ignored: ${ignoredByReason['git'].join(', ')}`);
     }
-    if (ignoredByReason['qwen'].length) {
-      messages.push(`Qwen-ignored: ${ignoredByReason['qwen'].join(', ')}`);
+    if (ignoredByReason['axe'].length) {
+      messages.push(`Axe-ignored: ${ignoredByReason['axe'].join(', ')}`);
     }
     if (ignoredByReason['both'].length) {
       messages.push(`Ignored by both: ${ignoredByReason['both'].join(', ')}`);

@@ -462,8 +462,8 @@ export function passesAcceptEditsFastPath(
   if (!EDIT_TOOL_NAMES.has(ctx.toolName)) return false;
   if (!ctx.filePath) return false;
   // Persistence paths (hooks, package.json scripts, CI definitions) and
-  // Qwen self-modification surfaces (.qwen/settings*.json, configured context
-  // files, .qwen/rules|commands|agents|skills|hooks/, .mcp.json) must never
+  // Qwen self-modification surfaces (.axe/settings*.json, configured context
+  // files, .axe/rules|commands|agents|skills|hooks/, .mcp.json) must never
   // auto-approve via fast-path — the former execute code on subsequent tooling
   // operations, the latter let an agent rewrite its own permissions or
   // instructions.

@@ -13,8 +13,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { DaemonCapabilities } from '@qwen-code/sdk/daemon';
-import { DaemonClient } from '@qwen-code/sdk/daemon';
+import type { DaemonCapabilities } from '@axe/sdk/daemon';
+import { DaemonClient } from '@axe/sdk/daemon';
 import { createDaemonWorkspaceActions } from './actions.js';
 import type {
   DaemonWorkspaceContextValue,

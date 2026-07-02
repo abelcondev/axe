@@ -8,7 +8,7 @@
  * @fileoverview Declarative-agent frontmatter schema constants and parsers.
  *
  * Mirrors Claude Code 2.1.168's `.claude/agents/<name>.md` schema verbatim so
- * a user can drop a Claude Code agent file into `.qwen/agents/` and have it
+ * a user can drop a Claude Code agent file into `.axe/agents/` and have it
  * parse identically. The internal verification source (DL7 / Ig5 / GN / kc /
  * P37 / _Y) is documented in `docs/declarative-agents-port.md`.
  *
@@ -17,7 +17,7 @@
  * deciding whether a dropped field surfaces a warning. This intentionally
  * differs from the strict throw-on-invalid posture used for `approvalMode`
  * elsewhere in the loader, because that field predates this port and changing
- * its semantics would break existing `.qwen/agents/*.md` files.
+ * its semantics would break existing `.axe/agents/*.md` files.
  */
 
 /** Permission mode enum (DL7 `$E` / `kc` constant). */

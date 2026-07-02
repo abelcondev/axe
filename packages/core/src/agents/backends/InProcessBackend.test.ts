@@ -750,7 +750,7 @@ describe('InProcessBackend', () => {
 
     expect(parentConfig.getFileFilteringOptions).toHaveBeenCalled();
     expect(agentContext.getFileService().getQwenIgnoreFileNamesDisplay()).toBe(
-      '.qwenignore, .cursorignore',
+      '.axeignore, .cursorignore',
     );
   });
 

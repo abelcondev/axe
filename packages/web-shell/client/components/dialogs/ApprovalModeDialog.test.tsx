@@ -10,7 +10,7 @@ if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = () => {};
 }
 
-vi.mock('@qwen-code/webui/daemon-react-sdk', () => ({
+vi.mock('@axe/webui/daemon-react-sdk', () => ({
   DAEMON_APPROVAL_MODES: ['plan', 'default', 'yolo'],
 }));
 

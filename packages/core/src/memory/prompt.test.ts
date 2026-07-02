@@ -17,11 +17,11 @@ import {
 
 describe('managed auto-memory prompt helpers', () => {
   it('builds a condensed memory prompt when MEMORY.md is empty', () => {
-    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.qwen/memory');
+    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.axe/memory');
 
     expect(prompt).toContain('# auto memory');
     expect(prompt).toContain('persistent, file-based memory system');
-    expect(prompt).toContain('/tmp/project/.qwen/memory');
+    expect(prompt).toContain('/tmp/project/.axe/memory');
     expect(prompt).toContain('currently empty');
     // Condensed prompt omits verbose sections
     expect(prompt).not.toContain('## What NOT to save in memory');
@@ -32,18 +32,18 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('embeds the current MEMORY.md index content', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       '- [User Memory](user/terse.md) — User prefers terse responses.',
     );
 
-    expect(prompt).toContain('## /tmp/project/.qwen/memory/MEMORY.md');
+    expect(prompt).toContain('## /tmp/project/.axe/memory/MEMORY.md');
     expect(prompt).toContain('[User Memory](user/terse.md)');
     expect(prompt).toContain('User prefers terse responses.');
   });
 
   it('warns extraction not to save MCP tool schemas or failed calls', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       '- [Note](note.md) — a note.',
     );
 
@@ -57,7 +57,7 @@ describe('managed auto-memory prompt helpers', () => {
   it('appends managed auto-memory after existing hierarchical memory', () => {
     const result = appendManagedAutoMemoryToUserMemory(
       '--- Context from: QWEN.md ---\nProject rules',
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       '- [Project Memory](project/release-freeze.md) — Release freeze starts Friday.',
     );
 
@@ -69,7 +69,7 @@ describe('managed auto-memory prompt helpers', () => {
   it('returns only managed auto-memory when hierarchical memory is empty', () => {
     const result = appendManagedAutoMemoryToUserMemory(
       '   ',
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       '- [Reference](reference/grafana.md) — Grafana dashboard link.',
     );
 
@@ -79,24 +79,24 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('adds a shared team tier when a team section is provided', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       '- [Project](project/x.md) — note.',
-      { memoryDir: '/home/u/.qwen/memories', indexContent: null },
+      { memoryDir: '/home/u/.axe/memories', indexContent: null },
       {
-        memoryDir: '/tmp/project/.qwen/team-memory',
+        memoryDir: '/tmp/project/.axe/team-memory',
         indexContent: '- [Convention](feedback/tests.md) — use real DBs.',
       },
     );
 
     expect(prompt).toContain('three persistent, file-based memory directories');
     expect(prompt).toContain('TEAM memory');
-    expect(prompt).toContain('/tmp/project/.qwen/team-memory');
+    expect(prompt).toContain('/tmp/project/.axe/team-memory');
     expect(prompt).toContain('## Saving to team memory');
     expect(prompt).toContain('MUST NOT save sensitive data to TEAM memory');
     // The team index is auto-generated; the model must not hand-edit it.
     expect(prompt).toContain('generated automatically from the saved files');
     // The team index block is rendered with its own content.
-    expect(prompt).toContain('## /tmp/project/.qwen/team-memory/MEMORY.md');
+    expect(prompt).toContain('## /tmp/project/.axe/team-memory/MEMORY.md');
     expect(prompt).toContain('[Convention](feedback/tests.md)');
     // PROJECT is now described as private; the old misleading wording is gone.
     expect(prompt).toContain(
@@ -107,11 +107,11 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('renders a two-tier project+team prompt when no user section is given', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       '- [Project](project/x.md) — note.',
       undefined,
       {
-        memoryDir: '/tmp/project/.qwen/team-memory',
+        memoryDir: '/tmp/project/.axe/team-memory',
         indexContent: '- [Convention](feedback/tests.md) — use real DBs.',
       },
     );
@@ -122,18 +122,18 @@ describe('managed auto-memory prompt helpers', () => {
     expect(prompt).toContain('## Saving to team memory');
     // PROJECT index block comes before the TEAM index block.
     expect(
-      prompt.indexOf('## /tmp/project/.qwen/memory/MEMORY.md'),
+      prompt.indexOf('## /tmp/project/.axe/memory/MEMORY.md'),
     ).toBeLessThan(
-      prompt.indexOf('## /tmp/project/.qwen/team-memory/MEMORY.md'),
+      prompt.indexOf('## /tmp/project/.axe/team-memory/MEMORY.md'),
     );
   });
 
   it('omits the team tier when no team section is provided', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
       {
-        memoryDir: '/home/u/.qwen/memories',
+        memoryDir: '/home/u/.axe/memories',
         indexContent: null,
       },
     );
@@ -149,7 +149,7 @@ describe('managed auto-memory prompt helpers', () => {
       (_, index) => `- [Memory ${index}](memory-${index}.md) — hook ${index}`,
     ).join('\n');
     const result = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       oversizedIndex,
     );
 
@@ -160,9 +160,9 @@ describe('managed auto-memory prompt helpers', () => {
   });
 
   it('condensed prompt with empty indexes is significantly shorter than full', () => {
-    const condensed = buildManagedAutoMemoryPrompt('/tmp/project/.qwen/memory');
+    const condensed = buildManagedAutoMemoryPrompt('/tmp/project/.axe/memory');
     const full = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       undefined,
       undefined,
       undefined,
@@ -175,7 +175,7 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('emits full prompt when at least one index has content', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       '- [User Memory](user/terse.md) — User prefers terse responses.',
     );
 
@@ -187,7 +187,7 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('emits full prompt with forceFullProtocol even when all indexes are empty', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
       undefined,
       undefined,
@@ -202,15 +202,15 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('emits condensed prompt for multi-tier setup when all indexes are empty', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
-      { memoryDir: '/home/u/.qwen/memories', indexContent: null },
+      { memoryDir: '/home/u/.axe/memories', indexContent: null },
     );
 
     // Condensed multi-tier still shows both dirs
     expect(prompt).toContain('two persistent, file-based memory directories');
-    expect(prompt).toContain('/home/u/.qwen/memories');
-    expect(prompt).toContain('/tmp/project/.qwen/memory');
+    expect(prompt).toContain('/home/u/.axe/memories');
+    expect(prompt).toContain('/tmp/project/.axe/memory');
     // Uses condensed sections
     expect(prompt).toContain('## Memory types');
     expect(prompt).toContain('## How to save memories');
@@ -222,10 +222,10 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('emits condensed prompt for three-tier setup with team section when all indexes are empty', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
-      { memoryDir: '/home/u/.qwen/memories', indexContent: null },
-      { memoryDir: '/tmp/project/.qwen/team-memory', indexContent: null },
+      { memoryDir: '/home/u/.axe/memories', indexContent: null },
+      { memoryDir: '/tmp/project/.axe/team-memory', indexContent: null },
     );
 
     expect(prompt).toContain('three persistent, file-based memory directories');
@@ -245,7 +245,7 @@ describe('managed auto-memory prompt helpers', () => {
   it('appendManagedAutoMemoryToUserMemory passes through options', () => {
     const withOptions = appendManagedAutoMemoryToUserMemory(
       '',
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
       undefined,
       undefined,
@@ -253,7 +253,7 @@ describe('managed auto-memory prompt helpers', () => {
     );
     const without = appendManagedAutoMemoryToUserMemory(
       '',
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
     );
 
@@ -266,10 +266,10 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('emits full prompt when only userSection has content (project index empty)', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
       {
-        memoryDir: '/home/u/.qwen/memories',
+        memoryDir: '/home/u/.axe/memories',
         indexContent: '- [Pref](user/pref.md) — prefers dark mode.',
       },
     );
@@ -283,7 +283,7 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('treats whitespace-only indexContent as empty (triggers condensed)', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       '   \n  \t  \n  ',
     );
 
@@ -297,10 +297,10 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('emits condensed prompt for project+team two-tier without userSection (all empty)', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
       undefined,
-      { memoryDir: '/tmp/project/.qwen/team-memory', indexContent: null },
+      { memoryDir: '/tmp/project/.axe/team-memory', indexContent: null },
     );
 
     // Two-tier (project + team), no user section
@@ -322,7 +322,7 @@ describe('managed auto-memory prompt helpers', () => {
   });
 
   it('condensed prompt includes maintenance directives', () => {
-    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.qwen/memory');
+    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.axe/memory');
 
     expect(prompt).toContain('Keep the name, description, and type fields');
     expect(prompt).toContain('Organize memories semantically by topic');
@@ -332,7 +332,7 @@ describe('managed auto-memory prompt helpers', () => {
   });
 
   it('condensed prompt includes read-path behavioral guidance', () => {
-    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.qwen/memory');
+    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.axe/memory');
 
     expect(prompt).toContain('## Accessing memories');
     expect(prompt).toContain(
@@ -343,14 +343,14 @@ describe('managed auto-memory prompt helpers', () => {
   });
 
   it('condensed prompt includes surprising/non-obvious heuristic in do-not-save', () => {
-    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.qwen/memory');
+    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.axe/memory');
 
     expect(prompt).toContain('surprising');
     expect(prompt).toContain('non-obvious');
   });
 
   it('condensed prompt includes date normalization for project type and negative judgement for user type', () => {
-    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.qwen/memory');
+    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.axe/memory');
 
     expect(prompt).toContain('convert relative dates to absolute dates');
     expect(prompt).toContain('negative judgement');
@@ -358,9 +358,9 @@ describe('managed auto-memory prompt helpers', () => {
 
   it('condensed multi-tier prompt includes cross-directory duplicate check', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
-      { memoryDir: '/home/u/.qwen/memories', indexContent: null },
+      { memoryDir: '/home/u/.axe/memories', indexContent: null },
     );
 
     expect(prompt).toContain(
@@ -403,14 +403,14 @@ describe('managed auto-memory prompt helpers', () => {
   });
 
   it('condensed save section includes index truncation warning', () => {
-    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.qwen/memory');
+    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.axe/memory');
     expect(prompt).toContain('lines after 200 will be truncated');
     expect(prompt).toContain('keep each index concise');
   });
 
   it('emits condensed prompt when forceFullProtocol is explicitly false', () => {
     const prompt = buildManagedAutoMemoryPrompt(
-      '/tmp/project/.qwen/memory',
+      '/tmp/project/.axe/memory',
       null,
       undefined,
       undefined,
@@ -460,7 +460,7 @@ describe('managed auto-memory prompt helpers', () => {
   });
 
   it('condensed prompt includes persistence guidance', () => {
-    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.qwen/memory');
+    const prompt = buildManagedAutoMemoryPrompt('/tmp/project/.axe/memory');
     expect(prompt).toContain(
       'Use plans and tasks for in-conversation work; reserve memory for durable cross-conversation knowledge',
     );

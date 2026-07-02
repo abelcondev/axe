@@ -614,7 +614,7 @@ export const DEFAULT_TOOL_OUTPUT_BATCH_BUDGET = 200_000;
  * Provenance of an MCP server config. Two purposes (see issue #4615):
  *
  * - **Approval gating**: `'project'` (a workspace `.mcp.json`) and `'workspace'`
- *   (a workspace `.qwen/settings.json`) are checked-in / shareable and therefore
+ *   (a workspace `.axe/settings.json`) are checked-in / shareable and therefore
  *   untrusted — both are held behind the pending-approval gate. See
  *   {@link isGatedMcpScope}.
  * - **Precedence**: `'workspace'` and `'system'` rank ABOVE a `.mcp.json`
@@ -801,7 +801,7 @@ export interface AgentsCollabSettings {
   displayMode?: string;
   /** Arena-specific settings */
   arena?: {
-    /** Custom base directory for Arena worktrees (default: ~/.qwen/arena) */
+    /** Custom base directory for Arena worktrees (default: ~/.axe/arena) */
     worktreeBaseDir?: string;
     /** Preserve worktrees and state files after session ends */
     preserveArtifacts?: boolean;
@@ -1030,7 +1030,7 @@ export interface ConfigParameters {
   channel?: string;
   /**
    * File descriptor number for structured JSON event output (dual output mode).
-   * When set, Qwen Code outputs structured JSON events to this fd while
+   * When set, Axe outputs structured JSON events to this fd while
    * continuing to render the TUI on stdout. The caller must provide this fd
    * via spawn stdio configuration.
    * Mutually exclusive with jsonFile.
@@ -1123,7 +1123,7 @@ export interface ConfigParameters {
   projectHooks?: Record<string, unknown>;
 
   hooks?: Record<string, unknown>;
-  /** Glob patterns to exclude from .qwen/rules/ loading. */
+  /** Glob patterns to exclude from .axe/rules/ loading. */
   contextRuleExcludes?: string[];
   /** Warnings generated during configuration resolution */
   warnings?: string[];
@@ -2210,20 +2210,20 @@ export class Config {
     // directory the worktree creators (`enter_worktree` and
     // `agent isolation:'worktree'`) write to. Using `this.targetDir`
     // directly would cause launches from a monorepo subdirectory to
-    // scan `<subdir>/.qwen/worktrees/` — which never exists — and the
+    // scan `<subdir>/.axe/worktrees/` — which never exists — and the
     // sweep would silently be a no-op forever.
     if (!this.getBareMode()) {
       void (async () => {
         try {
           // Resolve the repo top-level FIRST. The previous code bailed
-          // on `fs.access(<targetDir>/.qwen/worktrees)` before resolving,
+          // on `fs.access(<targetDir>/.axe/worktrees)` before resolving,
           // so a monorepo subdir launch (where `targetDir` is the
           // subdir, not the repo root) always early-returned and the
           // sweep was permanently a no-op. Fast-bail still happens, just
           // against the *correct* directory.
           const probe = new GitWorktreeService(this.targetDir);
           const root = (await probe.getRepoTopLevel()) ?? this.targetDir;
-          const worktreesDir = path.join(root, '.qwen', 'worktrees');
+          const worktreesDir = path.join(root, '.axe', 'worktrees');
           try {
             await fsPromises.access(worktreesDir);
           } catch {
@@ -2437,7 +2437,7 @@ export class Config {
       );
     if (this.isManagedMemoryAvailable()) {
       // User-level read is best-effort — an EACCES on
-      // `~/.qwen/memories/MEMORY.md` must not strip the whole managed-memory
+      // `~/.axe/memories/MEMORY.md` must not strip the whole managed-memory
       // section out of the system prompt. Project-level read still bubbles
       // (its failure is a real config-load problem).
       const teamMemoryEnabled =
@@ -3267,14 +3267,14 @@ export class Config {
     // Some OpenAI-compatible reasoning models (e.g. DeepSeek) require
     // reasoning_content to be preserved across turns.
 
-    // Hot update path: only supported for qwen-oauth.
+    // Hot update path: only supported for axe-oauth.
     // For other auth types we always refresh to recreate the ContentGenerator.
     //
     // Rationale:
     // - Non-qwen providers may need to re-validate credentials / baseUrl / envKey.
     // - ModelsConfig.applyResolvedModelDefaults can clear or change credentials sources.
     // - Refresh keeps runtime behavior consistent and centralized.
-    if (authType === AuthType.QWEN_OAUTH && !requiresRefresh) {
+    if (authType === AuthType.AXE_OAUTH && !requiresRefresh) {
       const { config, sources } = resolveContentGeneratorConfigWithSources(
         this,
         authType,
@@ -3286,7 +3286,7 @@ export class Config {
         },
       );
 
-      // Hot-update fields (qwen-oauth models share the same auth + client).
+      // Hot-update fields (axe-oauth models share the same auth + client).
       // Deliberately does NOT copy `reasoning`: it is a global, model-independent
       // preference captured in `priorReasoningEffort` above and re-applied via
       // setReasoningEffort() below. Do not add `reasoning` here — that would
@@ -3391,7 +3391,7 @@ export class Config {
    *
    * For runtime models, the modelId should be in format `$runtime|${authType}|${modelId}`.
    * This triggers a refresh of the ContentGenerator when required (always on authType changes).
-   * For qwen-oauth model switches that are hot-update safe, this may update in place.
+   * For axe-oauth model switches that are hot-update safe, this may update in place.
    *
    * @param authType - Target authentication type
    * @param modelId - Target model ID (or `$runtime|${authType}|${modelId}` for runtime models)

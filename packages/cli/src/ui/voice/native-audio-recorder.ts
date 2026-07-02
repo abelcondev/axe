@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { NativeAudioCaptureBackend } from '@qwen-code/audio-capture';
-import { createDebugLogger } from '@qwen-code/qwen-code-core';
+import type { NativeAudioCaptureBackend } from '@axe/audio-capture';
+import { createDebugLogger } from '@axe/core';
 import type {
   RecordedVoiceAudio,
   VoiceRecorder,
@@ -15,7 +15,7 @@ import type {
 // Native silence detection sets a flag we poll for; older addons lack it.
 const SILENCE_POLL_INTERVAL_MS = 200;
 const debugLogger = createDebugLogger('VOICE_NATIVE_RECORDER');
-const AUDIO_CAPTURE_PACKAGE = '@qwen-code/audio-capture';
+const AUDIO_CAPTURE_PACKAGE = '@axe/audio-capture';
 
 interface NativeAudioRecorderOptions {
   loadBackend?: () =>
@@ -130,7 +130,7 @@ class NativeAudioRecorder implements VoiceRecorder {
 
 async function loadDefaultBackend(): Promise<NativeAudioCaptureBackend> {
   const { createNativeAudioCaptureBackend } = await import(
-    '@qwen-code/audio-capture'
+    '@axe/audio-capture'
   );
   return createNativeAudioCaptureBackend();
 }
@@ -147,7 +147,7 @@ function explainMissingNativePackage(error: unknown): unknown {
   );
   return new Error(
     `Native voice capture package '${AUDIO_CAPTURE_PACKAGE}' is missing. ` +
-      'If Qwen Code was installed from a mirror or private registry, the ' +
+      'If Axe was installed from a mirror or private registry, the ' +
       'registry may not have synced this optional package. Reinstall from ' +
       'https://registry.npmjs.org or make sure the configured registry ' +
       `provides ${AUDIO_CAPTURE_PACKAGE}. (${error.message})`,

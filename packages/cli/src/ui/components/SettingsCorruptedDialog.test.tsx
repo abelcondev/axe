@@ -49,7 +49,7 @@ enum TerminalKeys {
 }
 
 describe('SettingsCorruptedDialog', () => {
-  const mockCorruptedPath = '/home/user/.qwen/settings.json.corrupted';
+  const mockCorruptedPath = '/home/user/.axe/settings.json.corrupted';
   const mockOnExit = vi.fn();
   const mockOnContinue = vi.fn();
 

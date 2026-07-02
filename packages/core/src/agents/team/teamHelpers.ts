@@ -8,7 +8,7 @@
  * @fileoverview Team file CRUD, name sanitization, color management,
  * and cleanup utilities.
  *
- * All file operations target `~/.qwen/teams/{team-name}/config.json`.
+ * All file operations target `~/.axe/teams/{team-name}/config.json`.
  * Functions are pure where possible; side-effectful I/O functions are
  * clearly separated.
  */
@@ -32,7 +32,7 @@ import {
 
 /**
  * Absolute path to the teams root directory.
- * `~/.qwen/teams/`
+ * `~/.axe/teams/`
  */
 export function getTeamsRootDir(): string {
   return path.join(Storage.getGlobalQwenDir(), TEAMS_DIR);
@@ -40,7 +40,7 @@ export function getTeamsRootDir(): string {
 
 /**
  * Absolute path to a specific team's directory.
- * `~/.qwen/teams/{teamName}/`
+ * `~/.axe/teams/{teamName}/`
  */
 export function getTeamDir(teamName: string): string {
   return path.join(getTeamsRootDir(), teamName);
@@ -48,7 +48,7 @@ export function getTeamDir(teamName: string): string {
 
 /**
  * Absolute path to a team's config file.
- * `~/.qwen/teams/{teamName}/config.json`
+ * `~/.axe/teams/{teamName}/config.json`
  */
 export function getTeamFilePath(teamName: string): string {
   return path.join(getTeamDir(teamName), TEAM_CONFIG_FILENAME);
@@ -56,7 +56,7 @@ export function getTeamFilePath(teamName: string): string {
 
 /**
  * Absolute path to a team's inboxes directory.
- * `~/.qwen/teams/{teamName}/inboxes/`
+ * `~/.axe/teams/{teamName}/inboxes/`
  */
 export function getInboxesDir(teamName: string): string {
   return path.join(getTeamDir(teamName), INBOXES_DIR);
@@ -64,7 +64,7 @@ export function getInboxesDir(teamName: string): string {
 
 /**
  * Absolute path to the tasks directory for a team.
- * `~/.qwen/tasks/{teamName}/`
+ * `~/.axe/tasks/{teamName}/`
  */
 export function getTasksDir(teamName: string): string {
   return path.join(Storage.getGlobalQwenDir(), TASKS_DIR, teamName);
@@ -362,7 +362,7 @@ export async function deleteTeamDirs(teamName: string): Promise<void> {
 }
 
 /**
- * List all team names (directory names under ~/.qwen/teams/).
+ * List all team names (directory names under ~/.axe/teams/).
  * Returns an empty array if the teams directory doesn't exist.
  */
 export async function listTeamNames(): Promise<string[]> {

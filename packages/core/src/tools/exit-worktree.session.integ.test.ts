@@ -250,7 +250,7 @@ describe('ExitWorktreeTool — WorktreeSession sidecar cleanup', () => {
     if (details.type === 'exec') {
       expect(details.command).toContain(`git worktree remove ${wtPath}`);
       expect(details.command).not.toContain(
-        path.join(nestedCwd, '.qwen', 'worktrees', 'cwd-stale'),
+        path.join(nestedCwd, '.axe', 'worktrees', 'cwd-stale'),
       );
     }
 
@@ -322,7 +322,7 @@ describe('ExitWorktreeTool — WorktreeSession sidecar cleanup', () => {
 
     const packageDir = path.join(repoRoot, 'packages', 'app');
     await fs.mkdir(packageDir, { recursive: true });
-    Storage.setRuntimeBaseDir('.qwen', packageDir);
+    Storage.setRuntimeBaseDir('.axe', packageDir);
     await writeRuntimeStatus(
       new Storage(packageDir).getRuntimeStatusPath('old-session'),
       {
@@ -332,7 +332,7 @@ describe('ExitWorktreeTool — WorktreeSession sidecar cleanup', () => {
       },
     );
 
-    Storage.setRuntimeBaseDir('.qwen', wtPath);
+    Storage.setRuntimeBaseDir('.axe', wtPath);
     const currentSessionId = 'new-session';
     const currentSessionService = new SessionService(wtPath);
     const originalHeadCommit = execFileSync('git', ['rev-parse', 'HEAD'], {

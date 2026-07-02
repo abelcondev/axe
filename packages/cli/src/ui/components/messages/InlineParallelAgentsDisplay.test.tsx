@@ -11,7 +11,7 @@ import type {
   AgentResultDisplay,
   AgentTask,
   Config,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { InlineParallelAgentsDisplay } from './InlineParallelAgentsDisplay.js';
 import type { IndividualToolCallDisplay } from '../../types.js';
 import { ToolCallStatus } from '../../types.js';

@@ -133,7 +133,7 @@ describe('memoryDiagnostics', () => {
     expect(report).toContain('Status: warn');
     expect(report).toContain('Heap pressure: 85.4%');
     expect(report).toContain('V8 heap usage is high');
-    expect(report).toContain('restart Qwen Code to recover memory');
+    expect(report).toContain('restart Axe to recover memory');
     expect(report).toContain('capture a heap snapshot');
   });
 

@@ -3,7 +3,7 @@ import type { DWClientDownStream } from 'dingtalk-stream-sdk-nodejs';
 import type {
   ChannelTaskLifecycleEvent,
   SessionTarget,
-} from '@qwen-code/channel-base';
+} from '@axe/channel-base';
 
 type LifecycleBase = Omit<
   Extract<ChannelTaskLifecycleEvent, { type: 'started' }>,
@@ -43,13 +43,13 @@ vi.mock('dingtalk-stream-sdk-nodejs', () => ({
   EventAck: { SUCCESS: 'success' },
 }));
 
-vi.mock('@qwen-code/channel-base', async () => {
+vi.mock('@axe/channel-base', async () => {
   // Use the REAL sanitizeSenderName so the adapter's log-sanitization path is
   // exercised against the shared helper, not a stub that could mask drift. The
   // vitest config aliases @qwen-code/channel-base to its SOURCE, so this resolves
   // with no prior channel-base build (dist may be absent/stale package-locally).
-  const real = await vi.importActual<typeof import('@qwen-code/channel-base')>(
-    '@qwen-code/channel-base',
+  const real = await vi.importActual<typeof import('@axe/channel-base')>(
+    '@axe/channel-base',
   );
   return {
     ChannelBase: class {

@@ -86,7 +86,7 @@ export class ModelsConfig {
   // Flag for strict model provider selection
   private strictModelProviderSelection: boolean = false;
 
-  // One-shot flag for qwen-oauth credential caching
+  // One-shot flag for axe-oauth credential caching
   private requireCachedQwenCredentialsOnce: boolean = false;
 
   // One-shot flag indicating credentials were manually set via updateCredentials()
@@ -258,7 +258,7 @@ export class ModelsConfig {
    *
    * Notes:
    * - By default, returns models across all authTypes.
-   * - qwen-oauth models are always ordered first.
+   * - axe-oauth models are always ordered first.
    * - Runtime model option (if active) is included before registry models of the same authType.
    */
   getAllConfiguredModels(authTypes?: AuthType[]): AvailableModel[] {
@@ -275,13 +275,13 @@ export class ModelsConfig {
       }
     }
 
-    // Force qwen-oauth to the front (if requested / defaulted in).
+    // Force axe-oauth to the front (if requested / defaulted in).
     const orderedAuthTypes: AuthType[] = [];
-    if (uniqueAuthTypes.includes(AuthType.QWEN_OAUTH)) {
-      orderedAuthTypes.push(AuthType.QWEN_OAUTH);
+    if (uniqueAuthTypes.includes(AuthType.AXE_OAUTH)) {
+      orderedAuthTypes.push(AuthType.AXE_OAUTH);
     }
     for (const authType of uniqueAuthTypes) {
-      if (authType !== AuthType.QWEN_OAUTH) {
+      if (authType !== AuthType.AXE_OAUTH) {
         orderedAuthTypes.push(authType);
       }
     }
@@ -345,10 +345,10 @@ export class ModelsConfig {
     newModel: string,
     metadata?: ModelSwitchMetadata,
   ): Promise<void> {
-    // Special case: qwen-oauth model switch - hot update in place
+    // Special case: axe-oauth model switch - hot update in place
     // coder-model supports vision capabilities and can be hot-updated
     if (
-      this.currentAuthType === AuthType.QWEN_OAUTH &&
+      this.currentAuthType === AuthType.AXE_OAUTH &&
       newModel === DEFAULT_QWEN_MODEL
     ) {
       this.strictModelProviderSelection = false;
@@ -364,7 +364,7 @@ export class ModelsConfig {
 
       // Notify Config to update contentGeneratorConfig
       if (this.onModelChange) {
-        await this.onModelChange(AuthType.QWEN_OAUTH, false);
+        await this.onModelChange(AuthType.AXE_OAUTH, false);
       }
       return;
     }
@@ -460,7 +460,7 @@ export class ModelsConfig {
     }
 
     const rollbackSnapshot = this.createStateSnapshotForRollback();
-    if (authType === AuthType.QWEN_OAUTH && options?.requireCachedCredentials) {
+    if (authType === AuthType.AXE_OAUTH && options?.requireCachedCredentials) {
       this.requireCachedQwenCredentialsOnce = true;
     }
 
@@ -489,7 +489,7 @@ export class ModelsConfig {
             ) ?? this.modelRegistry.getModel(authType, previousModelId))
           : undefined;
       const canReusePreviousApiKey =
-        authType !== AuthType.QWEN_OAUTH &&
+        authType !== AuthType.AXE_OAUTH &&
         !isAuthTypeChange &&
         !!rollbackSnapshot.generationConfig.apiKey &&
         !!model.envKey &&
@@ -818,8 +818,8 @@ export class ModelsConfig {
     //
     // (OpenAI client instantiation requires an apiKey even though it will be
     // replaced later.)
-    if (this.currentAuthType === AuthType.QWEN_OAUTH) {
-      this._generationConfig.apiKey = 'QWEN_OAUTH_DYNAMIC_TOKEN';
+    if (this.currentAuthType === AuthType.AXE_OAUTH) {
+      this._generationConfig.apiKey = 'AXE_OAUTH_DYNAMIC_TOKEN';
       this.generationConfigSources['apiKey'] = {
         kind: 'computed',
         detail: 'Qwen OAuth placeholder token',
@@ -926,7 +926,7 @@ export class ModelsConfig {
 
     // For Qwen OAuth, model switches within the same authType can always be hot-updated
     // (coder-model supports vision capabilities and doesn't require ContentGenerator recreation)
-    if (authType === AuthType.QWEN_OAUTH) {
+    if (authType === AuthType.AXE_OAUTH) {
       return false;
     }
 
@@ -1319,7 +1319,7 @@ export class ModelsConfig {
       label: snapshot.modelId,
       authType: snapshot.authType,
       /**
-       * `isVision` is for automatic switching of qwen-oauth vision model.
+       * `isVision` is for automatic switching of axe-oauth vision model.
        * Runtime models are basically specified via CLI arguments, env variables,
        * or settings for other auth types.
        */

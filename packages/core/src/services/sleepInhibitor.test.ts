@@ -102,7 +102,7 @@ describe('SleepInhibitor', () => {
       [
         '--no-ask-password',
         '--what=sleep',
-        '--who=Qwen Code',
+        '--who=Axe',
         '--why=working',
         '--mode=block',
         'sleep',

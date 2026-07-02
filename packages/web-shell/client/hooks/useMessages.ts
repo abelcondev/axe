@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useTranscriptBlocks } from '@qwen-code/webui/daemon-react-sdk';
+import { useTranscriptBlocks } from '@axe/webui/daemon-react-sdk';
 import { transcriptBlocksToDaemonMessages } from '../adapters/transcriptToMessages';
 import type { Message } from '../adapters/types';
 

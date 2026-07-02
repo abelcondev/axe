@@ -1,7 +1,7 @@
 export { TelegramChannel } from './TelegramAdapter.js';
 
 import { TelegramChannel } from './TelegramAdapter.js';
-import type { ChannelPlugin } from '@qwen-code/channel-base';
+import type { ChannelPlugin } from '@axe/channel-base';
 
 export const plugin: ChannelPlugin = {
   channelType: 'telegram',

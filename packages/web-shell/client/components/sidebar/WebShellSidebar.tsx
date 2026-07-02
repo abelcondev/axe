@@ -14,8 +14,8 @@ import {
   useActions,
   useConnection,
   useSessions,
-} from '@qwen-code/webui/daemon-react-sdk';
-import type { DaemonSessionSummary } from '@qwen-code/sdk/daemon';
+} from '@axe/webui/daemon-react-sdk';
+import type { DaemonSessionSummary } from '@axe/sdk/daemon';
 import { useI18n } from '../../i18n';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { DialogShell } from '../dialogs/DialogShell';

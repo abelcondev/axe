@@ -54,7 +54,7 @@ export function getVoiceUnavailableReason(
     !fileExists('/mnt/wslg/PulseServer')
   ) {
     return t(
-      'Voice dictation needs microphone access, which is unavailable in this WSL session. Use WSLg/PulseAudio, or run Qwen Code on a host with a microphone.',
+      'Voice dictation needs microphone access, which is unavailable in this WSL session. Use WSLg/PulseAudio, or run Axe on a host with a microphone.',
     );
   }
 

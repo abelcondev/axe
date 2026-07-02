@@ -15,7 +15,7 @@ import {
   escapePath,
   getExternalEditorCommand,
   type EditorType,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   toCodePoints,
   cpLen,

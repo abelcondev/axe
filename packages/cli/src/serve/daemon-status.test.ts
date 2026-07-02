@@ -433,7 +433,7 @@ function makeOptions(input: MakeOptionsInput = {}): BuildDaemonStatusOptions {
     getRestSseActive: () => 0,
     features: ['health', 'daemon_status'],
     protocolVersions: { current: 'v1', supported: ['v1'] },
-    supportedDeviceFlowProviders: ['qwen-oauth'],
+    supportedDeviceFlowProviders: ['axe-oauth'],
     deviceFlowRegistry: registry,
     sessionShellCommandEnabled: false,
     ...(input.channelWorkerSnapshot

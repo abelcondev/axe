@@ -120,7 +120,7 @@ export const DEVICE_FLOW_MAX_INTERVAL_MS = 60_000;
 
 // Derive the type from the supported-providers tuple so
 // adding/removing a provider id requires touching exactly ONE site.
-export const DEVICE_FLOW_SUPPORTED_PROVIDERS = ['qwen-oauth'] as const;
+export const DEVICE_FLOW_SUPPORTED_PROVIDERS = ['axe-oauth'] as const;
 export type DeviceFlowProviderId =
   (typeof DEVICE_FLOW_SUPPORTED_PROVIDERS)[number];
 
@@ -223,7 +223,7 @@ export interface BrandedSecret<T extends string = string> {
   toJSON(): '[redacted]';
   [Symbol.toPrimitive](): '[redacted]';
   /** Phantom marker preserving the literal type at the type level so
-   *  `BrandedSecret<'qwen-oauth'>` is distinguishable from
+   *  `BrandedSecret<'axe-oauth'>` is distinguishable from
    *  `BrandedSecret<string>` when a caller wants a narrower brand. */
   readonly _phantom?: T;
 }

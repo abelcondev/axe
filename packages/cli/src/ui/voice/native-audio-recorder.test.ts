@@ -162,7 +162,7 @@ describe('createNativeAudioRecorder', () => {
     const recorder = createNativeAudioRecorder({
       loadBackend: () => {
         throw new Error(
-          "Cannot find package '@qwen-code/audio-capture' imported from /qwen/dist/cli.js",
+          "Cannot find package '@axe/audio-capture' imported from /qwen/dist/cli.js",
         );
       },
     });
@@ -210,7 +210,7 @@ describe('createNativeAudioRecorder', () => {
 
   it('does not explain native start failures as missing packages', async () => {
     const startError = new Error(
-      "Cannot find package '@qwen-code/audio-capture' while starting",
+      "Cannot find package '@axe/audio-capture' while starting",
     );
     const backend = {
       startRecording: vi.fn(() => {

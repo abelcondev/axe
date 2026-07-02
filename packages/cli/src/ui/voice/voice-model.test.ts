@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { AuthType, type AvailableModel } from '@qwen-code/qwen-code-core';
+import { AuthType, type AvailableModel } from '@axe/core';
 import {
   isSelectableVoiceModel,
   isTranscribableVoiceModel,

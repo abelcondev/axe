@@ -17,7 +17,7 @@ import {
   createDebugLogger,
   persistSessionUsage,
   uiTelemetryService,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import dns from 'node:dns';
 import os from 'node:os';
 import path from 'node:path';
@@ -566,7 +566,7 @@ export async function main() {
   }
 
   // We are now past the logic handling potentially launching a child process
-  // to run Qwen Code. It is now safe to perform expensive initialization that
+  // to run Axe. It is now safe to perform expensive initialization that
   // may have side effects.
   profileCheckpoint('after_sandbox_check');
 
@@ -807,7 +807,7 @@ export async function main() {
         ...getSettingsWarnings(settings),
         ...config.getWarnings(),
         ...(config.getModelsConfig().getCurrentAuthType() ===
-        AuthType.QWEN_OAUTH
+        AuthType.AXE_OAUTH
           ? [
               'Qwen OAuth free tier was discontinued on 2026-04-15. Run /auth to switch to Coding Plan or another provider.',
             ]
@@ -836,7 +836,7 @@ export async function main() {
       // runNonInteractive's main/drain loops. In TUI mode the same call
       // would just emit "Structured output accepted." and keep the chat
       // alive, which silently strands the user's run. Parse-time gating
-      // can't catch this case (`qwen --json-schema '...'` on a TTY with
+      // can't catch this case (`axe --json-schema '...'` on a TTY with
       // no prompt routes to interactive only after stdin TTY detection),
       // so reject here before the UI launches.
       if (config.getJsonSchema?.()) {

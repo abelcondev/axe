@@ -6,8 +6,8 @@ import type {
   DaemonWorkspaceMcpToolsStatus,
   DaemonWorkspaceMcpResourceStatus,
   DaemonWorkspaceMcpResourcesStatus,
-} from '@qwen-code/webui/daemon-react-sdk';
-import { useMcp } from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
+import { useMcp } from '@axe/webui/daemon-react-sdk';
 import { useI18n } from '../../i18n';
 import { trimDialogLabel } from '../../utils/dialogLabels';
 import type { SerializedMcpStatusMessage } from '../messages/McpStatusMessage';

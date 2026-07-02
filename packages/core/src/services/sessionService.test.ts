@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -2366,7 +2366,7 @@ describe('SessionService', () => {
       );
       // Storage.resolveRuntimeBaseDir uses isAbsolute and resolve; both are
       // auto-mocked to return undefined, which silently falls back to
-      // `~/.qwen` and makes the fork write outside the tmp sandbox.
+      // `~/.axe` and makes the fork write outside the tmp sandbox.
       vi.mocked(path.isAbsolute).mockImplementation(
         realPath.isAbsolute as unknown as typeof path.isAbsolute,
       );

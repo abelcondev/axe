@@ -22,8 +22,8 @@ import {
   shouldSendMessage,
   useMessageSubmit,
 } from './hooks/useMessageSubmit.js';
-import type { PermissionOption, PermissionToolCall } from '@qwen-code/webui';
-import { stripZeroWidthSpaces } from '@qwen-code/webui';
+import type { PermissionOption, PermissionToolCall } from '@axe/webui';
+import { stripZeroWidthSpaces } from '@axe/webui';
 import type { TextMessage } from './hooks/message/useMessageHandling.js';
 import type { ToolCallData } from './components/messages/toolcalls/ToolCall.js';
 import { ToolCall } from './components/messages/toolcalls/ToolCall.js';
@@ -49,7 +49,7 @@ import {
   EmptyState,
   ChatHeader,
   SessionSelector,
-} from '@qwen-code/webui';
+} from '@axe/webui';
 import { InputForm } from './components/layout/InputForm.js';
 import {
   AccountInfoDialog,

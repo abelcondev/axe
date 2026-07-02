@@ -53,13 +53,13 @@ describe('FileDiscoveryService', () => {
       expect(service.shouldGitIgnoreFile('node_modules/foo.js')).toBe(false);
     });
 
-    it('should load .qwenignore patterns even when not in a git repo', async () => {
-      await createTestFile('.qwenignore', 'secrets.txt');
+    it('should load .axeignore patterns even when not in a git repo', async () => {
+      await createTestFile('.axeignore', 'secrets.txt');
       const service = new FileDiscoveryService(projectRoot);
 
       expect(service.shouldQwenIgnoreFile('secrets.txt')).toBe(true);
       expect(service.getQwenIgnoreFileDisplayForPath('secrets.txt')).toBe(
-        '.qwenignore',
+        '.axeignore',
       );
       expect(service.shouldQwenIgnoreFile('src/index.js')).toBe(false);
     });
@@ -86,7 +86,7 @@ describe('FileDiscoveryService', () => {
       const service = new FileDiscoveryService(projectRoot, ['.cursorignore']);
 
       expect(service.getQwenIgnoreFileNamesDisplay()).toBe(
-        '.qwenignore, .cursorignore',
+        '.axeignore, .cursorignore',
       );
       expect(service.shouldQwenIgnoreFile('cursor-secret.txt')).toBe(true);
       expect(service.getQwenIgnoreFileDisplayForPath('cursor-secret.txt')).toBe(
@@ -101,7 +101,7 @@ describe('FileDiscoveryService', () => {
     beforeEach(async () => {
       await fs.mkdir(path.join(projectRoot, '.git'));
       await createTestFile('.gitignore', 'node_modules/\n.git/\ndist');
-      await createTestFile('.qwenignore', 'logs/');
+      await createTestFile('.axeignore', 'logs/');
     });
 
     it('should filter out git-ignored and qwen-ignored files by default', () => {
@@ -175,7 +175,7 @@ describe('FileDiscoveryService', () => {
     beforeEach(async () => {
       await fs.mkdir(path.join(projectRoot, '.git'));
       await createTestFile('.gitignore', 'node_modules/');
-      await createTestFile('.qwenignore', '*.log');
+      await createTestFile('.axeignore', '*.log');
     });
 
     it('should return true for git-ignored files', () => {

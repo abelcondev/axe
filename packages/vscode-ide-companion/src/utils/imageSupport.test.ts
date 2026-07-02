@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { SUPPORTED_IMAGE_MIME_TYPES } from '@qwen-code/qwen-code-core';
+import { SUPPORTED_IMAGE_MIME_TYPES } from '@axe/core';
 import { SUPPORTED_PASTED_IMAGE_MIME_TYPES } from './imageSupport.js';
 
 describe('imageSupport constants', () => {

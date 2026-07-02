@@ -35,8 +35,8 @@ vi.mock('../i18n/index.js', () => ({
   }),
 }));
 
-// Mock @qwen-code/qwen-code-core
-vi.mock('@qwen-code/qwen-code-core', () => ({
+// Mock @axe/core
+vi.mock('@axe/core', () => ({
   Storage: {
     getGlobalQwenDir: vi.fn(() => '/mock/home/.qwen'),
   },
@@ -255,13 +255,13 @@ describe('languageUtils', () => {
     });
 
     it('should write to custom targetPath when provided', () => {
-      writeOutputLanguageFile('Korean', '/proj/.qwen/output-language.md');
+      writeOutputLanguageFile('Korean', '/proj/.axe/output-language.md');
 
       expect(fs.mkdirSync).toHaveBeenCalledWith('/proj/.qwen', {
         recursive: true,
       });
       expect(fs.writeFileSync).toHaveBeenCalledWith(
-        '/proj/.qwen/output-language.md',
+        '/proj/.axe/output-language.md',
         expect.stringContaining('Korean'),
         'utf-8',
       );
@@ -451,8 +451,8 @@ describe('languageUtils', () => {
 
   describe('output-language.md path resolution priority', () => {
     it('should prefer project-level path over global path', () => {
-      const projectPath = '/project/.qwen/output-language.md';
-      const globalPath = '/mock/home/.qwen/output-language.md';
+      const projectPath = '/project/.axe/output-language.md';
+      const globalPath = '/mock/home/.axe/output-language.md';
 
       vi.mocked(fs.existsSync).mockImplementation((p) => {
         if (p.toString() === projectPath) return true;
@@ -471,8 +471,8 @@ describe('languageUtils', () => {
     });
 
     it('should fall back to global path when project-level does not exist', () => {
-      const projectPath = '/project/.qwen/output-language.md';
-      const globalPath = '/mock/home/.qwen/output-language.md';
+      const projectPath = '/project/.axe/output-language.md';
+      const globalPath = '/mock/home/.axe/output-language.md';
 
       vi.mocked(fs.existsSync).mockImplementation((p) => {
         if (p.toString() === projectPath) return false;
@@ -491,8 +491,8 @@ describe('languageUtils', () => {
     });
 
     it('should return undefined when neither path exists', () => {
-      const projectPath = '/project/.qwen/output-language.md';
-      const globalPath = '/mock/home/.qwen/output-language.md';
+      const projectPath = '/project/.axe/output-language.md';
+      const globalPath = '/mock/home/.axe/output-language.md';
 
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
@@ -517,14 +517,14 @@ describe('languageUtils', () => {
       const config = {
         getOutputLanguageFilePath: vi
           .fn()
-          .mockReturnValue('/proj/.qwen/output-language.md'),
+          .mockReturnValue('/proj/.axe/output-language.md'),
         setOutputLanguageFilePath: vi.fn(),
       };
 
       writeOutputLanguageAndRegisterPath('Chinese', config);
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
-        '/proj/.qwen/output-language.md',
+        '/proj/.axe/output-language.md',
         expect.stringContaining('Chinese'),
         'utf-8',
       );

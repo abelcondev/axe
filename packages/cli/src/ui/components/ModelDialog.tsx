@@ -19,7 +19,7 @@ import {
   type AvailableModel as CoreAvailableModel,
   type ContentGeneratorConfig,
   type InputModalities,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { useKeypress } from '../hooks/useKeypress.js';
 import { theme } from '../semantic-colors.js';
 import { DescriptiveRadioButtonSelect } from './shared/DescriptiveRadioButtonSelect.js';
@@ -258,8 +258,8 @@ export function ModelDialog({
     const registryModels = allModels.filter(
       (m) =>
         !m.isRuntimeModel &&
-        (m.authType !== AuthType.QWEN_OAUTH ||
-          authType === AuthType.QWEN_OAUTH) &&
+        (m.authType !== AuthType.AXE_OAUTH ||
+          authType === AuthType.AXE_OAUTH) &&
         (isFastModelMode || !m.fastOnly) &&
         (isVoiceModelMode || !m.voiceOnly),
     );
@@ -274,9 +274,9 @@ export function ModelDialog({
       modelsByAuthTypeMap.get(authType)!.push(model);
     }
 
-    // Fixed order: qwen-oauth first, then others in a stable order
+    // Fixed order: axe-oauth first, then others in a stable order
     const authTypeOrder: AuthType[] = [
-      AuthType.QWEN_OAUTH,
+      AuthType.AXE_OAUTH,
       AuthType.USE_OPENAI,
       AuthType.USE_ANTHROPIC,
       AuthType.USE_GEMINI,
@@ -326,14 +326,14 @@ export function ModelDialog({
               ? snapshotId
               : buildModelSelectionKey(t2, model.id, model.baseUrl);
 
-          const isQwenOAuth = t2 === AuthType.QWEN_OAUTH;
+          const isAxeOAuth = t2 === AuthType.AXE_OAUTH;
 
           const title = (
             <Text>
               <Text
                 bold
                 color={
-                  isQwenOAuth
+                  isAxeOAuth
                     ? theme.status.warning
                     : isRuntime
                       ? theme.status.warning
@@ -352,7 +352,7 @@ export function ModelDialog({
               {isRuntime && (
                 <Text color={theme.status.warning}> (Runtime)</Text>
               )}
-              {isQwenOAuth && !isRuntime && (
+              {isAxeOAuth && !isRuntime && (
                 <Text color={theme.status.warning}> ({t('Discontinued')})</Text>
               )}
             </Text>
@@ -365,7 +365,7 @@ export function ModelDialog({
               ? `${description} (Runtime)`
               : 'Runtime model';
           }
-          if (isQwenOAuth && !isRuntime) {
+          if (isAxeOAuth && !isRuntime) {
             description = t('Discontinued — switch to Coding Plan or API Key');
           }
 
@@ -635,17 +635,17 @@ export function ModelDialog({
         return;
       }
 
-      // Block selection of discontinued qwen-oauth models
+      // Block selection of discontinued axe-oauth models
       // (only block non-runtime OAuth; runtime OAuth models from existing
       //  cached tokens are still allowed to work until the server rejects them)
-      const isQwenOAuthSelection =
-        selected.startsWith(`${AuthType.QWEN_OAUTH}::`) ||
+      const isAxeOAuthSelection =
+        selected.startsWith(`${AuthType.AXE_OAUTH}::`) ||
         (selected.startsWith('$runtime|') &&
-          selected.split('|')[1] === AuthType.QWEN_OAUTH);
+          selected.split('|')[1] === AuthType.AXE_OAUTH);
       const isRuntimeOAuthSelection = selected.startsWith(
-        `$runtime|${AuthType.QWEN_OAUTH}|`,
+        `$runtime|${AuthType.AXE_OAUTH}|`,
       );
-      if (isQwenOAuthSelection && !isRuntimeOAuthSelection) {
+      if (isAxeOAuthSelection && !isRuntimeOAuthSelection) {
         setErrorMessage(
           t(
             'Qwen OAuth free tier was discontinued on 2026-04-15. Please select a model from another provider or run /auth to switch.',
@@ -692,7 +692,7 @@ export function ModelDialog({
 
         await config.switchModel(selectedAuthType, modelId, {
           ...(selectedAuthType !== authType &&
-          selectedAuthType === AuthType.QWEN_OAUTH
+          selectedAuthType === AuthType.AXE_OAUTH
             ? { requireCachedCredentials: true }
             : {}),
           baseUrl: selectedBaseUrl,
@@ -814,7 +814,7 @@ export function ModelDialog({
             borderRight={false}
             borderColor={theme.border.default}
           />
-          {highlightedEntry.authType === AuthType.QWEN_OAUTH &&
+          {highlightedEntry.authType === AuthType.AXE_OAUTH &&
             !highlightedEntry.isRuntime && (
               <Box marginTop={1}>
                 <Text color={theme.status.warning}>
@@ -832,7 +832,7 @@ export function ModelDialog({
               highlightedEntry.model.contextWindowSize,
             )}
           />
-          {highlightedEntry.authType !== AuthType.QWEN_OAUTH && (
+          {highlightedEntry.authType !== AuthType.AXE_OAUTH && (
             <>
               <DetailRow
                 label="Base URL"

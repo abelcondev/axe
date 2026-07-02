@@ -196,7 +196,7 @@ describe('IdeClient', () => {
       await ideClient.connect();
 
       expect(fs.promises.readFile).toHaveBeenCalledWith(
-        path.join('/home/test', '.qwen', 'ide', '8080.lock'),
+        path.join('/home/test', '.axe', 'ide', '8080.lock'),
         'utf8',
       );
       expect(StreamableHTTPClientTransport).toHaveBeenCalledWith(
@@ -338,10 +338,10 @@ describe('IdeClient', () => {
       vi.mocked(fs.promises.readFile).mockImplementation(
         async (filePath: fs.PathLike | FileHandle) => {
           const file = String(filePath);
-          if (file === path.join('/home/test', '.qwen', 'ide', '1111.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '1111.lock')) {
             return JSON.stringify(primaryConfig);
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '2222.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '2222.lock')) {
             return JSON.stringify(fallbackConfig);
           }
           throw new Error(`unexpected path: ${file}`);
@@ -411,7 +411,7 @@ describe('IdeClient', () => {
       vi.mocked(fs.promises.readFile).mockImplementation(
         async (filePath: fs.PathLike | FileHandle) => {
           const file = String(filePath);
-          if (file === path.join('/home/test', '.qwen', 'ide', '1234.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '1234.lock')) {
             return JSON.stringify(envConfig);
           }
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
@@ -462,10 +462,10 @@ describe('IdeClient', () => {
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
             return JSON.stringify(primaryConfig);
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '2222.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '2222.lock')) {
             return JSON.stringify(otherWorkspaceConfig);
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '3333.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '3333.lock')) {
             return JSON.stringify(legacyConfig);
           }
           throw new Error(`unexpected path: ${file}`);
@@ -592,7 +592,7 @@ describe('IdeClient', () => {
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
             throw new Error('not found');
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '2222.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '2222.lock')) {
             return JSON.stringify({
               port: '2222',
               workspacePath: '/other/workspace',
@@ -689,7 +689,7 @@ describe('IdeClient', () => {
 
       expect(result).toEqual(config);
       expect(fs.promises.readFile).toHaveBeenCalledWith(
-        path.join('/home/test', '.qwen', 'ide', '12345.lock'),
+        path.join('/home/test', '.axe', 'ide', '12345.lock'),
         'utf8',
       );
       delete process.env['QWEN_CODE_IDE_SERVER_PORT'];
@@ -726,7 +726,7 @@ describe('IdeClient', () => {
       vi.mocked(fs.promises.readFile).mockImplementation(
         async (filePath: fs.PathLike | FileHandle) => {
           const file = String(filePath);
-          if (file === path.join('/home/test', '.qwen', 'ide', '1234.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '1234.lock')) {
             return JSON.stringify(envConfig);
           }
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
@@ -735,7 +735,7 @@ describe('IdeClient', () => {
           if (file === path.join('/tmp', 'qwen-code-ide-server-1234.json')) {
             throw new Error('not found');
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '5678.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '5678.lock')) {
             return JSON.stringify(matchingConfig);
           }
           throw new Error(`unexpected path: ${file}`);
@@ -767,11 +767,11 @@ describe('IdeClient', () => {
 
       expect(result).toEqual(matchingConfig);
       expect(fs.promises.readFile).toHaveBeenCalledWith(
-        path.join('/home/test', '.qwen', 'ide', '1234.lock'),
+        path.join('/home/test', '.axe', 'ide', '1234.lock'),
         'utf8',
       );
       expect(fs.promises.readdir).toHaveBeenCalledWith(
-        path.join('/home/test', '.qwen', 'ide'),
+        path.join('/home/test', '.axe', 'ide'),
       );
       expect(mockDebugLogger.debug).toHaveBeenCalledWith(
         'Ignoring IDE env lock file: workspace "/other/workspace" does not match cwd "/test/workspace/sub-dir".',
@@ -833,7 +833,7 @@ describe('IdeClient', () => {
       vi.mocked(fs.promises.readFile).mockImplementation(
         async (filePath: fs.PathLike | FileHandle) => {
           const file = String(filePath);
-          if (file === path.join('/home/test', '.qwen', 'ide', '1234.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '1234.lock')) {
             return JSON.stringify(envConfig);
           }
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
@@ -868,7 +868,7 @@ describe('IdeClient', () => {
       vi.mocked(fs.promises.readFile).mockImplementation(
         async (filePath: fs.PathLike | FileHandle) => {
           const file = String(filePath);
-          if (file === path.join('/home/test', '.qwen', 'ide', '1234.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '1234.lock')) {
             throw new Error('not found');
           }
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
@@ -902,7 +902,7 @@ describe('IdeClient', () => {
       expect(rejectedPorts.has('9999')).toBe(true);
       expect(rejectedPorts.has('1234')).toBe(true);
       expect(fs.promises.readdir).toHaveBeenCalledWith(
-        path.join('/home/test', '.qwen', 'ide'),
+        path.join('/home/test', '.axe', 'ide'),
       );
       expect(mockDebugLogger.debug).toHaveBeenCalledWith(
         'Ignoring legacy IDE connection config: workspace "/other/workspace" does not match cwd "/test/workspace/sub-dir".',
@@ -914,7 +914,7 @@ describe('IdeClient', () => {
       'should scan the lock directory when env port is invalid: %s',
       async (port) => {
         process.env['QWEN_CODE_IDE_SERVER_PORT'] = port;
-        const ideDir = path.join('/home/test', '.qwen', 'ide');
+        const ideDir = path.join('/home/test', '.axe', 'ide');
         const config = { port: '2345', workspacePath: '/test/workspace' };
         vi.mocked(fs.promises.readFile).mockImplementation(
           async (filePath: fs.PathLike | FileHandle) => {
@@ -1013,7 +1013,7 @@ describe('IdeClient', () => {
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
             return JSON.stringify(legacyConfig);
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '5678.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '5678.lock')) {
             return JSON.stringify(matchingConfig);
           }
           throw new Error(`unexpected path: ${file}`);
@@ -1041,7 +1041,7 @@ describe('IdeClient', () => {
 
       expect(result).toEqual(matchingConfig);
       expect(fs.promises.readdir).toHaveBeenCalledWith(
-        path.join('/home/test', '.qwen', 'ide'),
+        path.join('/home/test', '.axe', 'ide'),
       );
       expect(mockDebugLogger.debug).toHaveBeenCalledWith(
         'Ignoring legacy IDE connection config: workspace "/other/workspace" does not match cwd "/test/workspace/sub-dir".',
@@ -1052,7 +1052,7 @@ describe('IdeClient', () => {
       process.env['QWEN_CODE_IDE_SERVER_PORT'] = '2222';
       const config2 = { port: '2222', workspacePath: '/test/workspace' };
       vi.mocked(fs.promises.readFile)
-        .mockRejectedValueOnce(new Error('not found')) // ~/.qwen/ide/<port>.lock
+        .mockRejectedValueOnce(new Error('not found')) // ~/.axe/ide/<port>.lock
         .mockRejectedValueOnce(new Error('not found')) // legacy pid file
         .mockResolvedValueOnce(JSON.stringify(config2));
 
@@ -1107,7 +1107,7 @@ describe('IdeClient', () => {
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
             throw new Error('not found');
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '1000.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '1000.lock')) {
             return JSON.stringify(liveConfig);
           }
           throw new Error(`unexpected path: ${file}`);
@@ -1150,10 +1150,10 @@ describe('IdeClient', () => {
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
             throw new Error('not found');
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '1000.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '1000.lock')) {
             return JSON.stringify({ port: '1000' });
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '2000.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '2000.lock')) {
             return JSON.stringify(latestConfig);
           }
           throw new Error(`unexpected path: ${file}`);
@@ -1201,13 +1201,13 @@ describe('IdeClient', () => {
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
             throw new Error('not found');
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '1000.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '1000.lock')) {
             return JSON.stringify({
               port: '1000',
               workspacePath: '/older/workspace',
             });
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '2000.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '2000.lock')) {
             return JSON.stringify(latestConfig);
           }
           throw new Error(`unexpected path: ${file}`);
@@ -1239,7 +1239,7 @@ describe('IdeClient', () => {
 
       expect(result).toEqual(latestConfig);
       expect(fs.promises.readdir).toHaveBeenCalledWith(
-        path.join('/home/test', '.qwen', 'ide'),
+        path.join('/home/test', '.axe', 'ide'),
       );
     });
 
@@ -1250,13 +1250,13 @@ describe('IdeClient', () => {
           if (file === path.join('/tmp', 'qwen-code-ide-server-12345.json')) {
             throw new Error('not found');
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '1000.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '1000.lock')) {
             return JSON.stringify({
               port: '1000',
               workspacePath: '/another/workspace',
             });
           }
-          if (file === path.join('/home/test', '.qwen', 'ide', '2000.lock')) {
+          if (file === path.join('/home/test', '.axe', 'ide', '2000.lock')) {
             return JSON.stringify({
               port: '2000',
               workspacePath: '/yet/another/workspace',

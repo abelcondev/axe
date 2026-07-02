@@ -295,7 +295,7 @@ ${testRootDir}${path.sep}
   describe('with qwenignore', () => {
     it('should ignore qwenignore files by default', async () => {
       await fsPromises.writeFile(
-        nodePath.join(testRootDir, '.qwenignore'),
+        nodePath.join(testRootDir, '.axeignore'),
         'ignored.txt\nnode_modules/\n.gemini/\n!/.gemini/config.yaml',
       );
       await createTestFile('file1.txt');
@@ -315,7 +315,7 @@ ${testRootDir}${path.sep}
 
     it('should not ignore files if respectQwenIgnore is false', async () => {
       await fsPromises.writeFile(
-        nodePath.join(testRootDir, '.qwenignore'),
+        nodePath.join(testRootDir, '.axeignore'),
         'ignored.txt\nnode_modules/\n.gemini/\n!/.gemini/config.yaml',
       );
       await createTestFile('file1.txt');

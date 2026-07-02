@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 import type {
   DaemonToolTranscriptBlock,
   DaemonTranscriptBlock,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import {
   extractDaemonTodosFromToolBlock,
   isDaemonSubAgentToolBlock,

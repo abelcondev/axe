@@ -8,8 +8,8 @@
     "composite": true,
     "types": ["node", "vitest/globals"],
     "paths": {
-      "@qwen-code/qwen-code-core": ["../core/src/index.ts"],
-      "@qwen-code/qwen-code-core/*": ["../core/src/*"]
+      "@axe/core": ["../core/index.ts"],
+      "@axe/core/*": ["../core/*"]
     }
   },
   "include": ["src/**/*.ts"],

@@ -11,7 +11,7 @@ import type {
   DaemonShellTranscriptBlock,
   DaemonStatusTranscriptBlock,
   DaemonUserShellTranscriptBlock,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import type {
   DaemonMessage,
   DaemonMessageToolCall,

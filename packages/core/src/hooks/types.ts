@@ -54,9 +54,9 @@ export enum HookEventName {
   PermissionDenied = 'PermissionDenied',
   // StopFailure - When the turn ends due to an API error (instead of Stop)
   StopFailure = 'StopFailure',
-  // TodoCreated - When a new todo item is added to the list (Qwen Code specific)
+  // TodoCreated - When a new todo item is added to the list (Axe specific)
   TodoCreated = 'TodoCreated',
-  // TodoCompleted - When a todo item's status changes to 'completed' (Qwen Code specific)
+  // TodoCompleted - When a todo item's status changes to 'completed' (Axe specific)
   TodoCompleted = 'TodoCompleted',
   // InstructionsLoaded - When an instruction or context file is loaded
   InstructionsLoaded = 'InstructionsLoaded',

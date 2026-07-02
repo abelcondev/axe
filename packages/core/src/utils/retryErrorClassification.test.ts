@@ -141,14 +141,14 @@ describe('classifyRetryError', () => {
           code: 'insufficient_quota',
           message: 'Free allocated quota exceeded',
         },
-        { authType: AuthType.QWEN_OAUTH },
+        { authType: AuthType.AXE_OAUTH },
       ),
     ).toMatchObject({
       kind: 'provider-business',
       diagnosis: 'fail-fast',
       statusCode: 429,
       providerCode: 'insufficient_quota',
-      reason: 'qwen-oauth-free-tier-quota',
+      reason: 'axe-oauth-free-tier-quota',
     });
   });
 

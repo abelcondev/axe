@@ -12,7 +12,7 @@ import { createRoot, type Root } from 'react-dom/client';
 import type { ModelInfo } from '@agentclientprotocol/sdk';
 import { ModelSelector } from './ModelSelector.js';
 
-vi.mock('@qwen-code/webui', () => ({
+vi.mock('@axe/webui', () => ({
   PlanCompletedIcon: () => null,
 }));
 
@@ -74,13 +74,13 @@ afterEach(() => {
 });
 
 const discontinuedModel: ModelInfo = {
-  modelId: 'qwen3-coder-plus(qwen-oauth)',
+  modelId: 'qwen3-coder-plus(axe-oauth)',
   name: 'Qwen3 Coder Plus',
   description: 'Original description should be replaced',
 };
 
 const runtimeOAuthModel: ModelInfo = {
-  modelId: '$runtime|qwen-oauth|qwen3-coder-plus(qwen-oauth)',
+  modelId: '$runtime|axe-oauth|qwen3-coder-plus(axe-oauth)',
   name: 'Qwen3 Coder Plus (Runtime)',
 };
 

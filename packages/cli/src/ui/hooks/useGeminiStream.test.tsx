@@ -23,7 +23,7 @@ import type {
   EditorType,
   GeminiClient,
   AnyToolInvocation,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   ApprovalMode,
   AUTONOMOUS_SENTINEL_DYNAMIC,
@@ -32,7 +32,7 @@ import {
   SendMessageType,
   ToolErrorType,
   ToolConfirmationOutcome,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { Part, PartListUnion } from '@google/genai';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 import type { HistoryItem, SlashCommandProcessorResult } from '../types.js';
@@ -95,7 +95,7 @@ const mockActiveGoalEquals = vi.hoisted(() => vi.fn());
 const mockSetActiveGoal = vi.hoisted(() => vi.fn());
 const mockClearActiveGoal = vi.hoisted(() => vi.fn());
 
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const actualCoreModule = (await importOriginal()) as any;
   return {
     ...actualCoreModule,
@@ -289,7 +289,7 @@ describe('useGeminiStream', () => {
   const mockLoadedSettings: LoadedSettings = {
     merged: { preferredEditor: 'vscode' },
     user: { path: '/user/settings.json', settings: {} },
-    workspace: { path: '/workspace/.qwen/settings.json', settings: {} },
+    workspace: { path: '/workspace/.axe/settings.json', settings: {} },
     errors: [],
     forScope: vi.fn(),
     setValue: vi.fn(),
@@ -5403,10 +5403,10 @@ describe('useGeminiStream', () => {
       const allowInlineModel = (modelId = 'inline-model') => {
         mockConfig.getModel = vi.fn(() => 'session-model');
         mockConfig.getContentGeneratorConfig = vi.fn(
-          () => ({ authType: AuthType.QWEN_OAUTH }) as never,
+          () => ({ authType: AuthType.AXE_OAUTH }) as never,
         );
         mockConfig.getAvailableModelsForAuthType = vi.fn(
-          () => [{ id: modelId, authType: AuthType.QWEN_OAUTH }] as never,
+          () => [{ id: modelId, authType: AuthType.AXE_OAUTH }] as never,
         );
       };
 

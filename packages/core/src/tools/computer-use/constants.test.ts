@@ -99,12 +99,12 @@ describe('resolveAssetUrls', () => {
 });
 
 describe('binaryPath', () => {
-  it('resolves to the in-bundle binary under ~/.qwen/computer-use/...', () => {
+  it('resolves to the in-bundle binary under ~/.axe/computer-use/...', () => {
     const p = binaryPath('/home/u', 'darwin', 'arm64');
     expect(p).toBe(
       join(
         '/home/u',
-        '.qwen',
+        '.axe',
         'computer-use',
         `cua-driver-rs-${CUA_DRIVER_VERSION}`,
         `cua-driver-rs-${CUA_DRIVER_VERSION}-darwin-arm64`,
@@ -121,7 +121,7 @@ describe('binaryPath', () => {
     expect(p).toBe(
       join(
         '/home/u',
-        '.qwen',
+        '.axe',
         'computer-use',
         `cua-driver-rs-${CUA_DRIVER_VERSION}`,
         'cua-driver',

@@ -66,7 +66,7 @@ async function buildCleanMemorySystemPrompt(
     await ensureUserAutoMemoryScaffold();
   } catch {
     // User-level memory is best-effort elsewhere in managed memory. Keep
-    // project memory usable if ~/.qwen/memories cannot be scaffolded.
+    // project memory usable if ~/.axe/memories cannot be scaffolded.
   }
   const [projectIndex, userIndex] = await Promise.all([
     readAutoMemoryIndex(projectRoot),
@@ -89,7 +89,7 @@ async function buildCleanMemorySystemPrompt(
 
 function buildRememberSystemPrompt(memoryPrompt: string): string {
   return [
-    'You are saving one explicit durable memory for Qwen Code.',
+    'You are saving one explicit durable memory for Axe.',
     '',
     'Rules:',
     '- Save only information provided in the task prompt.',
@@ -215,7 +215,7 @@ export async function runManagedRememberByAgent(params: {
       ? rebuildUserAutoMemoryIndex().catch((err: unknown) => {
           // Mirrors existing managed-memory behavior: user memory is useful
           // when available, but project memory writes should not fail because
-          // ~/.qwen/memories cannot be indexed.
+          // ~/.axe/memories cannot be indexed.
           debugLogger.error('User memory index rebuild failed:', err);
         })
       : Promise.resolve(),

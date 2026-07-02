@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useSyncExternalStore } from 'react';
-import type { DaemonMidTurnMessageInjectedData } from '@qwen-code/sdk/daemon';
+import type { DaemonMidTurnMessageInjectedData } from '@axe/sdk/daemon';
 import {
   consumeSidechannelMidTurnInjected,
   getSidechannelMidTurnInjected,

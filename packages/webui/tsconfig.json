@@ -17,8 +17,8 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@qwen-code/sdk": ["../sdk-typescript/src/index.ts"],
-      "@qwen-code/sdk/daemon": ["../sdk-typescript/src/daemon/index.ts"]
+      "@axe/sdk": ["../sdk-typescript/src/index.ts"],
+      "@axe/sdk/daemon": ["../sdk-typescript/src/daemon/index.ts"]
     }
   },
   "include": ["src"],

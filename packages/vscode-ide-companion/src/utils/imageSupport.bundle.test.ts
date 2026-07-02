@@ -19,12 +19,12 @@ describe('imageSupport browser bundling', () => {
       platform: 'browser',
       write: false,
       logLevel: 'silent',
-      external: ['@qwen-code/qwen-code-core'],
+      external: ['@axe/core'],
     });
 
     const output = result.outputFiles[0]?.text ?? '';
 
-    expect(output).not.toContain('@qwen-code/qwen-code-core');
+    expect(output).not.toContain('@axe/core');
     expect(output).not.toContain('supportedImageFormats.js');
   });
 
@@ -38,7 +38,7 @@ describe('imageSupport browser bundling', () => {
       platform: 'browser',
       write: false,
       logLevel: 'silent',
-      external: ['@qwen-code/qwen-code-core'],
+      external: ['@axe/core'],
       loader: {
         '.png': 'dataurl',
       },
@@ -46,7 +46,7 @@ describe('imageSupport browser bundling', () => {
 
     const output = result.outputFiles[0]?.text ?? '';
 
-    expect(output).not.toContain('@qwen-code/qwen-code-core');
+    expect(output).not.toContain('@axe/core');
     expect(output).not.toContain('tokenLimits.js');
   });
 });

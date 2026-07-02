@@ -11,7 +11,7 @@ import {
   sanitizeDaemonTerminalText,
   type DaemonTranscriptBlock,
   type DaemonToolTranscriptBlock,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import type { UnifiedMessage } from '../adapters/types.js';
 import type {
   ToolCallData,

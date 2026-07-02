@@ -20,7 +20,7 @@ export const MAX_COMPUTER_USE_IDLE_TIMEOUT_MS = 2_147_483_647;
  * Singleton stdio MCP client for the cua-driver binary.
  *
  * Spawned via `<binary> mcp`, where `<binary>` is the pinned cua-driver
- * downloaded under `~/.qwen/computer-use/` (the bootstrap state machine
+ * downloaded under `~/.axe/computer-use/` (the bootstrap state machine
  * downloads + verifies it before the first spawn). Spawns are sub-second
  * — there is no npx/download cost on this path anymore.
  *

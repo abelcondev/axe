@@ -230,11 +230,11 @@ export class AnthropicContentConverter {
     // ship the standard per-session shape so they don't see a scope
     // extension they may not recognize.
     // Per-call overrides mirror the request-shape gates in
-    // `convertGeminiRequestToAnthropic` so a qwen-oauth-style hot flip of
+    // `convertGeminiRequestToAnthropic` so a axe-oauth-style hot flip of
     // `enableCacheControl` (the only field `Config.handleModelChange()`
     // mutates in place without recreating the generator) doesn't leave
     // the tool body and the beta header out of sync. `baseUrl` isn't
-    // hot-mutated — non-qwen-oauth providers recreate the generator on
+    // hot-mutated — non-axe-oauth providers recreate the generator on
     // refresh — but the same per-call plumbing covers it for free.
     const enableCacheControl =
       options.enableCacheControl ?? this.enableCacheControl;

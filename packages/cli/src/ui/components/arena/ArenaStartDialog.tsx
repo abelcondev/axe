@@ -8,7 +8,7 @@ import type React from 'react';
 import { useMemo, useState } from 'react';
 import { Box, Text } from 'ink';
 import Link from 'ink-link';
-import { AuthType } from '@qwen-code/qwen-code-core';
+import { AuthType } from '@axe/core';
 import { useConfig } from '../../contexts/ConfigContext.js';
 import { theme } from '../../semantic-colors.js';
 import { useKeypress } from '../../hooks/useKeypress.js';
@@ -37,7 +37,7 @@ export function ArenaStartDialog({
 
     return selectableModels.map((model) => {
       const token = `${model.authType}:${model.id}`;
-      const isQwenOauth = model.authType === AuthType.QWEN_OAUTH;
+      const isQwenOauth = model.authType === AuthType.AXE_OAUTH;
       return {
         key: token,
         value: token,
@@ -116,7 +116,7 @@ export function ArenaStartDialog({
         <Box marginTop={1} flexDirection="column">
           {hasDisabledQwenOauth && (
             <Text color={theme.status.warning}>
-              {t('Note: qwen-oauth models are not supported in Arena.')}
+              {t('Note: axe-oauth models are not supported in Arena.')}
             </Text>
           )}
           {needsMoreModels && (

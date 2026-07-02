@@ -32,7 +32,7 @@ import {
   Storage,
   getTokenUsageFilePath,
   recordTokenUsageFromApiResponse,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 const fsPromisesMock = vi.hoisted(() => ({
   open: vi.fn<typeof import('node:fs/promises').open>(),

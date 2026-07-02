@@ -12,7 +12,7 @@ import {
   type Config,
   createDebugLogger,
   recordSkillInvocation,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { CommandService } from './services/CommandService.js';
 import { BuiltinCommandLoader } from './services/BuiltinCommandLoader.js';
 import { BundledSkillLoader } from './services/BundledSkillLoader.js';

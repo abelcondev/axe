@@ -25,13 +25,13 @@ import {
 } from './run-qwen-serve.js';
 import { RUNTIME_STARTUP_CANCELLED_MESSAGE } from './runtime-startup-errors.js';
 import { isLoopbackBind } from './loopback-binds.js';
-import * as acpBridge from '@qwen-code/acp-bridge/bridge';
-import { canonicalizeWorkspace } from '@qwen-code/acp-bridge/workspacePaths';
+import * as acpBridge from '@axe/acp-bridge/bridge';
+import { canonicalizeWorkspace } from '@axe/acp-bridge/workspacePaths';
 import type {
   BridgeDaemonStatusSnapshot,
   HttpAcpBridge,
-} from '@qwen-code/acp-bridge/bridgeTypes';
-import * as qwenCore from '@qwen-code/qwen-code-core';
+} from '@axe/acp-bridge/bridgeTypes';
+import * as qwenCore from '@axe/core';
 import * as serverModule from './server.js';
 import type {
   ChannelWorkerSnapshot,
@@ -87,9 +87,9 @@ async function getFreeLoopbackPort(): Promise<number> {
   return port;
 }
 
-vi.mock('@qwen-code/acp-bridge/spawnChannel', async (importOriginal) => {
+vi.mock('@axe/acp-bridge/spawnChannel', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@qwen-code/acp-bridge/spawnChannel')>();
+    await importOriginal<typeof import('@axe/acp-bridge/spawnChannel')>();
   return {
     ...actual,
     createSpawnChannelFactory: vi.fn(
@@ -3637,9 +3637,9 @@ describe('runQwenServe startup observability', () => {
     tmpDir = fs.realpathSync(
       fs.mkdtempSync(path.join(os.tmpdir(), 'qws-startup-storage-dir-')),
     );
-    fs.mkdirSync(path.join(tmpDir, '.qwen'));
+    fs.mkdirSync(path.join(tmpDir, '.axe'));
     fs.writeFileSync(
-      path.join(tmpDir, '.qwen', 'settings.json'),
+      path.join(tmpDir, '.axe', 'settings.json'),
       JSON.stringify({
         advanced: { runtimeOutputDir: '.settings-runtime' },
       }),

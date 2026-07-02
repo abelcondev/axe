@@ -20,7 +20,7 @@ import {
 
 /**
  * Build a Config whose `.storage` points at `projectDir`, and point the
- * user scope (`~/.qwen`) at `userHome` via the QWEN_HOME env override so
+ * user scope (`~/.axe`) at `userHome` via the QWEN_HOME env override so
  * tests never touch the real home directory.
  */
 function fakeConfig(projectDir: string): Config {
@@ -45,9 +45,9 @@ describe('workflow-saved', () => {
     projectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wf-proj-'));
     userHome = await fs.mkdtemp(path.join(os.tmpdir(), 'wf-user-'));
     prevQwenHome = process.env['QWEN_HOME'];
-    // Storage.getGlobalQwenDir() reads QWEN_HOME, else ~/.qwen. Point it at
+    // Storage.getGlobalQwenDir() reads QWEN_HOME, else ~/.axe. Point it at
     // `<userHome>/.qwen` so the user scope is sandboxed.
-    process.env['QWEN_HOME'] = path.join(userHome, '.qwen');
+    process.env['QWEN_HOME'] = path.join(userHome, '.axe');
   });
 
   afterEach(async () => {
@@ -272,7 +272,7 @@ describe('workflow-saved', () => {
       });
       expect(result.status).toBe('saved');
       if (result.status !== 'saved') throw new Error('expected saved');
-      expect(result.path).toContain(path.join(userHome, '.qwen'));
+      expect(result.path).toContain(path.join(userHome, '.axe'));
       expect(result.scope).toBe('user');
     });
 
@@ -353,7 +353,7 @@ describe('workflow-saved', () => {
         `return 'EXFILTRATED';`,
         'utf8',
       );
-      // Make `<projectDir>/.qwen/workflows` a symlink to that external dir.
+      // Make `<projectDir>/.axe/workflows` a symlink to that external dir.
       projectWorkflowsDir = new Storage(projectDir).getProjectWorkflowsDir();
       await fs.mkdir(path.dirname(projectWorkflowsDir), { recursive: true });
       await fs.symlink(external, projectWorkflowsDir, 'dir');

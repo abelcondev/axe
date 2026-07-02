@@ -19,8 +19,8 @@ import type {
   DaemonSessionTaskStatus,
   DaemonTranscriptStore,
   PermissionResponse,
-} from '@qwen-code/sdk/daemon';
-import { isDaemonTurnError, type PromptResult } from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
+import { isDaemonTurnError, type PromptResult } from '@axe/sdk/daemon';
 import { mapSupportedCommands } from './mappers.js';
 import { toDaemonPromptContent } from './promptContent.js';
 import {

@@ -7,8 +7,8 @@
 import process from 'node:process';
 import { lookup as dnsLookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
-import { createDebugLogger } from '@qwen-code/qwen-code-core';
-import type { AvailableModel } from '@qwen-code/qwen-code-core';
+import { createDebugLogger } from '@axe/core';
+import type { AvailableModel } from '@axe/core';
 import type { LoadedSettings } from '../config/settings.js';
 import { buildVoiceKeyterms } from './voice-keyterms.js';
 import {

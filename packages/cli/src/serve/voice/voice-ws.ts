@@ -6,7 +6,7 @@
 
 import type { IncomingMessage } from 'node:http';
 import type { RawData, WebSocket } from 'ws';
-import { createDebugLogger } from '@qwen-code/qwen-code-core';
+import { createDebugLogger } from '@axe/core';
 import {
   loadDaemonVoiceContext,
   type DaemonVoiceContext,

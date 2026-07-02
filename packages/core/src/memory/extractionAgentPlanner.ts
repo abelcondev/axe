@@ -103,7 +103,7 @@ function truncate(text: string, maxChars: number): string {
 }
 
 async function buildTopicSummaryBlock(projectRoot: string): Promise<string> {
-  // User-level scan is best-effort: a read failure on `~/.qwen/memories/`
+  // User-level scan is best-effort: a read failure on `~/.axe/memories/`
   // must not deny the extraction agent its view of existing project-level
   // memories (which it uses to avoid creating duplicates).
   const [projectDocs, userDocs] = await Promise.all([

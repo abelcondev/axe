@@ -9,9 +9,11 @@ Fork de [qwen-code](https://github.com/QwenLM/qwen-code) con rename completo a `
 
 ## Fase 0 — Setup inicial
 
+> **Gestor de paquetes:** npm para install (workspace hoisting requerido por tsc). `bun` disponible para correr scripts (`bun run dev`, etc.)
+
 - [x] Clonar qwen-code como base del fork
-- [ ] Crear commit inicial (`chore: initial qwen-code import`)
-- [ ] `npm install` — instalar dependencias
+- [x] Crear commit inicial (`chore: initial qwen-code import`)
+- [ ] `npm install` — instalar dependencias (npm real, no el shim de bun)
 
 ---
 

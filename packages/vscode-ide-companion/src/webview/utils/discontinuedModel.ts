@@ -8,9 +8,9 @@
  * Discontinued-model detection for the ACP `availableModels` payload.
  *
  * The ACP server emits each model id wrapped as `${modelId}(${authType})`,
- * e.g. `qwen3-coder-plus(qwen-oauth)`. Runtime model snapshots are additionally
+ * e.g. `qwen3-coder-plus(axe-oauth)`. Runtime model snapshots are additionally
  * prefixed with `$runtime|${authType}|`, so the wrapped form becomes
- * `$runtime|qwen-oauth|qwen3-coder-plus(qwen-oauth)`.
+ * `$runtime|axe-oauth|qwen3-coder-plus(axe-oauth)`.
  *
  * This helper mirrors the encoding contract used by the CLI's
  * `acpModelUtils.ts` and the discontinued check in the CLI's `ModelDialog`.
@@ -22,7 +22,7 @@
 export const RUNTIME_PREFIX = '$runtime|';
 
 /** Auth type marker for the (now-discontinued) Qwen OAuth free tier. */
-export const QWEN_OAUTH_AUTH_TYPE = 'qwen-oauth';
+export const AXE_OAUTH_AUTH_TYPE = 'axe-oauth';
 
 /** User-facing strings for the discontinued state (English-only — webview has no i18n runtime). */
 export const DISCONTINUED_MESSAGES = {
@@ -77,5 +77,5 @@ export function isDiscontinuedModel(modelId: string): boolean {
     return false;
   }
   const parsed = parseAcpModelId(modelId);
-  return parsed.authType === QWEN_OAUTH_AUTH_TYPE && !parsed.isRuntime;
+  return parsed.authType === AXE_OAUTH_AUTH_TYPE && !parsed.isRuntime;
 }

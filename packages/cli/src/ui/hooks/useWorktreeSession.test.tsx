@@ -14,7 +14,7 @@ import {
   clearWorktreeSession,
   type Config,
   type WorktreeSession,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { useWorktreeSession } from './useWorktreeSession.js';
 
 const SESSION_ID = 'test-session-id';
@@ -30,7 +30,7 @@ function makeMockConfig(sidecarPath: string): Config {
 
 const sample: WorktreeSession = {
   slug: 'my-feature',
-  worktreePath: '/repo/.qwen/worktrees/my-feature',
+  worktreePath: '/repo/.axe/worktrees/my-feature',
   worktreeBranch: 'worktree-my-feature',
   originalCwd: '/repo',
   originalBranch: 'main',

@@ -1602,7 +1602,7 @@ describe('CoreToolScheduler', () => {
         ToolErrorType.EXECUTION_DENIED,
       );
       expect(completedCall.response.error?.message).toBe(
-        'Qwen Code requires permission to use edit, but that permission was declined.',
+        'Axe requires permission to use edit, but that permission was declined.',
       );
     }
     expect(execute).not.toHaveBeenCalled();
@@ -3468,7 +3468,7 @@ describe('CoreToolScheduler', () => {
       if (completedCall.status === 'error') {
         const errorMessage = completedCall.response.error?.message;
         expect(errorMessage).toBe(
-          'Qwen Code requires permission to use write_file, but that permission was declined.',
+          'Axe requires permission to use write_file, but that permission was declined.',
         );
         // Should NOT contain "not found in registry"
         expect(errorMessage).not.toContain('not found in registry');
@@ -5007,7 +5007,7 @@ describe('CoreToolScheduler request queueing', () => {
       getPreferredEditor: () => 'vscode',
       onEditorClose: vi.fn(),
     });
-    const command = "echo '{}' > .qwen/settings.json";
+    const command = "echo '{}' > .axe/settings.json";
     const request = {
       callId: 'pending-protected-write',
       name: ToolNames.SHELL,
@@ -5108,7 +5108,7 @@ describe('CoreToolScheduler request queueing', () => {
 
     expect(hookSystem.firePermissionDeniedEvent).toHaveBeenCalledWith(
       ToolNames.SHELL,
-      { command: "echo '{}' > .qwen/settings.json" },
+      { command: "echo '{}' > .axe/settings.json" },
       'pending-protected-write',
       'classifier_blocked',
       expect.any(AbortSignal),
@@ -6767,7 +6767,7 @@ describe('CoreToolScheduler telemetry spans', () => {
     });
     expect(mockAcquireSleepInhibitor).toHaveBeenCalledWith(
       expect.any(Object),
-      'Qwen Code is executing tool mockTool',
+      'Axe is executing tool mockTool',
     );
     expect(mockSleepInhibitorRelease).toHaveBeenCalledTimes(1);
   });
@@ -11038,7 +11038,7 @@ describe('CoreToolScheduler activation wiring', () => {
               name: n,
               description: `Description of ${n}`,
               level: 'project' as const,
-              filePath: `/p/.qwen/skills/${n}/SKILL.md`,
+              filePath: `/p/.axe/skills/${n}/SKILL.md`,
               body: '',
             })),
           ),
@@ -11364,7 +11364,7 @@ describe('CoreToolScheduler activation wiring', () => {
             name: 'tsx-helper',
             description: 'Helper for TSX',
             level: 'project' as const,
-            filePath: '/p/.qwen/skills/tsx-helper/SKILL.md',
+            filePath: '/p/.axe/skills/tsx-helper/SKILL.md',
             body: '',
           },
         ]),

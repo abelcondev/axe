@@ -18,14 +18,14 @@
  */
 
 import { promises as fs } from 'node:fs';
-import { canUseRipgrep } from '@qwen-code/qwen-code-core';
+import { canUseRipgrep } from '@axe/core';
 import {
   type DaemonStatusProvider,
   mapDomainErrorToErrorKind,
   type ServePreflightCell,
   type ServePreflightKind,
   type ServeWorkspaceEnvStatus,
-} from '@qwen-code/acp-bridge';
+} from '@axe/acp-bridge';
 import { getGitVersion, getNpmVersion } from '../utils/systemInfo.js';
 import { buildEnvStatusFromProcess } from './env-snapshot.js';
 

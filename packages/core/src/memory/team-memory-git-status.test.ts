@@ -55,20 +55,20 @@ describe('getTeamMemoryShareabilityWarning', () => {
   it('warns when a directory-form .gitignore swallows the team dir', () => {
     const repo = initRepo('ignored');
     cleanup.push(repo);
-    // The common pitfall: ignoring `.qwen/` (directory form) makes git skip the
+    // The common pitfall: ignoring `.axe/` (directory form) makes git skip the
     // folder entirely, so memories are silently never tracked.
-    fs.writeFileSync(path.join(repo, '.gitignore'), '.qwen/\n');
+    fs.writeFileSync(path.join(repo, '.gitignore'), '.axe/\n');
     const warning = getTeamMemoryShareabilityWarning(repo);
     expect(warning).toContain('git-ignored');
   });
 
-  it('returns null when .qwen/* re-includes the team dir', () => {
+  it('returns null when .axe/* re-includes the team dir', () => {
     const repo = initRepo('reinclude');
     cleanup.push(repo);
     // The file-glob form CAN be escaped by a re-include below it.
     fs.writeFileSync(
       path.join(repo, '.gitignore'),
-      '.qwen/*\n!.qwen/team-memory/\n!.qwen/team-memory/**\n',
+      '.axe/*\n!.axe/team-memory/\n!.axe/team-memory/**\n',
     );
     expect(getTeamMemoryShareabilityWarning(repo)).toBeNull();
   });
@@ -81,7 +81,7 @@ describe('getTeamMemoryShareabilityWarning', () => {
     // alone (pre-fix) would wrongly report this as shareable.
     fs.writeFileSync(
       path.join(repo, '.gitignore'),
-      '.qwen/team-memory/*.md\n!.qwen/team-memory/MEMORY.md\n',
+      '.axe/team-memory/*.md\n!.axe/team-memory/MEMORY.md\n',
     );
     const warning = getTeamMemoryShareabilityWarning(repo);
     expect(warning).toContain('git-ignored');

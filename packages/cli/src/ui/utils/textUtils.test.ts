@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import type {
   ToolCallConfirmationDetails,
   ToolEditConfirmationDetails,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   escapeAnsiCtrlCodes,
   sanitizeFilenameForDisplay,

@@ -17,7 +17,7 @@ import {
 } from './CompactToolGroupDisplay.js';
 import { InlineParallelAgentsDisplay } from './InlineParallelAgentsDisplay.js';
 import { useConfig } from '../../contexts/ConfigContext.js';
-import type { AgentResultDisplay } from '@qwen-code/qwen-code-core';
+import type { AgentResultDisplay } from '@axe/core';
 
 function isAgentWithPendingConfirmation(
   rd: IndividualToolCallDisplay['resultDisplay'],

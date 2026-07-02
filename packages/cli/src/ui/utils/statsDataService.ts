@@ -11,7 +11,7 @@ import {
   type AggregatedReport,
   type TimeRange,
   type UsageSummaryRecord,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 export interface StatsData {
   report: AggregatedReport;

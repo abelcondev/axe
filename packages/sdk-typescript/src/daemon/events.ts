@@ -23,7 +23,7 @@ import {
   PENDING_PROMPT_ADDED_EVENT,
   PENDING_PROMPT_STARTED_EVENT,
   PENDING_PROMPT_COMPLETED_EVENT,
-} from '@qwen-code/acp-bridge/daemonEventTypes';
+} from '@axe/acp-bridge/daemonEventTypes';
 export {
   MID_TURN_MESSAGE_INJECTED_EVENT,
   PENDING_PROMPT_ADDED_EVENT,
@@ -494,9 +494,9 @@ export interface DaemonAgentChangedData {
 
 /** Auth device-flow event payloads. */
 
-/** Provider id. Open string union for forward-compatible providers; `qwen-oauth`
+/** Provider id. Open string union for forward-compatible providers; `axe-oauth`
  *  is the only value v1 currently emits. */
-export type DaemonAuthDeviceFlowProviderId = 'qwen-oauth' | (string & {});
+export type DaemonAuthDeviceFlowProviderId = 'axe-oauth' | (string & {});
 
 export type DaemonAuthDeviceFlowStatus =
   | 'pending'

@@ -307,9 +307,9 @@ export class QwenLogger {
       const globalDir = Storage.getGlobalQwenDir();
       const sourceJsonPath = path.join(globalDir, 'source.json');
 
-      // Also check legacy ~/.qwen/source.json when QWEN_HOME is set,
-      // since the installer writes to ~/.qwen/ regardless of the env var.
-      const legacyPath = path.join(os.homedir(), '.qwen', 'source.json');
+      // Also check legacy ~/.axe/source.json when QWEN_HOME is set,
+      // since the installer writes to ~/.axe/ regardless of the env var.
+      const legacyPath = path.join(os.homedir(), '.axe', 'source.json');
       const candidates =
         path.normalize(sourceJsonPath) !== path.normalize(legacyPath)
           ? [sourceJsonPath, legacyPath]

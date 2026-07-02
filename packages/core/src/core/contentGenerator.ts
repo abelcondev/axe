@@ -55,7 +55,7 @@ export interface ContentGenerator {
 
 export enum AuthType {
   USE_OPENAI = 'openai',
-  QWEN_OAUTH = 'qwen-oauth',
+  AXE_OAUTH = 'axe-oauth',
   USE_GEMINI = 'gemini',
   USE_VERTEX_AI = 'vertex-ai',
   USE_ANTHROPIC = 'anthropic',
@@ -260,7 +260,7 @@ export function validateModelConfig(
   const errors: Error[] = [];
 
   // Qwen OAuth doesn't need validation - it uses dynamic tokens
-  if (config.authType === AuthType.QWEN_OAUTH) {
+  if (config.authType === AuthType.AXE_OAUTH) {
     return { valid: true, errors: [] };
   }
 
@@ -368,9 +368,9 @@ export async function createContentGenerator(
         './openaiContentGenerator/index.js'
       );
       baseGenerator = createOpenAIContentGenerator(generatorConfig, config);
-    } else if (authType === AuthType.QWEN_OAUTH) {
-      const { getQwenOAuthClient: getQwenOauthClient } = await import(
-        '../qwen/qwenOAuth2.js'
+    } else if (authType === AuthType.AXE_OAUTH) {
+      const { getAxeOAuthClient: getQwenOauthClient } = await import(
+        '../qwen/axeOAuth2.js'
       );
       const { QwenContentGenerator } = await import(
         '../qwen/qwenContentGenerator.js'
@@ -414,8 +414,8 @@ export async function createContentGenerator(
     const moduleNotFoundError = getModuleNotFoundError(error);
     if (moduleNotFoundError) {
       throw new Error(
-        `Qwen Code was updated in the background and needs to be restarted.\n` +
-          `Please exit and restart Qwen Code to use the '${authType}' provider.`,
+        `Axe was updated in the background and needs to be restarted.\n` +
+          `Please exit and restart Axe to use the '${authType}' provider.`,
         { cause: moduleNotFoundError },
       );
     }

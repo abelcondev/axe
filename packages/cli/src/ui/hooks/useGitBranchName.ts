@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { resolveBranchName, watchRepoBranch } from '@qwen-code/qwen-code-core';
+import { resolveBranchName, watchRepoBranch } from '@axe/core';
 
 /**
  * Tracks the current git branch (or a short commit hash when detached) for

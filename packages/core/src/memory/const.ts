@@ -8,10 +8,10 @@ export const DEFAULT_CONTEXT_FILENAME = 'QWEN.md';
 export const AGENT_CONTEXT_FILENAME = 'AGENTS.md';
 /**
  * Per-developer, project-scoped context file. Anchored at
- * `<projectRoot>/.qwen/QWEN.local.md`. Intended to be gitignored so each
+ * `<projectRoot>/.axe/QWEN.local.md`. Intended to be gitignored so each
  * developer can keep personal instructions (local cluster IDs, account
  * names, paths) without polluting the shared project `QWEN.md` or the
- * global `~/.qwen/QWEN.md`.
+ * global `~/.axe/QWEN.md`.
  *
  * Unlike `DEFAULT_CONTEXT_FILENAME` / `AGENT_CONTEXT_FILENAME`, this name is
  * NOT part of the hierarchical upward-search list — it is loaded from a
@@ -23,7 +23,7 @@ export const AGENT_CONTEXT_FILENAME = 'AGENTS.md';
  * project root can be found, the slot is skipped — the loader does NOT
  * fall back to cwd, because that would turn a "single fixed slot" into a
  * per-cwd file and (when cwd is the home directory) would collide with
- * the global Qwen dir at `~/.qwen/`.
+ * the global Qwen dir at `~/.axe/`.
  */
 export const LOCAL_CONTEXT_FILENAME = 'QWEN.local.md';
 export const MEMORY_SECTION_HEADER = '## Qwen Added Memories';

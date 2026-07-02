@@ -12,7 +12,7 @@
  * Unlike the previous open-computer-use backend, cua-driver is NOT on npm.
  * It ships as per-platform, Developer-ID-signed + Apple-notarized binaries
  * attached to GitHub releases (tag `cua-driver-rs-v<version>`). We download
- * the pinned asset once into `~/.qwen/computer-use/`, preferring a
+ * the pinned asset once into `~/.axe/computer-use/`, preferring a
  * qwen-code-owned OSS mirror (reliable in CN where GitHub release downloads
  * are slow/blocked) and falling back to GitHub.
  *
@@ -214,7 +214,7 @@ export function resolveMaxImageDimension(
 
 /** Install root for all Computer Use artifacts. Footprint stays here. */
 export function computerUseRoot(home: string = homedir()): string {
-  return join(home, '.qwen', 'computer-use');
+  return join(home, '.axe', 'computer-use');
 }
 
 /** Directory a given version's assets extract into. */

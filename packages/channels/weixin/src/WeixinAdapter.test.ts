@@ -19,7 +19,7 @@ import type {
   ChannelAgentBridge,
   ChannelConfig,
   ChannelTaskLifecycleEvent,
-} from '@qwen-code/channel-base';
+} from '@axe/channel-base';
 
 type LifecycleBase = Omit<
   Extract<ChannelTaskLifecycleEvent, { type: 'started' }>,

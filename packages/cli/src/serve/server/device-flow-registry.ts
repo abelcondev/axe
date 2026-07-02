@@ -14,7 +14,7 @@ import {
   type DeviceFlowProvider,
   type DeviceFlowProviderId,
 } from '../auth/device-flow.js';
-import { QwenOAuthDeviceFlowProvider } from '../auth/qwen-device-flow-provider.js';
+import { AxeOAuthDeviceFlowProvider } from '../auth/qwen-device-flow-provider.js';
 
 interface SetupDeviceFlowRegistryDeps {
   app: Application;
@@ -38,8 +38,8 @@ export function setupDeviceFlowRegistry(
   for (const provider of deps.providers ?? []) {
     deviceFlowProviderMap.set(provider.providerId, provider);
   }
-  if (!deviceFlowProviderMap.has('qwen-oauth')) {
-    deviceFlowProviderMap.set('qwen-oauth', new QwenOAuthDeviceFlowProvider());
+  if (!deviceFlowProviderMap.has('axe-oauth')) {
+    deviceFlowProviderMap.set('axe-oauth', new AxeOAuthDeviceFlowProvider());
   }
 
   const deviceFlowEventSink: DeviceFlowEventSink = {

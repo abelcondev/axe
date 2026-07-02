@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   DaemonWorkspaceProvider,
   DaemonSessionProvider,
-} from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
 import { App } from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { RootErrorFallback } from './components/RootErrorFallback';

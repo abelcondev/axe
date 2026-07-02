@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { createDebugLogger } from '@qwen-code/qwen-code-core';
+import { createDebugLogger } from '@axe/core';
 import type { TextBuffer } from '../components/shared/text-buffer.js';
 import { Command, keyMatchers } from '../keyMatchers.js';
 import type { HistoryItemWithoutId } from '../types.js';
@@ -321,7 +321,7 @@ export function useVoiceInput({
           }
           if (recorder.supportsStreaming?.() === false) {
             throw new Error(
-              'Streaming voice transcription requires native audio capture. Install/rebuild @qwen-code/audio-capture or switch voiceModel to qwen3-asr-flash for batch transcription.',
+              'Streaming voice transcription requires native audio capture. Install/rebuild @axe/audio-capture or switch voiceModel to qwen3-asr-flash for batch transcription.',
             );
           }
           const streamPromise = openStream!({

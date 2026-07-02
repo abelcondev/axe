@@ -12,7 +12,7 @@ import {
   AuthType,
   type ContentGeneratorConfig,
   type Config,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { LoadedSettings } from '../../config/settings.js';
 
 // Helper function to create a mock config
@@ -90,10 +90,10 @@ describe('modelCommand', () => {
     });
   });
 
-  it('should return dialog action for QWEN_OAUTH auth type', async () => {
+  it('should return dialog action for AXE_OAUTH auth type', async () => {
     const mockConfig = createMockConfig({
       model: 'test-model',
-      authType: AuthType.QWEN_OAUTH,
+      authType: AuthType.AXE_OAUTH,
     });
     mockContext.services.config = mockConfig as Config;
 
@@ -160,7 +160,7 @@ describe('modelCommand', () => {
         config: {
           getContentGeneratorConfig: vi.fn().mockReturnValue({
             model: 'qwen-plus',
-            authType: AuthType.QWEN_OAUTH,
+            authType: AuthType.AXE_OAUTH,
           }),
           getAvailableModelsForAuthType: vi
             .fn()
@@ -174,7 +174,7 @@ describe('modelCommand', () => {
     const result = await modelCommand.action!(mockContext, 'qwen-max');
 
     expect(switchModel).toHaveBeenCalledWith(
-      AuthType.QWEN_OAUTH,
+      AuthType.AXE_OAUTH,
       'qwen-max',
       undefined,
     );
@@ -211,7 +211,7 @@ describe('modelCommand', () => {
         config: {
           getContentGeneratorConfig: vi.fn().mockReturnValue({
             model: 'qwen-plus',
-            authType: AuthType.QWEN_OAUTH,
+            authType: AuthType.AXE_OAUTH,
           }),
           getAvailableModelsForAuthType: vi
             .fn()
@@ -249,7 +249,7 @@ describe('modelCommand', () => {
         config: {
           getContentGeneratorConfig: vi.fn().mockReturnValue({
             model: 'qwen-plus',
-            authType: AuthType.QWEN_OAUTH,
+            authType: AuthType.AXE_OAUTH,
           }),
           switchModel,
           getAvailableModelsForAuthType: vi.fn().mockReturnValue([]),
@@ -279,7 +279,7 @@ describe('modelCommand', () => {
         config: {
           getContentGeneratorConfig: vi.fn().mockReturnValue({
             model: 'qwen-plus',
-            authType: AuthType.QWEN_OAUTH,
+            authType: AuthType.AXE_OAUTH,
           }),
           switchModel,
           getAvailableModelsForAuthType: vi
@@ -403,7 +403,7 @@ describe('modelCommand', () => {
         config: {
           getContentGeneratorConfig: vi.fn().mockReturnValue({
             model: 'qwen-plus',
-            authType: AuthType.QWEN_OAUTH,
+            authType: AuthType.AXE_OAUTH,
           }),
           switchModel,
           getAvailableModelsForAuthType: vi
@@ -436,7 +436,7 @@ describe('modelCommand', () => {
         config: {
           getContentGeneratorConfig: vi.fn().mockReturnValue({
             model: 'qwen-plus',
-            authType: AuthType.QWEN_OAUTH,
+            authType: AuthType.AXE_OAUTH,
           }),
           switchModel,
           getAvailableModelsForAuthType: vi.fn().mockReturnValue([]),
@@ -453,8 +453,8 @@ describe('modelCommand', () => {
       type: 'message',
       messageType: 'error',
       content:
-        "Model 'missing-model' is not available for auth type 'qwen-oauth'.\n" +
-        "No models are configured for auth type 'qwen-oauth'.\n" +
+        "Model 'missing-model' is not available for auth type 'axe-oauth'.\n" +
+        "No models are configured for auth type 'axe-oauth'.\n" +
         'Configure models in settings.modelProviders and ensure the required environment variables are set. In interactive mode, run /auth to configure or switch providers, or run /model without arguments to choose from configured models.',
     });
   });
@@ -473,7 +473,7 @@ describe('modelCommand', () => {
         config: {
           getContentGeneratorConfig: vi.fn().mockReturnValue({
             model: 'qwen-plus',
-            authType: AuthType.QWEN_OAUTH,
+            authType: AuthType.AXE_OAUTH,
           }),
           switchModel,
           getAvailableModelsForAuthType: vi
@@ -489,7 +489,7 @@ describe('modelCommand', () => {
     );
 
     expect(switchModel).toHaveBeenCalledWith(
-      AuthType.QWEN_OAUTH,
+      AuthType.AXE_OAUTH,
       'qwen-max',
       undefined,
     );
@@ -589,9 +589,9 @@ describe('modelCommand', () => {
         config: {
           getContentGeneratorConfig: vi.fn().mockReturnValue({
             model: 'qwen-plus',
-            authType: AuthType.QWEN_OAUTH,
+            authType: AuthType.AXE_OAUTH,
           }),
-          getAuthType: vi.fn().mockReturnValue(AuthType.QWEN_OAUTH),
+          getAuthType: vi.fn().mockReturnValue(AuthType.AXE_OAUTH),
           getAvailableModelsForAuthType: vi
             .fn()
             .mockReturnValue([{ id: 'gpt-4', label: 'GPT-4' }]),
@@ -1702,7 +1702,7 @@ describe('modelCommand', () => {
           config: {
             getContentGeneratorConfig: vi.fn().mockReturnValue({
               model: 'qwen-max',
-              authType: AuthType.QWEN_OAUTH,
+              authType: AuthType.AXE_OAUTH,
             }),
             getModel: vi.fn().mockReturnValue('qwen-max'),
           },
@@ -1727,7 +1727,7 @@ describe('modelCommand', () => {
           config: {
             getContentGeneratorConfig: vi.fn().mockReturnValue({
               model: 'qwen-max',
-              authType: AuthType.QWEN_OAUTH,
+              authType: AuthType.AXE_OAUTH,
             }),
             getModel: vi.fn().mockReturnValue('qwen-max'),
           },

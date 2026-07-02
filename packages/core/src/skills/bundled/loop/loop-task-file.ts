@@ -42,15 +42,15 @@ export interface ReadLoopTaskFileOptions {
    * Directory holding the home/global `loop.md` candidate (`<homeQwenDir>/loop.md`).
    * Pass the QWEN_HOME-aware global dir (`Storage.getGlobalQwenDir()`) so a
    * relocated config home is honored instead of always reading the real OS home.
-   * Defaults to `<homeDir>/.qwen` so a direct barrel caller keeps the `~/.qwen`
+   * Defaults to `<homeDir>/.qwen` so a direct barrel caller keeps the `~/.axe`
    * layout.
    */
   homeQwenDir?: string;
   /**
-   * When false, the project `.qwen/loop.md` candidate is skipped entirely — it
+   * When false, the project `.axe/loop.md` candidate is skipped entirely — it
    * is repo-controlled, so an untrusted workspace must not read it and feed it
    * to the model (mirrors the folder-trust gate on project hooks). The
-   * home/global `~/.qwen/loop.md` is user-owned and always allowed.
+   * home/global `~/.axe/loop.md` is user-owned and always allowed.
    *
    * Defaults to false (fail-secure): this function is re-exported from the core
    * barrel, so a caller that omits the option must NOT silently read an
@@ -160,14 +160,14 @@ async function readBoundedTaskFile(filePath: string): Promise<Buffer | null> {
 }
 
 /**
- * Reads `.qwen/loop.md`, project before home, byte-capped at 25 KB. A missing,
+ * Reads `.axe/loop.md`, project before home, byte-capped at 25 KB. A missing,
  * directory, non-regular, or empty (whitespace-only) path is skipped to the next
  * candidate rather than treated as present; all candidates exhausted → missing.
  * Only the byte cap lives here — the fire-time resolver owns the user-facing
  * truncation notice so the byte-vs-line nuance stays in one place.
  *
  * Project candidate: must be a real regular file at the literal path, and is
- * stat'd BEFORE the blocking open. A symlinked `.qwen/loop.md` is refused
+ * stat'd BEFORE the blocking open. A symlinked `.axe/loop.md` is refused
  * outright — a repo-controlled symlink such as `-> ../.env` resolves *inside*
  * the workspace, so confinement alone would pass and exfiltrate that file to the
  * model. A FIFO/socket/device/dir is refused too, so a named pipe can never
@@ -178,7 +178,7 @@ async function readBoundedTaskFile(filePath: string): Promise<Buffer | null> {
  * folder) the candidate is dropped entirely.
  *
  * Home candidate: `<homeQwenDir>/loop.md` (the QWEN_HOME-aware global dir, not
- * always the real `~/.qwen`). It is the user's own dotfile, so a symlink IS
+ * always the real `~/.axe`). It is the user's own dotfile, so a symlink IS
  * followed (a common, legitimate setup — e.g. into a synced dotfiles repo), but
  * the resolved target must be a regular file AND stay within the home
  * confinement root (`homeDir`: `$QWEN_HOME` or `$HOME`) so a FIFO/device/dir
@@ -188,7 +188,7 @@ async function readBoundedTaskFile(filePath: string): Promise<Buffer | null> {
 export async function readLoopTaskFile({
   projectRoot,
   homeDir,
-  homeQwenDir = path.join(homeDir, '.qwen'),
+  homeQwenDir = path.join(homeDir, '.axe'),
   allowProjectFile = false,
   realDirCache = moduleRealDirCache,
 }: ReadLoopTaskFileOptions): Promise<LoopTaskFileResult> {
@@ -205,7 +205,7 @@ export async function readLoopTaskFile({
       ? [
           {
             source: 'project' as const,
-            path: path.join(projectRoot, '.qwen', 'loop.md'),
+            path: path.join(projectRoot, '.axe', 'loop.md'),
           },
         ]
       : []),
@@ -233,7 +233,7 @@ export async function readLoopTaskFile({
         }
         // A hard-linked loop.md is an ordinary regular file (lstat sees no
         // symlink) but shares a sensitive target's inode (e.g. `ln .env
-        // .qwen/loop.md`), so confinement passes on the same fs and the secret
+        // .axe/loop.md`), so confinement passes on the same fs and the secret
         // would be read every tick. `nlink > 1` is the only tell — refuse it,
         // mirroring canonicalizeKeytermsFile.
         if (projectStat.nlink > 1) {
@@ -270,13 +270,13 @@ export async function readLoopTaskFile({
         }
         // Same hard-link guard as the project candidate: a `nlink > 1` regular
         // file shares another inode's content (e.g. `ln ~/.ssh/id_ed25519
-        // ~/.qwen/loop.md`) and would otherwise be read and fed to the model.
+        // ~/.axe/loop.md`) and would otherwise be read and fed to the model.
         if (homeStat.nlink > 1) {
           debugLogger.debug('skipping hard-linked home loop.md', { filePath });
           continue;
         }
         // A home symlink IS followed, but its target must stay WITHIN $HOME:
-        // otherwise `~/.qwen/loop.md -> /etc/passwd` (or `-> /dev/...`) would be
+        // otherwise `~/.axe/loop.md -> /etc/passwd` (or `-> /dev/...`) would be
         // read and fed to the model every tick. In-home dotfile symlinks (e.g.
         // `-> ~/dotfiles/loop.md`) still resolve inside $HOME and are allowed.
         const realHome = await resolveRealDir(homeDir, realDirCache);
@@ -295,7 +295,7 @@ export async function readLoopTaskFile({
       // None of these name a readable loop.md, so try the next candidate:
       // absent (ENOENT), a directory (EISDIR), a non-directory path component
       // (ENOTDIR, e.g. a stray file where `.qwen` should be), a symlink loop
-      // (ELOOP, e.g. a self-referential `~/.qwen/loop.md`), or an over-long path
+      // (ELOOP, e.g. a self-referential `~/.axe/loop.md`), or an over-long path
       // (ENAMETOOLONG). Anything else (EACCES permissions, real I/O) surfaces
       // rather than being silently swallowed.
       if (

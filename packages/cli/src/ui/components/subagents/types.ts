@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { SubagentLevel, Config } from '@qwen-code/qwen-code-core';
+import type { SubagentLevel, Config } from '@axe/core';
 
 /**
  * State management for the subagent creation wizard.
@@ -17,7 +17,7 @@ export interface CreationWizardState {
   location: SubagentLevel;
 
   /** Generation method selection */
-  generationMethod: 'qwen' | 'manual';
+  generationMethod: 'axe' | 'manual';
 
   /** User's description input for the subagent */
   userDescription: string;
@@ -71,7 +71,7 @@ export interface ColorOption {
 export type WizardAction =
   | { type: 'SET_STEP'; step: number }
   | { type: 'SET_LOCATION'; location: SubagentLevel }
-  | { type: 'SET_GENERATION_METHOD'; method: 'qwen' | 'manual' }
+  | { type: 'SET_GENERATION_METHOD'; method: 'axe' | 'manual' }
   | { type: 'SET_USER_DESCRIPTION'; description: string }
   | { type: 'SET_GENERATED_NAME'; name: string }
   | { type: 'SET_GENERATED_SYSTEM_PROMPT'; systemPrompt: string }

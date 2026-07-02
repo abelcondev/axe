@@ -53,9 +53,9 @@ const { mockDebugWarn } = vi.hoisted(() => ({
   mockDebugWarn: vi.fn(),
 }));
 
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
   return {
     ...actual,
     createDebugLogger: () => ({
@@ -89,7 +89,7 @@ function makeSettingsFile(overrides: Partial<SettingsFile> = {}): SettingsFile {
   return {
     settings: {},
     originalSettings: {},
-    path: '/home/user/.qwen/settings.json',
+    path: '/home/user/.axe/settings.json',
     rawJson: '{}',
     ...overrides,
   };
@@ -103,11 +103,11 @@ function makeLoadedSettings(
   } = {},
 ): LoadedSettings {
   const user = makeSettingsFile({
-    path: '/home/user/.qwen/settings.json',
+    path: '/home/user/.axe/settings.json',
     ...overrides.user,
   });
   const workspace = makeSettingsFile({
-    path: '/project/.qwen/settings.json',
+    path: '/project/.axe/settings.json',
     ...overrides.workspace,
   });
   return {
@@ -284,7 +284,7 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(settings.reloadScopeFromDisk).toHaveBeenCalledWith(
@@ -298,7 +298,7 @@ describe('SettingsWatcher', () => {
       const listener = vi.fn();
       watcher.addChangeListener(listener);
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json.tmp');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json.tmp');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(settings.reloadScopeFromDisk).not.toHaveBeenCalled();
@@ -310,7 +310,7 @@ describe('SettingsWatcher', () => {
       const listener = vi.fn();
       watcher.addChangeListener(listener);
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json.orig');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json.orig');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(settings.reloadScopeFromDisk).not.toHaveBeenCalled();
@@ -321,7 +321,7 @@ describe('SettingsWatcher', () => {
       const listener = vi.fn();
       watcher.addChangeListener(listener);
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/other-file.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/other-file.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(settings.reloadScopeFromDisk).not.toHaveBeenCalled();
@@ -338,9 +338,9 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
 
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
@@ -360,8 +360,8 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
-      fireAllEvent(1, 'change', '/project/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
+      fireAllEvent(1, 'change', '/project/.axe/settings.json');
 
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
@@ -378,7 +378,7 @@ describe('SettingsWatcher', () => {
       const listener = vi.fn();
       watcher.addChangeListener(listener);
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(settings.reloadScopeFromDisk).toHaveBeenCalled();
@@ -396,7 +396,7 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).toHaveBeenCalledTimes(1);
@@ -418,7 +418,7 @@ describe('SettingsWatcher', () => {
         // no-op: disk matches memory
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).not.toHaveBeenCalled();
@@ -433,7 +433,7 @@ describe('SettingsWatcher', () => {
         // no-op: settings stay the same after stripping comments
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).not.toHaveBeenCalled();
@@ -453,7 +453,7 @@ describe('SettingsWatcher', () => {
         userFile.settings = s({ theme: 'light' });
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).toHaveBeenCalledTimes(1);
@@ -475,7 +475,7 @@ describe('SettingsWatcher', () => {
         userFile.settings = s({ env: { FOO: 'b' } });
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).not.toHaveBeenCalled();
@@ -493,7 +493,7 @@ describe('SettingsWatcher', () => {
         userFile.settings = s({ security: { auth: { apiKey: 'new' } } });
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).not.toHaveBeenCalled();
@@ -511,7 +511,7 @@ describe('SettingsWatcher', () => {
         userFile.settings = s({ ui: { theme: 'light' } });
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).toHaveBeenCalledTimes(1);
@@ -529,7 +529,7 @@ describe('SettingsWatcher', () => {
         userFile.settings = s({ ui: { theme: 'light' }, env: { FOO: 'b' } });
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).toHaveBeenCalledTimes(1);
@@ -547,7 +547,7 @@ describe('SettingsWatcher', () => {
         userFile.settings = s({ someCustomKey: 2 });
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).toHaveBeenCalledTimes(1);
@@ -571,7 +571,7 @@ describe('SettingsWatcher', () => {
         });
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).toHaveBeenCalledTimes(1);
@@ -592,7 +592,7 @@ describe('SettingsWatcher', () => {
         userFile.settings = s({ mcp: { excluded: ['a', 'b'] } });
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).toHaveBeenCalledTimes(1);
@@ -618,7 +618,7 @@ describe('SettingsWatcher', () => {
       );
 
       const userIdx = mockWatchers.length - 2;
-      fireAllEvent(userIdx, 'add', '/home/user/.qwen/settings.json');
+      fireAllEvent(userIdx, 'add', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       const events: SettingsChangeEvent[] = listener.mock.calls[0][0];
@@ -646,7 +646,7 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'unlink', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'unlink', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       const events: SettingsChangeEvent[] = listener.mock.calls[0][0];
@@ -668,7 +668,7 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).not.toHaveBeenCalled();
@@ -687,7 +687,7 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(failingListener).toHaveBeenCalled();
@@ -710,7 +710,7 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(
         SettingsWatcher.DEBOUNCE_MS + SettingsWatcher.LISTENER_TIMEOUT_MS + 100,
       );
@@ -809,7 +809,7 @@ describe('SettingsWatcher', () => {
     it('bootstrap ignored predicate allows only the .qwen entry', () => {
       const workspaceOnly = makeLoadedSettings({
         workspaceSettingsActive: false,
-        user: { path: '/home/user/.qwen/settings.json' },
+        user: { path: '/home/user/.axe/settings.json' },
       });
       const w = new SettingsWatcher(workspaceOnly);
       mockExistsSync.mockReturnValue(false);
@@ -950,7 +950,7 @@ describe('SettingsWatcher', () => {
         // reloadScopeFromDisk catches internally, settings unchanged
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(listener).not.toHaveBeenCalled();
@@ -963,7 +963,7 @@ describe('SettingsWatcher', () => {
         throw error;
       });
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(mockDebugWarn).toHaveBeenCalledWith(
@@ -985,7 +985,7 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
 
       watcher.stopWatching();
 
@@ -1025,10 +1025,10 @@ describe('SettingsWatcher', () => {
         },
       );
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
-      fireAllEvent(0, 'change', '/home/user/.qwen/settings.json');
+      fireAllEvent(0, 'change', '/home/user/.axe/settings.json');
       await vi.advanceTimersByTimeAsync(SettingsWatcher.DEBOUNCE_MS + 10);
 
       expect(settings.reloadScopeFromDisk).toHaveBeenCalledTimes(2);

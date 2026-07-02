@@ -73,7 +73,7 @@ describe('qwen mcp approve / reject', () => {
   };
 
   const writeWorkspaceSettings = (servers: Record<string, unknown>) => {
-    const qwenDir = path.join(dir, '.qwen');
+    const qwenDir = path.join(dir, '.axe');
     fs.mkdirSync(qwenDir, { recursive: true });
     fs.writeFileSync(
       path.join(qwenDir, 'settings.json'),
@@ -105,7 +105,7 @@ describe('qwen mcp approve / reject', () => {
     expect(output()).toContain('Approved MCP server "slack"');
   });
 
-  it('approves a workspace .qwen/settings.json server', async () => {
+  it('approves a workspace .axe/settings.json server', async () => {
     writeWorkspaceSettings({ ws: { command: 'node', args: ['ws.js'] } });
 
     await run(approveCommand, { name: 'ws', all: false });

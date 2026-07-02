@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   DaemonSessionTasksStatus,
   DaemonSessionTaskStatus,
-} from '@qwen-code/sdk/daemon';
-import { useActions } from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/sdk/daemon';
+import { useActions } from '@axe/webui/daemon-react-sdk';
 import { useDelayedGlobalKeyDown } from '../../hooks/useDelayedGlobalKeyDown';
 import { useI18n } from '../../i18n';
 import { formatRuntime } from '../../utils/formatRuntime';

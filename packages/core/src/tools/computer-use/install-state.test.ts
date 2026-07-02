@@ -65,7 +65,7 @@ describe('install-state', () => {
   it('installStatePathFor returns correct path', () => {
     const path = installStatePathFor(tmpHome);
     expect(path).toBe(
-      pathJoin(tmpHome, '.qwen', 'computer-use', 'installed.json'),
+      pathJoin(tmpHome, '.axe', 'computer-use', 'installed.json'),
     );
   });
 });

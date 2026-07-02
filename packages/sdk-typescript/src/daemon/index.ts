@@ -36,7 +36,7 @@ export type { RestSseTransport } from './RestSseTransport.js';
 // (`./transports.ts`), so REST-only consumers stay tree-shaken while
 // consumers who want resumable ACP-over-HTTP get a first-class import:
 //   import { negotiateTransport, AcpHttpTransport }
-//     from '@qwen-code/sdk/daemon/transports';
+//     from '@axe/sdk/daemon/transports';
 // The `NegotiateTransportOptions` *type* stays available from this barrel
 // for backward compatibility (type-only, no bundle cost).
 export type { NegotiateTransportOptions } from './negotiateTransport.js';

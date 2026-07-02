@@ -29,7 +29,7 @@ import type {
   Config,
   SkillConfig,
   SkillLevel,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { LoadedSettings } from '../../../config/settings.js';
 import { SettingScope } from '../../../config/settings.js';
 import { t } from '../../../i18n/index.js';
@@ -283,7 +283,7 @@ export function SkillsManagerDialog({
         {
           type: MessageType.ERROR,
           text: t(
-            'Workspace is untrusted; workspace settings are ignored by the merged config. Run /trust first to persist skills changes here, or edit ~/.qwen/settings.json directly to manage skills at user scope.',
+            'Workspace is untrusted; workspace settings are ignored by the merged config. Run /trust first to persist skills changes here, or edit ~/.axe/settings.json directly to manage skills at user scope.',
           ),
         },
         Date.now(),
@@ -306,7 +306,7 @@ export function SkillsManagerDialog({
     const nextDisabled: string[] = [];
     // Preserve workspace entries that don't correspond to any currently-
     // loaded skill (e.g. from a different git branch, uninstalled
-    // extension, deleted .qwen/skills/ directory). Without this, opening
+    // extension, deleted .axe/skills/ directory). Without this, opening
     // /skills and pressing Esc would silently drop orphaned entries and
     // the user's prior disable setting would vanish if the skill later
     // reappears (branch switch, extension reinstall).

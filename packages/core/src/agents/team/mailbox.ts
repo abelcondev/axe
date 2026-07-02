@@ -8,7 +8,7 @@
  * @fileoverview File-based mailbox for structured control messages.
  *
  * Each agent has an inbox file at
- * `~/.qwen/teams/{teamName}/inboxes/{agentName}.json`.
+ * `~/.axe/teams/{teamName}/inboxes/{agentName}.json`.
  *
  * Concurrency is handled in two layers: a per-inbox in-process
  * `Mutex` serializes writers within this process, and a

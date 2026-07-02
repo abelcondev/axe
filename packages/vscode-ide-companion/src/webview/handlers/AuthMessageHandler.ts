@@ -19,7 +19,7 @@ import {
   type ProviderConfig,
   type ProviderSetupInputs,
   type BaseUrlOption,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 /**
  * Auth message handler

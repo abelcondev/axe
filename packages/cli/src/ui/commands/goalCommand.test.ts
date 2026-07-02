@@ -7,12 +7,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { goalCommand } from './goalCommand.js';
 import { createMockCommandContext } from '../../test-utils/mockCommandContext.js';
-import type { Config } from '@qwen-code/qwen-code-core';
+import type { Config } from '@axe/core';
 import {
   __resetActiveGoalStoreForTests,
   clearActiveGoal,
   notifyGoalTerminal,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 function makeConfig(overrides: Partial<Config> = {}): Config {
   return {

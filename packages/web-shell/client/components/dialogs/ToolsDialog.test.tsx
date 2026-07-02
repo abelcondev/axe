@@ -15,7 +15,7 @@ const tools = [
   { name: 'tool-b', displayName: 'Tool B', enabled: false },
 ];
 
-vi.mock('@qwen-code/webui/daemon-react-sdk', () => ({
+vi.mock('@axe/webui/daemon-react-sdk', () => ({
   useTools: () => ({
     status: { errors: [] },
     tools,

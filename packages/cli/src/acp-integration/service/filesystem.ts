@@ -15,12 +15,12 @@ import { RequestError } from '@agentclientprotocol/sdk';
 import type {
   FileSystemService,
   ReadTextFileResponse,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   createDebugLogger,
   getErrorMessage,
   isSubpath,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { realpath } from 'node:fs/promises';
 import path from 'node:path';
 

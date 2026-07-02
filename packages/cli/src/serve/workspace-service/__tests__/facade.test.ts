@@ -9,10 +9,10 @@ import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 
-// Mock @qwen-code/qwen-code-core to avoid the undici dependency chain.
-// This is required so @qwen-code/acp-bridge/status can load (it imports
+// Mock @axe/core to avoid the undici dependency chain.
+// This is required so @axe/acp-bridge/status can load (it imports
 // SkillError from core).
-vi.mock('@qwen-code/qwen-code-core', () => {
+vi.mock('@axe/core', () => {
   class SkillError extends Error {
     code: string;
     constructor(message: string, code: string) {
@@ -40,7 +40,7 @@ vi.mock('@qwen-code/qwen-code-core', () => {
     }
 
     getWorkspaceSettingsPath() {
-      return `${this.workspace}/.qwen/settings.json`;
+      return `${this.workspace}/.axe/settings.json`;
     }
   }
 
@@ -66,7 +66,7 @@ vi.mock('@qwen-code/qwen-code-core', () => {
     DEFAULT_SENSITIVE_SPAN_ATTRIBUTE_MAX_LENGTH: 1024 * 1024,
     SENSITIVE_SPAN_ATTRIBUTE_MAX_LENGTH_LIMIT: 100 * 1024 * 1024,
     DEFAULT_QWEN_CUSTOM_IGNORE_FILE_NAMES: ['.agentignore', '.aiignore'],
-    QWEN_DIR: '.qwen',
+    QWEN_DIR: '.axe',
     Storage,
     ModelsConfig,
     atomicWriteFileSync: vi.fn(),
@@ -89,7 +89,7 @@ vi.mock('../../../utils/stdioHelpers.js', () => ({
 }));
 
 const { createDaemonWorkspaceService } = await import('../index.js');
-import { SessionNotFoundError } from '@qwen-code/acp-bridge/bridgeErrors';
+import { SessionNotFoundError } from '@axe/acp-bridge/bridgeErrors';
 import {
   resetHomeEnvBootstrapForTesting,
   SettingScope,
@@ -373,7 +373,7 @@ describe('createDaemonWorkspaceService', () => {
           rules: { allow: [], ask: [], deny: [] },
         },
         workspace: {
-          path: '/workspace/.qwen/settings.json',
+          path: '/workspace/.axe/settings.json',
           rules: { allow: ['Shell(*)'], ask: [], deny: [] },
         },
         merged: { allow: ['Shell(*)'], ask: [], deny: [] },

@@ -1,5 +1,5 @@
 import { ProxyAgent, setGlobalDispatcher } from 'undici';
-import { normalizeProxyUrl } from '@qwen-code/qwen-code-core';
+import { normalizeProxyUrl } from '@axe/core';
 
 /**
  * Resolve and apply proxy settings for channel service processes.

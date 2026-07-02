@@ -14,7 +14,7 @@
 import type {
   ApprovalMode,
   DaemonBridgeTelemetryMetrics,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { ChannelFactory } from './channel.js';
 import type { PermissionPolicy } from './permission.js';
 import type { PermissionAuditPublisher } from './permissionMediator.js';

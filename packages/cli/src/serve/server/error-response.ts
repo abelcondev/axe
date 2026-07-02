@@ -9,7 +9,7 @@ import {
   recordDaemonBridgeError,
   recordDaemonError,
   TrustGateError,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { Response } from 'express';
 import { writeStderrLine } from '../../utils/stdioHelpers.js';
 import {

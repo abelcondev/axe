@@ -19,7 +19,7 @@ import {
 import * as os from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import * as ts from 'typescript';
-import { QWEN_DIR, Storage } from '@qwen-code/qwen-code-core';
+import { QWEN_DIR, Storage } from '@axe/core';
 
 import {
   bootstrapServeFastPathEnvironment,
@@ -377,7 +377,7 @@ describe('CLI entry import boundary', () => {
 
     expect(fastPathSource).not.toContain('../config/settings.js');
     expect(fastPathSource).not.toContain('../config/environment.js');
-    expect(fastPathSource).not.toContain('@qwen-code/qwen-code-core');
+    expect(fastPathSource).not.toContain('@axe/core');
     expect(fastPathSource).toContain('bootSettings: settings');
     expect(fastPathSource).toContain('resolveOnListen: true');
     expect(fastPathSource).toContain(
@@ -435,7 +435,7 @@ describe('CLI entry import boundary', () => {
       /from ['"]@qwen-code\/acp-bridge\/spawnChannel['"]/,
     );
     expect(runServeSource).toContain("import('./server.js')");
-    expect(runServeSource).toContain("import('@qwen-code/acp-bridge/bridge')");
+    expect(runServeSource).toContain("import('@axe/acp-bridge/bridge')");
   });
 
   it('keeps request helpers from value-importing the ACP compatibility shim', () => {
@@ -448,10 +448,10 @@ describe('CLI entry import boundary', () => {
       /from ['"]\.\.\/acp-session-bridge\.js['"]/,
     );
     expect(requestHelpersSource).toContain(
-      "import type { AcpSessionBridge } from '@qwen-code/acp-bridge/bridgeTypes';",
+      "import type { AcpSessionBridge } from '@axe/acp-bridge/bridgeTypes';",
     );
     expect(requestHelpersSource).toContain(
-      "import { MAX_WORKSPACE_PATH_LENGTH } from '@qwen-code/acp-bridge/workspacePaths';",
+      "import { MAX_WORKSPACE_PATH_LENGTH } from '@axe/acp-bridge/workspacePaths';",
     );
   });
 
@@ -470,11 +470,11 @@ describe('CLI entry import boundary', () => {
     ).toEqual([]);
 
     const forbiddenExternalImports = [
-      '@qwen-code/acp-bridge',
-      '@qwen-code/acp-bridge/bridge',
-      '@qwen-code/acp-bridge/spawnChannel',
-      '@qwen-code/acp-bridge/bridgeClient',
-      '@qwen-code/acp-bridge/bridgeErrors',
+      '@axe/acp-bridge',
+      '@axe/acp-bridge/bridge',
+      '@axe/acp-bridge/spawnChannel',
+      '@axe/acp-bridge/bridgeClient',
+      '@axe/acp-bridge/bridgeErrors',
     ];
     const forbiddenImports = [...graph.externalValueImports].filter(
       (specifier) => forbiddenExternalImports.includes(specifier),
@@ -682,8 +682,8 @@ describe('serve fast path argument parsing', () => {
     tempWorkspace = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-fallback-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
-    writeFileSync(join(tempWorkspace, '.qwen', 'settings.json'), '{');
+    mkdirSync(join(tempWorkspace, '.axe'));
+    writeFileSync(join(tempWorkspace, '.axe', 'settings.json'), '{');
     const stderrWrites: string[] = [];
     vi.spyOn(process.stderr, 'write').mockImplementation((chunk) => {
       stderrWrites.push(String(chunk));
@@ -882,9 +882,9 @@ describe('serve fast path environment bootstrap', () => {
     tempWorkspace = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-rate-limit-env-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
+    mkdirSync(join(tempWorkspace, '.axe'));
     writeFileSync(
-      join(tempWorkspace, '.qwen', 'settings.json'),
+      join(tempWorkspace, '.axe', 'settings.json'),
       JSON.stringify({
         env: {
           QWEN_SERVE_RATE_LIMIT: '1',
@@ -1067,9 +1067,9 @@ describe('serve fast path environment bootstrap', () => {
     tempWorkspace = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-env-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
+    mkdirSync(join(tempWorkspace, '.axe'));
     writeFileSync(
-      join(tempWorkspace, '.qwen', '.env'),
+      join(tempWorkspace, '.axe', '.env'),
       'QWEN_SERVER_TOKEN=from-workspace-env\n',
     );
     process.chdir(tempWorkspace);
@@ -1088,9 +1088,9 @@ describe('serve fast path environment bootstrap', () => {
     tempLaunchCwd = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-launch-cwd-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
+    mkdirSync(join(tempWorkspace, '.axe'));
     writeFileSync(
-      join(tempWorkspace, '.qwen', '.env'),
+      join(tempWorkspace, '.axe', '.env'),
       'QWEN_SERVER_TOKEN=from-explicit-workspace-env\n',
     );
     process.chdir(tempLaunchCwd);
@@ -1153,9 +1153,9 @@ describe('serve fast path environment bootstrap', () => {
     tempWorkspace = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-settings-env-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
+    mkdirSync(join(tempWorkspace, '.axe'));
     writeFileSync(
-      join(tempWorkspace, '.qwen', 'settings.json'),
+      join(tempWorkspace, '.axe', 'settings.json'),
       JSON.stringify({
         env: { QWEN_SERVER_TOKEN: 'from-workspace-settings-env' },
       }),
@@ -1182,9 +1182,9 @@ describe('serve fast path environment bootstrap', () => {
     tempQwenHome = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-discovered-home-')),
     );
-    mkdirSync(join(tempLaunchCwd, '.qwen'), { recursive: true });
+    mkdirSync(join(tempLaunchCwd, '.axe'), { recursive: true });
     writeFileSync(
-      join(tempLaunchCwd, '.qwen', '.env'),
+      join(tempLaunchCwd, '.axe', '.env'),
       `QWEN_HOME=${tempQwenHome}\n`,
     );
     writeFileSync(
@@ -1262,7 +1262,7 @@ describe('serve fast path environment bootstrap', () => {
     tempWorkspace = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-settings-parity-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
+    mkdirSync(join(tempWorkspace, '.axe'));
     const { SETTINGS_VERSION, loadSettings } = await import(
       '../config/settings.js'
     );
@@ -1308,7 +1308,7 @@ describe('serve fast path environment bootstrap', () => {
       ),
     );
     writeFileSync(
-      join(tempWorkspace, '.qwen', 'settings.json'),
+      join(tempWorkspace, '.axe', 'settings.json'),
       JSON.stringify(
         versioned({
           env: {
@@ -1559,9 +1559,9 @@ describe('serve fast path environment bootstrap', () => {
     tempWorkspace = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-settings-env-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
+    mkdirSync(join(tempWorkspace, '.axe'));
     writeFileSync(
-      join(tempWorkspace, '.qwen', 'settings.json'),
+      join(tempWorkspace, '.axe', 'settings.json'),
       JSON.stringify({
         env: { QWEN_SERVER_TOKEN: '${FAST_PATH_REFERENCED_TOKEN}' },
       }),
@@ -1584,9 +1584,9 @@ describe('serve fast path environment bootstrap', () => {
     tempWorkspace = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-settings-env-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
+    mkdirSync(join(tempWorkspace, '.axe'));
     writeFileSync(
-      join(tempWorkspace, '.qwen', 'settings.json'),
+      join(tempWorkspace, '.axe', 'settings.json'),
       JSON.stringify({
         env: { QWEN_SERVER_TOKEN: '${FAST_PATH_REFERENCED_TOKEN}' },
       }),
@@ -1609,9 +1609,9 @@ describe('serve fast path environment bootstrap', () => {
       tempWorkspace = realpathSync(
         mkdtempSync(join(os.tmpdir(), 'qws-fast-path-bad-settings-')),
       );
-      mkdirSync(join(tempWorkspace, '.qwen'));
+      mkdirSync(join(tempWorkspace, '.axe'));
       writeFileSync(
-        join(tempWorkspace, '.qwen', 'settings.json'),
+        join(tempWorkspace, '.axe', 'settings.json'),
         settingsJson,
       );
       process.chdir(tempWorkspace);
@@ -1628,7 +1628,7 @@ describe('serve fast path environment bootstrap', () => {
     tempWorkspace = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-untrusted-settings-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
+    mkdirSync(join(tempWorkspace, '.axe'));
     writeFileSync(
       join(qwenHome, 'settings.json'),
       JSON.stringify({ security: { folderTrust: { enabled: true } } }),
@@ -1641,7 +1641,7 @@ describe('serve fast path environment bootstrap', () => {
       process.env['QWEN_CODE_TRUSTED_FOLDERS_PATH'],
       JSON.stringify({ [tempWorkspace]: TrustLevel.DO_NOT_TRUST }),
     );
-    writeFileSync(join(tempWorkspace, '.qwen', 'settings.json'), '[]');
+    writeFileSync(join(tempWorkspace, '.axe', 'settings.json'), '[]');
     process.chdir(tempWorkspace);
 
     expect(() => loadServeFastPathSettings(tempWorkspace!)).toThrow(
@@ -1658,7 +1658,7 @@ describe('serve fast path environment bootstrap', () => {
     tempLaunchCwd = realpathSync(
       mkdtempSync(join(os.tmpdir(), 'qws-fast-path-trusted-launch-')),
     );
-    mkdirSync(join(tempWorkspace, '.qwen'));
+    mkdirSync(join(tempWorkspace, '.axe'));
     writeFileSync(
       join(qwenHome, 'settings.json'),
       JSON.stringify({ security: { folderTrust: { enabled: true } } }),
@@ -1679,7 +1679,7 @@ describe('serve fast path environment bootstrap', () => {
       'QWEN_SERVER_TOKEN=from-untrusted-workspace-env\n',
     );
     writeFileSync(
-      join(tempWorkspace, '.qwen', 'settings.json'),
+      join(tempWorkspace, '.axe', 'settings.json'),
       JSON.stringify({
         env: { QWEN_SERVER_TOKEN: 'from-untrusted-workspace-settings' },
       }),

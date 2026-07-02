@@ -121,8 +121,8 @@ class ReadFileToolInvocation extends BaseToolInvocation<
       workspaceContext.isPathWithinWorkspace(filePath) ||
       isSubpaths(allowedRoots, filePath) ||
       // isAnyAutoMemPath narrows to the managed auto-memory roots
-      // (per-project + user-level under ~/.qwen/memories/) — never the
-      // broad getMemoryBaseDir() — to avoid exposing sensitive ~/.qwen
+      // (per-project + user-level under ~/.axe/memories/) — never the
+      // broad getMemoryBaseDir() — to avoid exposing sensitive ~/.axe
       // files such as settings.json or OAuth credentials.
       isAnyAutoMemPath(filePath, this.config.getTargetDir())
     ) {

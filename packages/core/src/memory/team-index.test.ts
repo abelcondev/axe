@@ -117,7 +117,7 @@ describe('rebuildTeamAutoMemoryIndex', () => {
   });
 
   it('refuses to write through a symlinked team root (no write outside the repo)', async () => {
-    // A committed `.qwen/team-memory -> /elsewhere` symlink would otherwise
+    // A committed `.axe/team-memory -> /elsewhere` symlink would otherwise
     // redirect the generated index outside the repo with no approval.
     const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'qwen-outside-'));
     try {

@@ -8,7 +8,7 @@ import type { RefObject } from 'react';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { CompletionItem } from '../../types/completionItemTypes.js';
 import { shouldAllowCompletionQuery } from '../utils/slashCommandUtils.js';
-import { stripZeroWidthSpaces } from '@qwen-code/webui';
+import { stripZeroWidthSpaces } from '@axe/webui';
 
 interface CompletionTriggerState {
   isOpen: boolean;

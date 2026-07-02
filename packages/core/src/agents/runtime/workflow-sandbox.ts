@@ -489,7 +489,7 @@ export interface SandboxOptions {
   /**
    * Host-side `workflow(nameOrRef, args)` implementation. When provided, the
    * sandbox exposes the `workflow` global that resolves a saved workflow
-   * (by name from `.qwen/workflows/<name>.js`, or by `{scriptPath}`) and runs
+   * (by name from `.axe/workflows/<name>.js`, or by `{scriptPath}`) and runs
    * it as a nested orchestration sharing this run's agent-count cap and token
    * budget. When omitted the sandbox falls back to a throwing stub — this is
    * also how single-level nesting is enforced: the orchestrator injects

@@ -9,8 +9,8 @@ import { waitFor, act } from '@testing-library/react';
 import type { InputPromptProps } from './InputPrompt.js';
 import { InputPrompt, classifyPastedImagePaths } from './InputPrompt.js';
 import { useTextBuffer, type TextBuffer } from './shared/text-buffer.js';
-import type { Config } from '@qwen-code/qwen-code-core';
-import { ApprovalMode } from '@qwen-code/qwen-code-core';
+import type { Config } from '@axe/core';
+import { ApprovalMode } from '@axe/core';
 import type { LoadedSettings } from '../../config/settings.js';
 import * as path from 'node:path';
 import type { CommandContext, SlashCommand } from '../commands/types.js';
@@ -1279,7 +1279,7 @@ describe('InputPrompt', () => {
       async () => {
         vi.mocked(clipboardUtils.clipboardHasImage).mockResolvedValue(true);
         vi.mocked(clipboardUtils.saveClipboardImage).mockResolvedValue(
-          '/Users/mochi/.qwen/tmp/clipboard-123.png',
+          '/Users/mochi/.axe/tmp/clipboard-123.png',
         );
 
         const { stdin, unmount } = renderWithProviders(
@@ -1302,7 +1302,7 @@ describe('InputPrompt', () => {
     it('should handle Cmd+V when clipboard has an image', async () => {
       vi.mocked(clipboardUtils.clipboardHasImage).mockResolvedValue(true);
       vi.mocked(clipboardUtils.saveClipboardImage).mockResolvedValue(
-        '/Users/mochi/.qwen/tmp/clipboard-456.png',
+        '/Users/mochi/.axe/tmp/clipboard-456.png',
       );
 
       const { stdin, unmount } = renderWithProviders(
@@ -1359,7 +1359,7 @@ describe('InputPrompt', () => {
     });
 
     it('should insert image path at cursor position with proper spacing', async () => {
-      const imagePath = '/Users/mochi/.qwen/tmp/clipboard-456.png';
+      const imagePath = '/Users/mochi/.axe/tmp/clipboard-456.png';
       vi.mocked(clipboardUtils.clipboardHasImage).mockResolvedValue(true);
       vi.mocked(clipboardUtils.saveClipboardImage).mockResolvedValue(imagePath);
 

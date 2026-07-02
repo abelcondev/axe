@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -12,7 +12,7 @@ import {
   TERMINAL_OSC_REGEX,
   TERMINAL_CSI_REGEX,
   TERMINAL_SHIFT_DCS_REGEX,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { LoadedSettings, SettingsFile } from '../../config/settings.js';
 import type {
   AsciiArtSource,
@@ -339,7 +339,7 @@ function readArtFile(absolutePath: string): string | undefined {
 /**
  * Banner-specific sanitizer. Re-uses the OSC / CSI / SS2 / SS3 patterns
  * exported from `stripTerminalControlSequences` (in
- * `@qwen-code/qwen-code-core`) so the regexes are authored once, but
+ * `@axe/core`) so the regexes are authored once, but
  * preserves `\n` and `\t` — multi-line / tab-aligned ASCII art needs
  * those, while the shared core helper strips them. The fallback range
  * here matches the core helper's C0/C1/DEL strip but carves out

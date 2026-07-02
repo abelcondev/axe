@@ -217,7 +217,7 @@ describe('standalone-update', () => {
 
       await expect(
         performStandaloneUpdate(standaloneDir, '1.0.0'),
-      ).rejects.toThrow('not a Qwen Code standalone install');
+      ).rejects.toThrow('not a Axe standalone install');
     });
 
     it('rejects unknown target in manifest', async () => {
@@ -332,7 +332,7 @@ describe('standalone-update', () => {
       try {
         ensurePathInShellRc(binDir);
         const content = fs.readFileSync(zshrc, 'utf-8');
-        expect(content).toContain('# Added by Qwen Code standalone installer');
+        expect(content).toContain('# Added by Axe standalone installer');
         expect(content).toContain(`export PATH="${binDir}:$PATH"`);
       } finally {
         process.env['SHELL'] = origShell;
@@ -345,7 +345,7 @@ describe('standalone-update', () => {
       const zshrc = path.join(tempDir, '.zshrc');
       fs.writeFileSync(
         zshrc,
-        `# Added by Qwen Code standalone installer\nexport PATH="${binDir}:$PATH"\n`,
+        `# Added by Axe standalone installer\nexport PATH="${binDir}:$PATH"\n`,
       );
 
       const origShell = process.env['SHELL'];
@@ -357,7 +357,7 @@ describe('standalone-update', () => {
         ensurePathInShellRc(binDir);
         const content = fs.readFileSync(zshrc, 'utf-8');
         const matches = content.match(
-          /# Added by Qwen Code standalone installer/g,
+          /# Added by Axe standalone installer/g,
         );
         expect(matches).toHaveLength(1);
       } finally {

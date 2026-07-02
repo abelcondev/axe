@@ -13,7 +13,7 @@ import type { ApprovalModeValue } from './approvalModeValueTypes.js';
 // ---------------------------------------------------------------------------
 
 // Default auth method for ACP authenticate requests.
-// Value matches AuthType.USE_OPENAI from @qwen-code/qwen-code-core.
+// Value matches AuthType.USE_OPENAI from @axe/core.
 // Cannot import directly because this file is used in the webview bundle
 // where core (Node.js-only) is excluded as external.
 export const authMethod = 'openai';

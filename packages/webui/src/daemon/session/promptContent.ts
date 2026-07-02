@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { PromptContentBlock } from '@qwen-code/sdk/daemon';
+import type { PromptContentBlock } from '@axe/sdk/daemon';
 import type { DaemonPromptImage } from './types.js';
 
 export function toDaemonPromptContent(

@@ -23,8 +23,8 @@ import type {
   PermissionManager,
   RuleWithSource,
   RuleType,
-} from '@qwen-code/qwen-code-core';
-import { isPathWithinRoot, parseRule } from '@qwen-code/qwen-code-core';
+} from '@axe/core';
+import { isPathWithinRoot, parseRule } from '@axe/core';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -63,13 +63,13 @@ function getPermScopeItems(): PermScopeItem[] {
   return [
     {
       label: t('Project settings'),
-      description: t('Checked in at .qwen/settings.json'),
+      description: t('Checked in at .axe/settings.json'),
       value: SettingScope.Workspace,
       key: 'project',
     },
     {
       label: t('User settings'),
-      description: t('Saved in at ~/.qwen/settings.json'),
+      description: t('Saved in at ~/.axe/settings.json'),
       value: SettingScope.User,
       key: 'user',
     },
@@ -85,17 +85,17 @@ function getTabs(): Tab[] {
     {
       id: 'allow',
       label: t('Allow'),
-      description: t("Qwen Code won't ask before using allowed tools."),
+      description: t("Axe won't ask before using allowed tools."),
     },
     {
       id: 'ask',
       label: t('Ask'),
-      description: t('Qwen Code will ask before using these tools.'),
+      description: t('Axe will ask before using these tools.'),
     },
     {
       id: 'deny',
       label: t('Deny'),
-      description: t('Qwen Code is not allowed to use denied tools.'),
+      description: t('Axe is not allowed to use denied tools.'),
     },
     {
       id: 'workspace',
@@ -654,7 +654,7 @@ export function PermissionsDialog({
         <Box height={1} />
         <Text color={theme.text.secondary} wrap="wrap">
           {t(
-            'Qwen Code will be able to read files in this directory and make edits when auto-accept edits is on.',
+            'Axe will be able to read files in this directory and make edits when auto-accept edits is on.',
           )}
         </Text>
         <Box height={1} />
@@ -755,7 +755,7 @@ export function PermissionsDialog({
         <TabBar tabs={tabs} activeIndex={activeTabIndex} />
         <Text color={theme.text.secondary} wrap="wrap">
           {t(
-            'Qwen Code can read files in the workspace, and make edits when auto-accept edits is on.',
+            'Axe can read files in the workspace, and make edits when auto-accept edits is on.',
           )}
         </Text>
         <Box height={1} />

@@ -91,7 +91,7 @@ const { mockRestoreWorktreeContext } = vi.hoisted(() => ({
     .mockResolvedValue({ contextMessage: null, session: null }),
 }));
 
-vi.mock('@qwen-code/qwen-code-core', () => ({
+vi.mock('@axe/core', () => ({
   createDebugLogger: () => ({
     debug: vi.fn(),
     error: vi.fn(),
@@ -126,8 +126,8 @@ vi.mock('@qwen-code/qwen-code-core', () => ({
   AuthType: {},
   DEFAULT_QWEN_CUSTOM_IGNORE_FILE_NAMES: ['.agentignore', '.aiignore'],
   clearCachedCredentialFile: vi.fn(),
-  QwenOAuth2Event: {},
-  qwenOAuth2Events: { on: vi.fn(), off: vi.fn() },
+  AxeOAuth2Event: {},
+  axeOAuth2Events: { on: vi.fn(), off: vi.fn() },
   MCP_BUDGET_WARN_FRACTION: 0.75,
   MCPServerConfig: vi.fn().mockImplementation((...args: unknown[]) => ({
     _args: args,
@@ -232,10 +232,10 @@ vi.mock('../utils/acpModelUtils.js', () => ({
 // ---------------------------------------------------------------------------
 
 import { runAcpAgent } from './acpAgent.js';
-import type { Config } from '@qwen-code/qwen-code-core';
+import type { Config } from '@axe/core';
 import type { LoadedSettings } from '../config/settings.js';
 import type { CliArgs } from '../config/config.js';
-import { SessionService } from '@qwen-code/qwen-code-core';
+import { SessionService } from '@axe/core';
 import { AgentSideConnection } from '@agentclientprotocol/sdk';
 import { loadSettings } from '../config/settings.js';
 import { loadCliConfig } from '../config/config.js';
@@ -444,13 +444,13 @@ describe('QwenAgent loadSession — Phase C worktree context restore', () => {
 
   it('VP2: live sidecar — pendingWorktreeNotice is set to contextMessage', async () => {
     const contextMessage =
-      '[Resumed] Active worktree: "my-feature" at /repo/.qwen/worktrees/my-feature ' +
+      '[Resumed] Active worktree: "my-feature" at /repo/.axe/worktrees/my-feature ' +
       '(branch: worktree-my-feature). Continue using this path for all file operations.';
     mockRestoreWorktreeContext.mockResolvedValueOnce({
       contextMessage,
       session: {
         slug: 'my-feature',
-        worktreePath: '/repo/.qwen/worktrees/my-feature',
+        worktreePath: '/repo/.axe/worktrees/my-feature',
         worktreeBranch: 'worktree-my-feature',
         originalCwd: '/repo',
         originalBranch: 'main',

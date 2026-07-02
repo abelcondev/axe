@@ -6,5 +6,5 @@
  * Re-export session grouping utilities from webui for backward compatibility
  */
 
-export { groupSessionsByDate, getTimeAgo } from '@qwen-code/webui';
-export type { SessionGroup } from '@qwen-code/webui';
+export { groupSessionsByDate, getTimeAgo } from '@axe/webui';
+export type { SessionGroup } from '@axe/webui';

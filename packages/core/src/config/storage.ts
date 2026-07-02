@@ -14,7 +14,7 @@ import { FatalConfigError } from '../utils/errors.js';
 export { QWEN_DIR } from '../utils/paths.js';
 export const GOOGLE_ACCOUNTS_FILENAME = 'google_accounts.json';
 export const OAUTH_FILE = 'oauth_creds.json';
-export const SKILL_PROVIDER_CONFIG_DIRS = ['.qwen', '.agents'];
+export const SKILL_PROVIDER_CONFIG_DIRS = ['.axe', '.agents'];
 const TMP_DIR_NAME = 'tmp';
 const BIN_DIR_NAME = 'bin';
 const PROJECT_DIR_NAME = 'projects';
@@ -130,11 +130,11 @@ export class Storage {
    * Returns the base directory for all runtime output (temp files, debug logs,
    * session data, todos, insights, etc.).
    *
-   * Priority: QWEN_RUNTIME_DIR env var > setRuntimeBaseDir() value > getGlobalQwenDir()
+   * Priority: AXE_RUNTIME_DIR env var > setRuntimeBaseDir() value > getGlobalAxeDir()
    * @returns Absolute path to the runtime output base directory
    */
   static getRuntimeBaseDir(): string {
-    const envDir = process.env['QWEN_RUNTIME_DIR'];
+    const envDir = process.env['AXE_RUNTIME_DIR'];
     if (envDir) {
       return (
         Storage.resolveRuntimeBaseDir(envDir) ?? Storage.getGlobalQwenDir()
@@ -152,13 +152,13 @@ export class Storage {
   }
 
   static getGlobalQwenDir(): string {
-    const envDir = process.env['QWEN_HOME'];
+    const envDir = process.env['AXE_HOME'];
     if (envDir) {
       return Storage.resolvePath(envDir);
     }
     const homeDir = os.homedir();
     if (!homeDir) {
-      return path.join(os.tmpdir(), '.qwen');
+      return path.join(os.tmpdir(), '.axe');
     }
     return path.join(homeDir, QWEN_DIR);
   }
@@ -351,7 +351,7 @@ export class Storage {
   }
 
   /**
-   * Project-level saved-workflow scripts directory: `<targetDir>/.qwen/workflows`.
+   * Project-level saved-workflow scripts directory: `<targetDir>/.axe/workflows`.
    * Saved workflow scripts (`<name>.js`) here are surfaced as slash commands
    * and resolvable by `workflow('<name>')` from inside a running workflow.
    */
@@ -360,7 +360,7 @@ export class Storage {
   }
 
   /**
-   * User-level saved-workflow scripts directory: `~/.qwen/workflows`. User
+   * User-level saved-workflow scripts directory: `~/.axe/workflows`. User
    * scope is lower-precedence than project scope when the same `<name>.js`
    * exists in both.
    */
@@ -429,9 +429,9 @@ export class Storage {
   }
 
   /**
-   * Returns the user-level extensions directory (~/.qwen/extensions/).
+   * Returns the user-level extensions directory (~/.axe/extensions/).
    * Extensions installed at user scope are stored here, as opposed to
-   * project-level extensions which live in <project>/.qwen/extensions/.
+   * project-level extensions which live in <project>/.axe/extensions/.
    */
   static getUserExtensionsDir(): string {
     return path.join(Storage.getGlobalQwenDir(), 'extensions');

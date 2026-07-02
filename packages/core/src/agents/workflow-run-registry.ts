@@ -102,7 +102,7 @@ export interface WorkflowTask extends TaskBase {
    * P7b: the workflow script source (verbatim, as the tool received it).
    * Used by the run-snapshot writer (so a persisted run carries its
    * script) and the save-to-disk dialog (so a completed run can be saved
-   * to `.qwen/workflows/<name>.js`). Empty string for legacy callers that
+   * to `.axe/workflows/<name>.js`). Empty string for legacy callers that
    * don't supply it.
    */
   script: string;

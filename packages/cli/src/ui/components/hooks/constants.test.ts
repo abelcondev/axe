@@ -9,7 +9,7 @@ import {
   HookEventName,
   HooksConfigSource,
   hookEventSupportsMatcher,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 vi.mock('../../../i18n/index.js', () => ({
   t: vi.fn((key: string) => key),
@@ -336,7 +336,7 @@ describe('hooks constants', () => {
 
       expect(info.event).toBe(HookEventName.Stop);
       expect(info.shortDescription).toBe(
-        'Right before Qwen Code concludes its response',
+        'Right before Axe concludes its response',
       );
       expect(info.description).toBe('');
       expect(info.exitCodes).toHaveLength(3);

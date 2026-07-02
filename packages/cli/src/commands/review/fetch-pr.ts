@@ -15,7 +15,7 @@
 //   3. `gh pr view ...` to fetch metadata (head/base ref names, head SHA,
 //      diff stats, cross-repo flag).
 //   4. `git worktree add` to create an ephemeral worktree at
-//      `.qwen/tmp/review-pr-<n>` so subsequent steps can run in isolation.
+//      `.axe/tmp/review-pr-<n>` so subsequent steps can run in isolation.
 //   5. Emit a single JSON report describing the resulting state, which the
 //      LLM reads to drive the rest of Step 1.
 

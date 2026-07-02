@@ -57,7 +57,7 @@ export const lspCommand: SlashCommand = {
         context,
         'info',
         t(
-          'LSP is not enabled. Start Qwen Code with `--experimental-lsp` to enable LSP support.',
+          'LSP is not enabled. Start Axe with `--experimental-lsp` to enable LSP support.',
         ),
       );
     }
@@ -68,7 +68,7 @@ export const lspCommand: SlashCommand = {
         context,
         'info',
         t(
-          'LSP is enabled but no client is connected. Check debug logs under `${QWEN_RUNTIME_DIR:-~/.qwen}/debug/` or see the LSP troubleshooting docs.',
+          'LSP is enabled but no client is connected. Check debug logs under `${AXE_RUNTIME_DIR:-~/.axe}/debug/` or see the LSP troubleshooting docs.',
         ),
       );
     }

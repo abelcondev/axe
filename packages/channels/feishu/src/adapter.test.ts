@@ -5,7 +5,7 @@ import type {
   ChannelConfig,
   ChannelTaskLifecycleEvent,
   SessionTarget,
-} from '@qwen-code/channel-base';
+} from '@axe/channel-base';
 
 function createMockBridge(): ChannelAgentBridge {
   return {

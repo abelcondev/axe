@@ -14,7 +14,7 @@ import {
   getLatestGitHubRelease,
   isGitHubRepositoryAsync,
 } from '../utils/gitUtils.js';
-import { createDebugLogger } from '@qwen-code/qwen-code-core';
+import { createDebugLogger } from '@axe/core';
 import { writeStderrLine } from '../utils/stdioHelpers.js';
 
 const debugLogger = createDebugLogger('SETUP_GITHUB');
@@ -27,7 +27,7 @@ export const GITHUB_WORKFLOW_PATHS = [
   'pr-review/qwen-review.yml',
 ];
 
-const GITIGNORE_ENTRIES = ['.qwen/', 'gha-creds-*.json'];
+const GITIGNORE_ENTRIES = ['.axe/', 'gha-creds-*.json'];
 export const MAX_WORKFLOW_DOWNLOAD_BYTES = 5 * 1024 * 1024;
 
 export type GithubSetupGitignoreStatus =

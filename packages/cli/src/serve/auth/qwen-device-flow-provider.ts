@@ -10,12 +10,12 @@ import {
   isDeviceAuthorizationSuccess,
   isDeviceTokenPending,
   isDeviceTokenSuccess,
-  QwenOAuth2Client,
-  QwenOAuthPollError,
+  AxeOAuth2Client,
+  AxeOAuthPollError,
   type DeviceTokenPendingData,
-  type IQwenOAuth2Client,
+  type IAxeOAuth2Client,
   type QwenCredentials,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { writeStderrLine } from '../../utils/stdioHelpers.js';
 import {
   brandSecret,
@@ -30,11 +30,11 @@ import {
   type DeviceFlowStartResult,
 } from './device-flow.js';
 
-const QWEN_OAUTH_SCOPE = 'openid profile email model.completion';
+const AXE_OAUTH_SCOPE = 'openid profile email model.completion';
 
 /**
  * Maximum length of raw IdP detail written to stderr for operator
- * audit. The raw `err.message` from `QwenOAuth2Client` can embed the
+ * audit. The raw `err.message` from `AxeOAuth2Client` can embed the
  * full upstream response body, which on a misbehaving reverse proxy /
  * WAF can be megabytes of HTML. Truncate so container log-aggregation
  * pipelines don't lose the useful prefix.
@@ -50,18 +50,18 @@ function truncateForStderr(detail: string): string {
 /**
  * Qwen-OAuth implementation of `DeviceFlowProvider` for `qwen serve`.
  *
- * Uses the lower-level `QwenOAuth2Client` primitives (`requestDeviceAuthorization`
+ * Uses the lower-level `AxeOAuth2Client` primitives (`requestDeviceAuthorization`
  * / `pollDeviceToken`) directly rather than the high-level
  * `authWithQwenDeviceFlow` because that helper invokes `open(url)` to launch
  * a browser on the daemon host — only the SDK/user side may decide to open
  * a URL.
  */
-export class QwenOAuthDeviceFlowProvider implements DeviceFlowProvider {
-  readonly providerId: DeviceFlowProviderId = 'qwen-oauth';
-  private readonly client: IQwenOAuth2Client;
+export class AxeOAuthDeviceFlowProvider implements DeviceFlowProvider {
+  readonly providerId: DeviceFlowProviderId = 'axe-oauth';
+  private readonly client: IAxeOAuth2Client;
 
-  constructor(client?: IQwenOAuth2Client) {
-    this.client = client ?? new QwenOAuth2Client();
+  constructor(client?: IAxeOAuth2Client) {
+    this.client = client ?? new AxeOAuth2Client();
   }
 
   async start(opts: { signal: AbortSignal }): Promise<DeviceFlowStartResult> {
@@ -73,7 +73,7 @@ export class QwenOAuthDeviceFlowProvider implements DeviceFlowProvider {
       // socket immediately.
       auth = await this.client.requestDeviceAuthorization(
         {
-          scope: QWEN_OAUTH_SCOPE,
+          scope: AXE_OAUTH_SCOPE,
           code_challenge,
           code_challenge_method: 'S256',
         },
@@ -147,7 +147,7 @@ export class QwenOAuthDeviceFlowProvider implements DeviceFlowProvider {
       // !== 'pending' and skip emit/audit.
       return { kind: 'pending' };
     }
-    let response: Awaited<ReturnType<IQwenOAuth2Client['pollDeviceToken']>>;
+    let response: Awaited<ReturnType<IAxeOAuth2Client['pollDeviceToken']>>;
     try {
       // Pass `signal` through to the IdP fetch so cancel / dispose
       // during a slow upstream response aborts the in-flight socket
@@ -171,10 +171,10 @@ export class QwenOAuthDeviceFlowProvider implements DeviceFlowProvider {
       // the entire IdP responseText which would flow to every SSE
       // subscriber. Use a stable bounded summary; full detail goes
       // through stderr audit only. Branch on `instanceof
-      // QwenOAuthPollError` and read the structured `oauthError`
+      // AxeOAuthPollError` and read the structured `oauthError`
       // field instead of substring-matching the message text.
       const errorKind: DeviceFlowErrorKind =
-        err instanceof QwenOAuthPollError
+        err instanceof AxeOAuthPollError
           ? mapRfc8628OAuthCode(err.oauthError)
           : 'upstream_error';
       // Mirror the `start()` path's stderr audit so on-call can
@@ -189,7 +189,7 @@ export class QwenOAuthDeviceFlowProvider implements DeviceFlowProvider {
       const aborted = opts.signal.aborted;
       if (!aborted) {
         let safeDetail: string;
-        if (err instanceof QwenOAuthPollError) {
+        if (err instanceof AxeOAuthPollError) {
           // Structured upstream OAuth error envelope — no raw body,
           // but the `oauthError` field IS attacker-controlled, so
           // sanitize C0/C1 controls before interpolating.
@@ -287,7 +287,7 @@ export class QwenOAuthDeviceFlowProvider implements DeviceFlowProvider {
 
 /**
  * Map a structured RFC 8628 OAuth error code (from
- * `QwenOAuthPollError.oauthError`) to the registry's
+ * `AxeOAuthPollError.oauthError`) to the registry's
  * `DeviceFlowErrorKind` taxonomy. Unknown / missing codes fall
  * through to `upstream_error`.
  */

@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 import type {
   DaemonEvent,
   DaemonWorkspaceSkillsStatus,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import {
   getReplayTokenCount,
   getReplayTokenUsage,

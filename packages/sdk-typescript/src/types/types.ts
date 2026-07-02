@@ -111,7 +111,7 @@ export type McpAuthProviderType =
  * - Streamable HTTP: httpUrl, headers
  * - WebSocket: tcp
  *
- * This interface aligns with MCPServerConfig in @qwen-code/qwen-code-core.
+ * This interface aligns with MCPServerConfig in @axe/core.
  */
 export interface CLIMcpServerConfig {
   // For stdio transport
@@ -427,7 +427,7 @@ export interface QueryOptions {
   /**
    * Authentication type for the AI service.
    * - 'openai': Use OpenAI-compatible authentication
-   * - 'qwen-oauth': Legacy Qwen OAuth authentication
+   * - 'axe-oauth': Legacy Qwen OAuth authentication
    *
    * Qwen OAuth free tier was discontinued on 2026-04-15. New SDK setups should
    * use OpenAI-compatible authentication or another supported provider.

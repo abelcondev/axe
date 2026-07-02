@@ -10,7 +10,7 @@ import {
   registerGoalHook,
   unregisterGoalHook,
   type Config,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { renderWithProviders } from '../../test-utils/render.js';
 import { GoalPill } from './GoalPill.js';
 

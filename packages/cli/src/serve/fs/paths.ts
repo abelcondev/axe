@@ -6,7 +6,7 @@
 
 import { promises as fsp } from 'node:fs';
 import * as path from 'node:path';
-import { isWithinRoot } from '@qwen-code/qwen-code-core';
+import { isWithinRoot } from '@axe/core';
 import { FsError, type FsErrorKind } from './errors.js';
 
 // `canonicalizeWorkspace` and `MAX_WORKSPACE_PATH_LENGTH` lifted to
@@ -19,7 +19,7 @@ import { FsError, type FsErrorKind } from './errors.js';
 import {
   canonicalizeWorkspace,
   MAX_WORKSPACE_PATH_LENGTH,
-} from '@qwen-code/acp-bridge/workspacePaths';
+} from '@axe/acp-bridge/workspacePaths';
 export { canonicalizeWorkspace, MAX_WORKSPACE_PATH_LENGTH };
 
 /**

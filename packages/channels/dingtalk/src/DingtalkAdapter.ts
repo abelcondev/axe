@@ -10,7 +10,7 @@ import {
   isTerminalTaskLifecycleType,
   sanitizeLogText,
   sanitizeSenderName,
-} from '@qwen-code/channel-base';
+} from '@axe/channel-base';
 import { normalizeDingTalkMarkdown, extractTitle } from './markdown.js';
 import { downloadMedia } from './media.js';
 import type {
@@ -20,7 +20,7 @@ import type {
   ChannelAgentBridge,
   ChannelTaskLifecycleEvent,
   SessionTarget,
-} from '@qwen-code/channel-base';
+} from '@axe/channel-base';
 
 /**
  * Raw DingTalk message data — the SDK's RobotMessage type only covers text,

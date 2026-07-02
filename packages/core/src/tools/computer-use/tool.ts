@@ -30,7 +30,7 @@ import { homedir } from 'node:os';
 type ComputerUseParams = Record<string, unknown>;
 
 const INSTALL_REASON =
-  'This downloads the Computer Use driver (~20MB, signed + notarized) into ~/.qwen/computer-use/ the first time. ' +
+  'This downloads the Computer Use driver (~20MB, signed + notarized) into ~/.axe/computer-use/ the first time. ' +
   'Computer Use can click, type, and read your desktop apps in the background. ' +
   "On macOS you'll be guided through Accessibility / Screen Recording permissions next.";
 

@@ -42,7 +42,7 @@ export {
   type ModelSwitchMetadata,
   MODEL_GENERATION_CONFIG_FIELDS,
   type OnModelChangeCallback,
-  QWEN_OAUTH_MODELS,
+  AXE_OAUTH_MODELS,
   resolveModelConfig,
   type ResolvedModelConfig,
   validateModelConfig,
@@ -126,7 +126,7 @@ export { nextFireTime, parseCron } from './utils/cronParser.js';
 // Backward-compatible type re-exports for tool classes removed from eager loading.
 // These preserve TypeScript type compatibility for downstream consumers.
 // Note: runtime value imports (e.g. `new EditTool(...)`) must use the direct
-// module path (e.g. `@qwen-code/qwen-code-core/dist/tools/edit.js`) as these
+// module path (e.g. `@axe/core/dist/tools/edit.js`) as these
 // classes are now lazy-loaded and are not exported as values from the package root.
 export type { EditTool, EditToolParams } from './tools/edit.js';
 export type {
@@ -486,7 +486,7 @@ export * from './utils/sideQuery.js';
 // OAuth & Authentication
 // ============================================================================
 
-export * from './qwen/qwenOAuth2.js';
+export * from './qwen/axeOAuth2.js';
 
 // ============================================================================
 // Message Bus Types

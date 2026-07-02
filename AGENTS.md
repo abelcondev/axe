@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance to Qwen Code when working with code in this
+This file provides guidance to Axe when working with code in this
 repository.
 
 ## Working Principles
@@ -129,12 +129,12 @@ npm run preflight  # Full check: clean → install → format → lint → build
 
 ### General workflow
 
-1. **Design doc for non-trivial work** — write one in `.qwen/design/` if the
+1. **Design doc for non-trivial work** — write one in `.axe/design/` if the
    change touches multiple files or involves design decisions. Skip for small
    bugfixes.
 2. **Test plan for behavioral changes** — write an E2E test plan in
-   `.qwen/e2e-tests/` when the change affects user-observable behavior. Dry-run
-   against the global `qwen` CLI first to confirm the baseline.
+   `.axe/e2e-tests/` when the change affects user-observable behavior. Dry-run
+   against the global `axe` CLI first to confirm the baseline.
 3. **Build + typecheck before declaring done**:
    `npm run build && npm run typecheck`.
 4. **Code review** — run `/review` when available. Triage each comment:
@@ -189,14 +189,14 @@ applicable.
 
 ## Project Directories
 
-Project artifacts live under `.qwen/`:
+Project artifacts live under `.axe/`:
 
 | Directory               | Purpose                              |
 | ----------------------- | ------------------------------------ |
-| `.qwen/design/`         | Design docs for planned features     |
-| `.qwen/e2e-tests/`      | E2E test plans and results           |
-| `.qwen/issues/`         | Issue drafts before filing on GitHub |
-| `.qwen/pr-drafts/`      | PR drafts before submitting          |
-| `.qwen/pr-reviews/`     | PR review notes                      |
-| `.qwen/investigations/` | Structured debugging journals        |
-| `.qwen/scripts/`        | Utility scripts                      |
+| `.axe/design/`         | Design docs for planned features     |
+| `.axe/e2e-tests/`      | E2E test plans and results           |
+| `.axe/issues/`         | Issue drafts before filing on GitHub |
+| `.axe/pr-drafts/`      | PR drafts before submitting          |
+| `.axe/pr-reviews/`     | PR review notes                      |
+| `.axe/investigations/` | Structured debugging journals        |
+| `.axe/scripts/`        | Utility scripts                      |

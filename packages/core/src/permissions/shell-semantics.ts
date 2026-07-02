@@ -2047,7 +2047,7 @@ const MAX_SHELL_UNWRAP_DEPTH = 4;
  * Used by {@link extractShellOperationsAcrossCommand} to track the effective
  * cwd left-to-right across compound segments, so a segment like
  * `cd .qwen && echo > settings.json` correctly attributes the write to
- * `<cwd>/.qwen/settings.json`.
+ * `<cwd>/.axe/settings.json`.
  */
 type CdResolution =
   | { kind: 'not-cd' }
@@ -2134,7 +2134,7 @@ function resolveCdTargetCwd(
  *     "cd .qwen && bash -lc 'echo {} > settings.json'",
  *     '/repo',
  *   )
- *   // → [{ virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' }]
+ *   // → [{ virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' }]
  */
 export function extractShellOperationsAcrossCommand(
   command: string,

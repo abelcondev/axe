@@ -12,15 +12,15 @@
  *   VP4: second Session.prompt() does NOT inject the notice again.
  *   VP4b: no notice set — first prompt is sent without any worktree reminder.
  *
- * This file does NOT mock @qwen-code/qwen-code-core at the module level so
+ * This file does NOT mock @axe/core at the module level so
  * the real Session class and its dependencies resolve correctly.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Session } from './Session.js';
-import type { Config, GeminiChat } from '@qwen-code/qwen-code-core';
-import { ApprovalMode, AuthType, Storage } from '@qwen-code/qwen-code-core';
-import * as core from '@qwen-code/qwen-code-core';
+import type { Config, GeminiChat } from '@axe/core';
+import { ApprovalMode, AuthType, Storage } from '@axe/core';
+import * as core from '@axe/core';
 import type {
   AgentSideConnection,
   PromptRequest,
@@ -182,7 +182,7 @@ describe('Session.pendingWorktreeNotice', () => {
     );
 
     const notice =
-      '[Resumed] Active worktree: "feat" at /repo/.qwen/worktrees/feat ' +
+      '[Resumed] Active worktree: "feat" at /repo/.axe/worktrees/feat ' +
       '(branch: worktree-feat). Continue using this path for all file operations.';
     session.pendingWorktreeNotice = notice;
 

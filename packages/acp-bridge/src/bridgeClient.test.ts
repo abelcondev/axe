@@ -42,7 +42,7 @@ import { RequestError } from '@agentclientprotocol/sdk';
 import {
   ClientMcpRegistrar,
   type ClientMcpFrame,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js';
 import { BridgeClient } from './bridgeClient.js';
 import type { BridgeFileSystem } from './bridgeFileSystem.js';

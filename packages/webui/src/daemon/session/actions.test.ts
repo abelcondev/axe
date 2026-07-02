@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { DaemonSessionClient } from '@qwen-code/sdk/daemon';
+import type { DaemonSessionClient } from '@axe/sdk/daemon';
 import {
   createDaemonSessionActions,
   getConnectionAfterSessionClear,

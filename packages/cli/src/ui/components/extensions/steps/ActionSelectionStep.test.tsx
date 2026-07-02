@@ -8,14 +8,14 @@ import { render } from 'ink-testing-library';
 import { describe, it, expect, vi } from 'vitest';
 import { ActionSelectionStep } from './ActionSelectionStep.js';
 import { KeypressProvider } from '../../../contexts/KeypressContext.js';
-import type { Extension } from '@qwen-code/qwen-code-core';
+import type { Extension } from '@axe/core';
 
 const createMockExtension = (name: string, isActive = true): Extension =>
   ({
     id: name,
     name,
     version: '1.0.0',
-    path: `/home/user/.qwen/extensions/${name}`,
+    path: `/home/user/.axe/extensions/${name}`,
     isActive,
     installMetadata: {
       type: 'git',

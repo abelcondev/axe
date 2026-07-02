@@ -15,7 +15,7 @@ import type { SettingsMigration } from '../types.js';
  */
 const PROVIDER_KEY_TO_PROTOCOL: Record<string, string> = {
   openai: 'openai',
-  'qwen-oauth': 'qwen-oauth',
+  'axe-oauth': 'axe-oauth',
   gemini: 'gemini',
   'vertex-ai': 'gemini',
   anthropic: 'anthropic',

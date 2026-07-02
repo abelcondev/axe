@@ -12,7 +12,7 @@ import type {
   DaemonSessionSupportedCommandsStatus,
   DaemonWorkspaceProvidersStatus,
   DaemonWorkspaceSkillsStatus,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import type {
   DaemonCommandInfo,
   DaemonConnectionState,

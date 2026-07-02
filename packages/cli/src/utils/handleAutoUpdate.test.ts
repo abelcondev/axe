@@ -264,7 +264,7 @@ describe('handleAutoUpdate', () => {
 
     expect(emitSpy).toHaveBeenCalledWith('update-success', {
       message:
-        'Update successful! Please restart Qwen Code to use the new version. ' +
+        'Update successful! Please restart Axe to use the new version. ' +
         'Switching model providers before restarting may not work correctly.',
     });
   });
@@ -432,7 +432,7 @@ describe('setUpdateHandler', () => {
       {
         type: MessageType.INFO,
         text:
-          'Update successful! Please restart Qwen Code to use the new version. ' +
+          'Update successful! Please restart Axe to use the new version. ' +
           'Switching model providers before restarting may not work correctly.',
       },
       expect.any(Number),

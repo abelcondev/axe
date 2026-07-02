@@ -20,9 +20,9 @@ describe('FileSearch', () => {
     vi.restoreAllMocks();
   });
 
-  it('should use .qwenignore rules', async () => {
+  it('should use .axeignore rules', async () => {
     tmpDir = await createTmpDir({
-      '.qwenignore': 'dist/',
+      '.axeignore': 'dist/',
       dist: ['ignored.js'],
       src: ['not-ignored.js'],
     });
@@ -41,13 +41,13 @@ describe('FileSearch', () => {
     await fileSearch.initialize();
     const results = await fileSearch.search('');
 
-    expect(results).toEqual(['src/', '.qwenignore', 'src/not-ignored.js']);
+    expect(results).toEqual(['src/', '.axeignore', 'src/not-ignored.js']);
   });
 
-  it('should combine .gitignore and .qwenignore rules', async () => {
+  it('should combine .gitignore and .axeignore rules', async () => {
     tmpDir = await createTmpDir({
       '.gitignore': 'dist/',
-      '.qwenignore': 'build/',
+      '.axeignore': 'build/',
       dist: ['ignored-by-git.js'],
       build: ['ignored-by-gemini.js'],
       src: ['not-ignored.js'],
@@ -70,7 +70,7 @@ describe('FileSearch', () => {
     expect(results).toEqual([
       'src/',
       '.gitignore',
-      '.qwenignore',
+      '.axeignore',
       'src/not-ignored.js',
     ]);
   });

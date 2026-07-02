@@ -2528,7 +2528,7 @@ describe('DaemonClient', () => {
   describe('MCP restart timeout coupling (#4330)', () => {
     it('SDK default timeout equals server deadline + client headroom', async () => {
       const { MCP_RESTART_SERVER_DEADLINE_MS, MCP_RESTART_CLIENT_HEADROOM_MS } =
-        await import('@qwen-code/acp-bridge/mcpTimeouts');
+        await import('@axe/acp-bridge/mcpTimeouts');
       const expected =
         MCP_RESTART_SERVER_DEADLINE_MS + MCP_RESTART_CLIENT_HEADROOM_MS;
       expect(expected).toBe(330_000);
@@ -3765,7 +3765,7 @@ describe('DaemonClient', () => {
       const { fetch, calls } = recordingFetch(() =>
         jsonResponse(201, {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           userCode: 'USER-1',
           verificationUri: 'https://idp.example/verify',
@@ -3776,7 +3776,7 @@ describe('DaemonClient', () => {
       );
       const client = new DaemonClient({ baseUrl: 'http://daemon', fetch });
       const res = await client.startDeviceFlow({
-        providerId: 'qwen-oauth',
+        providerId: 'axe-oauth',
         clientId: 'sdk-X',
       });
       expect(res.deviceFlowId).toBe('flow-A');
@@ -3786,14 +3786,14 @@ describe('DaemonClient', () => {
       expect(call?.method).toBe('POST');
       expect(call?.headers['x-qwen-client-id']).toBe('sdk-X');
       expect(JSON.parse(call?.body ?? '{}')).toEqual({
-        providerId: 'qwen-oauth',
+        providerId: 'axe-oauth',
       });
     });
 
     it('startDeviceFlow accepts 200 (take-over branch) and 201 (fresh) identically', async () => {
       const body = {
         deviceFlowId: 'flow-A',
-        providerId: 'qwen-oauth',
+        providerId: 'axe-oauth',
         status: 'pending',
         userCode: 'USER-1',
         verificationUri: 'https://idp.example/verify',
@@ -3805,7 +3805,7 @@ describe('DaemonClient', () => {
         const { fetch } = recordingFetch(() => jsonResponse(status, body));
         const client = new DaemonClient({ baseUrl: 'http://daemon', fetch });
         await expect(
-          client.startDeviceFlow({ providerId: 'qwen-oauth' }),
+          client.startDeviceFlow({ providerId: 'axe-oauth' }),
         ).resolves.toMatchObject({ attached: true });
       }
     });
@@ -3816,7 +3816,7 @@ describe('DaemonClient', () => {
       );
       const client = new DaemonClient({ baseUrl: 'http://daemon', fetch });
       await expect(
-        client.startDeviceFlow({ providerId: 'qwen-oauth' }),
+        client.startDeviceFlow({ providerId: 'axe-oauth' }),
       ).rejects.toBeInstanceOf(DaemonHttpError);
     });
 
@@ -3824,7 +3824,7 @@ describe('DaemonClient', () => {
       const { fetch, calls } = recordingFetch(() =>
         jsonResponse(200, {
           deviceFlowId: 'flow with space',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'authorized',
           createdAt: 1_700_000_000_000,
         }),
@@ -3847,7 +3847,7 @@ describe('DaemonClient', () => {
           observedSignal = init?.signal ?? undefined;
           return jsonResponse(200, {
             deviceFlowId: 'flow-A',
-            providerId: 'qwen-oauth',
+            providerId: 'axe-oauth',
             status: 'pending',
             createdAt: 1_700_000_000_000,
           });
@@ -3929,7 +3929,7 @@ describe('DaemonClient', () => {
         workspaceCwd: '/work/bound',
         providers: [],
         pendingDeviceFlows: [],
-        supportedDeviceFlowProviders: ['qwen-oauth' as const],
+        supportedDeviceFlowProviders: ['axe-oauth' as const],
       };
       const { fetch, calls } = recordingFetch(() =>
         jsonResponse(200, snapshot),

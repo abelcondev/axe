@@ -9,7 +9,7 @@ import {
   AuthType,
   resolveModelConfig,
   type ProviderModelConfig,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   getAuthTypeFromEnv,
   resolveCliGenerationConfig,
@@ -18,9 +18,9 @@ import type { Settings } from '../config/settings.js';
 
 const mockWriteStderrLine = vi.hoisted(() => vi.fn());
 
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const original =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
   return {
     ...original,
     resolveModelConfig: vi.fn(),
@@ -74,10 +74,10 @@ describe('modelConfigUtils', () => {
       expect(getAuthTypeFromEnv()).toBeUndefined();
     });
 
-    it('should return QWEN_OAUTH when QWEN_OAUTH is set', () => {
-      process.env['QWEN_OAUTH'] = 'true';
+    it('should return AXE_OAUTH when AXE_OAUTH is set', () => {
+      process.env['AXE_OAUTH'] = 'true';
 
-      expect(getAuthTypeFromEnv()).toBe(AuthType.QWEN_OAUTH);
+      expect(getAuthTypeFromEnv()).toBe(AuthType.AXE_OAUTH);
     });
 
     it('should return USE_GEMINI when Gemini env vars are set', () => {
@@ -124,14 +124,14 @@ describe('modelConfigUtils', () => {
       expect(getAuthTypeFromEnv()).toBeUndefined();
     });
 
-    it('should prioritize QWEN_OAUTH over other auth types when explicitly set', () => {
-      process.env['QWEN_OAUTH'] = 'true';
+    it('should prioritize AXE_OAUTH over other auth types when explicitly set', () => {
+      process.env['AXE_OAUTH'] = 'true';
       process.env['OPENAI_API_KEY'] = 'test-key';
       process.env['OPENAI_MODEL'] = 'gpt-4';
       process.env['OPENAI_BASE_URL'] = 'https://api.openai.com';
 
-      // QWEN_OAUTH is checked first, so it should be returned even when other auth vars are set
-      expect(getAuthTypeFromEnv()).toBe(AuthType.QWEN_OAUTH);
+      // AXE_OAUTH is checked first, so it should be returned even when other auth vars are set
+      expect(getAuthTypeFromEnv()).toBe(AuthType.AXE_OAUTH);
     });
 
     it('should return undefined when no auth env vars are set', () => {
@@ -512,14 +512,14 @@ describe('modelConfigUtils', () => {
       );
     });
 
-    it('warns when a custom provider maps to qwen-oauth', () => {
+    it('warns when a custom provider maps to axe-oauth', () => {
       const settings = makeMockSettings({
         model: { name: 'some-model' },
         modelProviders: {
           idealab: [{ id: 'qwen3.7-max' }],
         } as unknown as Settings['modelProviders'],
         providerProtocol: {
-          idealab: AuthType.QWEN_OAUTH,
+          idealab: AuthType.AXE_OAUTH,
         } as unknown as Settings['providerProtocol'],
       });
 
@@ -538,7 +538,7 @@ describe('modelConfigUtils', () => {
       expect(result.warnings).toEqual(
         expect.arrayContaining([
           expect.stringContaining(
-            'modelProviders provider "idealab" maps to "qwen-oauth"',
+            'modelProviders provider "idealab" maps to "axe-oauth"',
           ),
         ]),
       );

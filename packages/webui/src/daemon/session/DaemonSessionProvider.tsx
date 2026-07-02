@@ -30,7 +30,7 @@ import {
   type DaemonTranscriptStore,
   type DaemonTurnCompleteData,
   type DaemonUiEvent,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import { createDaemonSessionActions, getPromptSettledKey } from './actions.js';
 import {
   detachDaemonClient,

@@ -576,7 +576,7 @@ export class ContentGenerationPipeline {
       // would leak the field, and a non-qwen config with a qwen request
       // model would miss the disable signal (the regression).
       //
-      // `coder-model` is the QWEN_OAUTH default (DEFAULT_QWEN_MODEL in
+      // `coder-model` is the AXE_OAUTH default (DEFAULT_QWEN_MODEL in
       // config/models.ts, aliased to Qwen 3.6 Plus hybrid) — it doesn't
       // start with `qwen` but is the most common hybrid-thinking model
       // for first-time users, so it must be covered.

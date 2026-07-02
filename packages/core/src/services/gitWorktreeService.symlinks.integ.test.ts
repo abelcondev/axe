@@ -221,23 +221,23 @@ describe('GitWorktreeService.createUserWorktree() — symlinkDirectories', () =>
   });
 
   it('rejects paths inside .qwen (security guard)', async () => {
-    // `.qwen` is CLI metadata: symlinking `.qwen/worktrees` would create
-    // a worktrees-inside-worktrees loop; symlinking `.qwen/projects` or
-    // `.qwen/tmp` would alias session metadata users have no legitimate
+    // `.qwen` is CLI metadata: symlinking `.axe/worktrees` would create
+    // a worktrees-inside-worktrees loop; symlinking `.axe/projects` or
+    // `.axe/tmp` would alias session metadata users have no legitimate
     // reason to share across worktrees. Guard rejects the whole subtree.
-    await fs.mkdir(path.join(repoRoot, '.qwen'), { recursive: true });
-    await fs.writeFile(path.join(repoRoot, '.qwen', 'projects'), 'data');
+    await fs.mkdir(path.join(repoRoot, '.axe'), { recursive: true });
+    await fs.writeFile(path.join(repoRoot, '.axe', 'projects'), 'data');
 
     const service = new GitWorktreeService(repoRoot);
     const result = await service.createUserWorktree('reject-qwen', 'main', {
-      symlinkDirectories: ['.qwen/projects'],
+      symlinkDirectories: ['.axe/projects'],
     });
     expect(result.success).toBe(true);
 
     const wt = result.worktree!.path;
-    // No symlink at <worktree>/.qwen/projects.
+    // No symlink at <worktree>/.axe/projects.
     const wrote = await fs
-      .lstat(path.join(wt, '.qwen', 'projects'))
+      .lstat(path.join(wt, '.axe', 'projects'))
       .then((s) => s.isSymbolicLink())
       .catch(() => false);
     expect(wrote).toBe(false);

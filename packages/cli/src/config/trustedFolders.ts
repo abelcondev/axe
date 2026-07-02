@@ -12,7 +12,7 @@ import {
   getErrorMessage,
   ideContextStore,
   Storage,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { Settings } from './settings.js';
 import { parse, stringify } from 'comment-json';
 import stripJsonComments from 'strip-json-comments';

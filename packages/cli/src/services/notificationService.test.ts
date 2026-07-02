@@ -120,7 +120,7 @@ describe('sendNotification', () => {
     sendNotification({ message: 'test' }, terminal, true);
     expect(terminal.notifyITerm2).toHaveBeenCalledWith({
       message: 'test',
-      title: 'Qwen Code',
+      title: 'Axe',
     });
   });
 

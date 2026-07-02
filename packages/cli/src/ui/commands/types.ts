@@ -10,7 +10,7 @@ import type {
   Config,
   Logger,
   SessionListItem,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type {
   HistoryItemWithoutId,
   HistoryItem,
@@ -290,7 +290,7 @@ export type CommandSource =
   | 'skill-dir-command' // FileCommandLoader (user/project, no extensionName)
   | 'plugin-command' // FileCommandLoader (extension, extensionName set)
   | 'mcp-prompt' // McpPromptLoader
-  | 'workflow-command'; // SavedWorkflowLoader (.qwen/workflows/<name>.js)
+  | 'workflow-command'; // SavedWorkflowLoader (.axe/workflows/<name>.js)
 // Reserved for future loaders (not implemented in Phase 1):
 // | 'plugin-skill'
 // | 'dynamic-skill'

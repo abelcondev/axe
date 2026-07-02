@@ -19,7 +19,7 @@ function makeSkill(overrides: Partial<SkillConfig>): SkillConfig {
     description: overrides.description ?? 'desc',
     body: overrides.body ?? '',
     level: overrides.level ?? 'project',
-    filePath: overrides.filePath ?? '/proj/.qwen/skills/test/SKILL.md',
+    filePath: overrides.filePath ?? '/proj/.axe/skills/test/SKILL.md',
     ...overrides,
   };
 }

@@ -5,7 +5,7 @@ import { createRoot, type Root } from 'react-dom/client';
 import type {
   DaemonRewindSnapshotInfo,
   DaemonTranscriptBlock,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import { I18nProvider } from '../../i18n';
 import { RewindDialog } from './RewindDialog';
 

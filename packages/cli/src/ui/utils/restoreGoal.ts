@@ -12,7 +12,7 @@ import {
   type Config,
   type GoalTerminalEvent,
   type GoalTerminalKind,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   isTerminalGoalStatusKind,
   MessageType,

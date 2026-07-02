@@ -18,7 +18,7 @@ import {
   type ProviderModelConfig,
   type ProviderProtocolConfig,
   stripRuntimeSnapshotPrefix,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { Settings } from '../config/settings.js';
 import { sanitizeProviderBaseUrl } from './acpModelUtils.js';
 
@@ -31,7 +31,7 @@ const AUTH_ENV_MODEL_VARS: Record<AuthType, string[]> = {
   [AuthType.USE_GEMINI]: ['GEMINI_MODEL'],
   [AuthType.USE_VERTEX_AI]: ['GOOGLE_MODEL'],
   [AuthType.USE_ANTHROPIC]: ['ANTHROPIC_MODEL'],
-  [AuthType.QWEN_OAUTH]: [],
+  [AuthType.AXE_OAUTH]: [],
 };
 
 /**
@@ -106,11 +106,11 @@ function buildSkippedProviderWarnings(
     }
     const protocol = resolveProviderProtocol(providerId, providerProtocol);
     if (
-      protocol === AuthType.QWEN_OAUTH &&
-      providerId !== AuthType.QWEN_OAUTH
+      protocol === AuthType.AXE_OAUTH &&
+      providerId !== AuthType.AXE_OAUTH
     ) {
       warnings.push(
-        `Warning: modelProviders provider "${providerId}" maps to "qwen-oauth" via providerProtocol, but qwen-oauth uses hard-coded models only; its ${models.length} model(s) are ignored.`,
+        `Warning: modelProviders provider "${providerId}" maps to "axe-oauth" via providerProtocol, but axe-oauth uses hard-coded models only; its ${models.length} model(s) are ignored.`,
       );
       continue;
     }
@@ -198,8 +198,8 @@ export interface ResolvedCliGenerationConfig {
 }
 
 export function getAuthTypeFromEnv(): AuthType | undefined {
-  if (process.env['QWEN_OAUTH']) {
-    return AuthType.QWEN_OAUTH;
+  if (process.env['AXE_OAUTH']) {
+    return AuthType.AXE_OAUTH;
   }
 
   if (

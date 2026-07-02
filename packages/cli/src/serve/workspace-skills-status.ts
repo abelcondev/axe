@@ -30,10 +30,10 @@
  * outside the child) — those still surface once a session exists.
  */
 
-import { SkillManager, isSafeModeEnv } from '@qwen-code/qwen-code-core';
-import type { Config } from '@qwen-code/qwen-code-core';
-import type { ServeWorkspaceSkillsStatus } from '@qwen-code/acp-bridge/status';
-import { STATUS_SCHEMA_VERSION } from '@qwen-code/acp-bridge/status';
+import { SkillManager, isSafeModeEnv } from '@axe/core';
+import type { Config } from '@axe/core';
+import type { ServeWorkspaceSkillsStatus } from '@axe/acp-bridge/status';
+import { STATUS_SCHEMA_VERSION } from '@axe/acp-bridge/status';
 import { writeStderrLine } from '../utils/stdioHelpers.js';
 import { mapSkillConfigToStatus } from './workspace-skills-mapping.js';
 

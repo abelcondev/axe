@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FC } from 'react';
 import type { ModelInfo } from '@agentclientprotocol/sdk';
-import { PlanCompletedIcon } from '@qwen-code/webui';
+import { PlanCompletedIcon } from '@axe/webui';
 import {
   DISCONTINUED_MESSAGES,
   isDiscontinuedModel,

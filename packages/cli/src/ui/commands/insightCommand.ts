@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -19,7 +19,7 @@ import {
   encodeInsightReadyMessage,
   openBrowserSecurely,
   Storage,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 const logger = createDebugLogger('DataProcessor');
 

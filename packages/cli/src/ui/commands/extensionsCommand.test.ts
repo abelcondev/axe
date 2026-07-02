@@ -20,13 +20,13 @@ import {
 import {
   ExtensionManager,
   parseInstallSource,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 const mockOpenBrowserSecurely = vi.hoisted(() => vi.fn());
 
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
   return {
     ...actual,
     openBrowserSecurely: mockOpenBrowserSecurely,

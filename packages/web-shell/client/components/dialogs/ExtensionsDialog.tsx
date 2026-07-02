@@ -3,11 +3,11 @@ import {
   useConnection,
   useWorkspaceActions,
   useWorkspaceEventSignals,
-} from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
 import type {
   DaemonExtensionEntry,
   DaemonExtensionUpdateState,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import { useI18n } from '../../i18n';
 import { trimDialogLabel } from '../../utils/dialogLabels';
 import { dp } from './dialogStyles';

@@ -5,7 +5,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { Components, Options } from 'react-markdown';
-import type { DaemonStreamingState } from '@qwen-code/webui/daemon-react-sdk';
+import type { DaemonStreamingState } from '@axe/webui/daemon-react-sdk';
 import type { ACPToolCall } from './adapters/types';
 import type { WelcomeHeaderProps } from './components/WelcomeHeader';
 

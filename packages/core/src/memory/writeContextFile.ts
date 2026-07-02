@@ -118,7 +118,7 @@ export interface WriteContextFileResult {
 
 /**
  * Append/replace `QWEN.md` for the workspace or the user's global
- * `~/.qwen/` directory. Used by the `qwen serve` daemon's
+ * `~/.axe/` directory. Used by the `qwen serve` daemon's
  * `POST /workspace/memory` route (issue #4175 PR 16) and any other
  * caller that needs to mutate hierarchical memory through code.
  *
@@ -244,7 +244,7 @@ function resolveContextFilePath(
  * appending. The POST route caps NEW content at 1 MB but a malicious
  * or accidental client could grow the file to arbitrary size over
  * time (workspace QWEN.md is operator-controlled but the global
- * `~/.qwen/QWEN.md` may have been edited externally). 16 MB sits
+ * `~/.axe/QWEN.md` may have been edited externally). 16 MB sits
  * three orders of magnitude above any realistic user-authored
  * memory file while still bounding the daemon's transient memory
  * cost per append. Hitting this cap means QWEN.md has grown past

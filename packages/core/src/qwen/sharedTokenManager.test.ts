@@ -17,11 +17,11 @@ import {
 } from './sharedTokenManager.js';
 import { atomicWriteFile } from '../utils/atomicFileWrite.js';
 import type {
-  IQwenOAuth2Client,
+  IAxeOAuth2Client,
   QwenCredentials,
   TokenRefreshData,
   ErrorData,
-} from './qwenOAuth2.js';
+} from './axeOAuth2.js';
 
 // Mock external dependencies
 vi.mock('node:fs', () => ({
@@ -72,11 +72,11 @@ function setPrivateProperty<T>(obj: unknown, property: string, value: T): void {
 }
 
 /**
- * Creates a mock QwenOAuth2Client for testing
+ * Creates a mock AxeOAuth2Client for testing
  */
 function createMockQwenClient(
   initialCredentials: Partial<QwenCredentials> = {},
-): IQwenOAuth2Client {
+): IAxeOAuth2Client {
   let credentials: QwenCredentials = {
     access_token: 'mock_access_token',
     refresh_token: 'mock_refresh_token',
@@ -835,7 +835,7 @@ describe('SharedTokenManager', () => {
 
   describe('CredentialsClearRequiredError handling', () => {
     it('should clear memory cache when CredentialsClearRequiredError is thrown during refresh', async () => {
-      const { CredentialsClearRequiredError } = await import('./qwenOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
 
       const tokenManager = SharedTokenManager.getInstance();
       tokenManager.clearCache();
@@ -899,7 +899,7 @@ describe('SharedTokenManager', () => {
     });
 
     it('should convert CredentialsClearRequiredError to TokenManagerError', async () => {
-      const { CredentialsClearRequiredError } = await import('./qwenOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
 
       const tokenManager = SharedTokenManager.getInstance();
       tokenManager.clearCache();
@@ -969,7 +969,7 @@ describe('SharedTokenManager', () => {
       const checkMethod = getPrivateProperty(
         tokenManager,
         'checkAndReloadIfNeeded',
-      ) as (client?: IQwenOAuth2Client) => Promise<void>;
+      ) as (client?: IAxeOAuth2Client) => Promise<void>;
       await checkMethod.call(tokenManager, mockClient);
 
       // Verify that clearTimeout was called to clean up the timer

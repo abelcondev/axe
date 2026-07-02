@@ -4,7 +4,7 @@ import {
   type DaemonAuthProviderBaseUrlOption,
   type DaemonAuthProviderCatalog,
   type DaemonAuthProviderDescriptor,
-} from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
 import { useI18n } from '../../i18n';
 import styles from './AuthMessage.module.css';
 

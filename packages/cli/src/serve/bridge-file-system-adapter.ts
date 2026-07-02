@@ -55,7 +55,7 @@ import type {
   WriteTextFileRequest,
   WriteTextFileResponse,
 } from '@agentclientprotocol/sdk';
-import type { BridgeFileSystem } from '@qwen-code/acp-bridge';
+import type { BridgeFileSystem } from '@axe/acp-bridge';
 import type {
   WorkspaceFileSystemFactory,
   RequestContext,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { mapDomainErrorToErrorKind } from '@qwen-code/acp-bridge';
+import { mapDomainErrorToErrorKind } from '@axe/acp-bridge';
 import type { Application } from 'express';
 import { writeStderrLine } from '../../utils/stdioHelpers.js';
 import type { AcpSessionBridge } from '../acp-session-bridge.js';
@@ -12,7 +12,7 @@ import type { DaemonLogger } from '../daemon-logger.js';
 import {
   SubscriberLimitExceededError,
   type BridgeEvent,
-} from '@qwen-code/acp-bridge/eventBus';
+} from '@axe/acp-bridge/eventBus';
 import {
   errorMessage,
   type SendBridgeError,

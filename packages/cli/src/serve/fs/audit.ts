@@ -9,7 +9,7 @@ import * as path from 'node:path';
 import {
   EVENT_SCHEMA_VERSION,
   type BridgeEvent,
-} from '@qwen-code/acp-bridge/eventBus';
+} from '@axe/acp-bridge/eventBus';
 import type { FsErrorKind } from './errors.js';
 import type { Intent, ResolvedPath } from './paths.js';
 

@@ -15,7 +15,7 @@ import {
   type Config,
   type SubagentConfig,
   type SubagentLevel,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { writeStderrLine } from '../utils/stdioHelpers.js';
 import { isServeDebugMode } from './debug-mode.js';
 import {
@@ -71,7 +71,7 @@ import {
   type ServeWorkspaceAgentDetail,
   type ServeWorkspaceAgentSummary,
   type ServeWorkspaceAgentsStatus,
-} from '@qwen-code/acp-bridge/status';
+} from '@axe/acp-bridge/status';
 
 /**
  * Workspace subagent CRUD routes.
@@ -109,7 +109,7 @@ export function mountWorkspaceAgentsRoutes(
 
   app.get('/workspace/agents', async (_req, res) => {
     try {
-      // `force: true` re-walks `.qwen/agents/` on every call so out-of-
+      // `force: true` re-walks `.axe/agents/` on every call so out-of-
       // band edits (a developer editing an agent file in their IDE
       // while the daemon is running) appear immediately. Without it
       // `SubagentManager.listSubagents()` serves a stale cache and
@@ -222,7 +222,7 @@ export function mountWorkspaceAgentsRoutes(
           if (err.code === SubagentErrorCode.FILE_ERROR) {
             // `SubagentError(FILE_ERROR)` wraps Node fs error
             // messages like `"ENOENT: no such file or directory, open
-            // '/Users/<x>/.qwen/agents/foo.md'"` — leaking the
+            // '/Users/<x>/.axe/agents/foo.md'"` — leaking the
             // operator's absolute filesystem layout through an
             // authenticated route response. Gate the message behind
             // `QWEN_SERVE_DEBUG` so default production responses
@@ -837,7 +837,7 @@ function parseAgentConfig(
   }
   // Reject names that shadow a built-in subagent. Without this check a
   // client could `POST /workspace/agents { name: "general-purpose" }`
-  // and write a project-level file at `<workspace>/.qwen/agents/
+  // and write a project-level file at `<workspace>/.axe/agents/
   // general-purpose.md`. List/load resolve the project entry first
   // (project > builtin), but `SubagentManager.deleteSubagent` rejects
   // by name alone (`subagent-manager.ts:302`) — so DELETE returns 403

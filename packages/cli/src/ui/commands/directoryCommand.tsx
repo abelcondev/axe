@@ -16,7 +16,7 @@ import {
   loadServerHierarchicalMemory,
   ConditionalRulesRegistry,
   expandHomeDir,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { t } from '../../i18n/index.js';
 import { SettingScope } from '../../config/settings.js';
 

@@ -1,7 +1,7 @@
 /**
  * Cron scheduler with optional durable (file-backed) task support.
  * In-memory jobs live and die with the process. Durable jobs persist
- * under the user runtime dir (~/.qwen/tmp/<project-hash>/) and survive
+ * under the user runtime dir (~/.axe/tmp/<project-hash>/) and survive
  * restarts.
  */
 
@@ -57,7 +57,7 @@ export interface CronJob {
   fireAtMs?: number;
   lastFiredAt?: number;
   jitterMs: number;
-  /** Persisted under ~/.qwen (per-project) — survives restarts. */
+  /** Persisted under ~/.axe (per-project) — survives restarts. */
   durable?: boolean;
   /** One-shot that was due while no owning session ran — fired late. */
   missed?: boolean;
@@ -201,7 +201,7 @@ export class CronScheduler {
   private timer: ReturnType<typeof setInterval> | null = null;
   private onFire: ((job: CronJob) => void) | null = null;
   // Guard a consumer installs when it cannot execute certain durable jobs. A
-  // headless run can't expand a `.qwen/loop.md` sentinel, so it marks such
+  // headless run can't expand a `.axe/loop.md` sentinel, so it marks such
   // durable jobs skippable here: they are then neither fired NOR have their
   // persisted fired-state advanced (lastFiredAt stamp / one-shot removal),
   // leaving the tick for the owning interactive session instead of silently
@@ -372,7 +372,7 @@ export class CronScheduler {
 
   /**
    * Creates a durable cron job: registered like any other job, and
-   * persisted under ~/.qwen (per-project) so it survives restarts.
+   * persisted under ~/.axe (per-project) so it survives restarts.
    * Throws if the job can't be persisted.
    */
   async createDurable(
@@ -1236,7 +1236,7 @@ export class CronScheduler {
 export function buildMissedCronNotification(missed: DurableCronTask[]): string {
   const plural = missed.length > 1;
   const header =
-    `The following one-shot scheduled task${plural ? 's were' : ' was'} missed while Qwen Code was not running. ` +
+    `The following one-shot scheduled task${plural ? 's were' : ' was'} missed while Axe was not running. ` +
     `${plural ? 'They have' : 'It has'} been removed from ${CRON_TASKS_DISPLAY_PATH} and will not fire again.\n\n` +
     `Do NOT execute ${plural ? 'these prompts' : 'this prompt'} yet. ` +
     `First ask the user whether to run ${plural ? 'each one' : 'it'} now ` +

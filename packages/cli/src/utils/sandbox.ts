@@ -15,12 +15,12 @@ import {
   SETTINGS_DIRECTORY_NAME,
 } from '../config/settings.js';
 import { promisify } from 'node:util';
-import type { Config, SandboxConfig } from '@qwen-code/qwen-code-core';
+import type { Config, SandboxConfig } from '@axe/core';
 import {
   FatalSandboxError,
   Storage,
   isSubpath,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { randomBytes } from 'node:crypto';
 import { writeStderrLine } from './stdioHelpers.js';
 import { parseSandboxImageName } from './sandboxImageName.js';
@@ -368,7 +368,7 @@ export async function start_sandbox(
   if (process.env['BUILD_SANDBOX']) {
     if (!gcPath.includes('qwen-code/packages/')) {
       throw new FatalSandboxError(
-        'Cannot build sandbox using installed Qwen Code binary; ' +
+        'Cannot build sandbox using installed Axe binary; ' +
           'run `npm link ./packages/cli` under QwenCode-cli repo to switch to linked binary.',
       );
     } else {

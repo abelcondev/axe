@@ -31,7 +31,7 @@ const {
   mockShowSaveDialog: vi.fn(),
 }));
 
-vi.mock('@qwen-code/qwen-code-core', () => {
+vi.mock('@axe/core', () => {
   class SessionService {
     constructor(_cwd: string) {}
 

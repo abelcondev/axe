@@ -47,8 +47,8 @@ function mockRealpath(
 }
 
 describe('Storage – getGlobalSettingsPath', () => {
-  it('returns path to ~/.qwen/settings.json', () => {
-    const expected = path.join(os.homedir(), '.qwen', 'settings.json');
+  it('returns path to ~/.axe/settings.json', () => {
+    const expected = path.join(os.homedir(), '.axe', 'settings.json');
     expect(Storage.getGlobalSettingsPath()).toBe(expected);
   });
 });
@@ -57,23 +57,23 @@ describe('Storage – additional helpers', () => {
   const projectRoot = '/tmp/project';
   const storage = new Storage(projectRoot);
 
-  it('getWorkspaceSettingsPath returns project/.qwen/settings.json', () => {
-    const expected = path.join(projectRoot, '.qwen', 'settings.json');
+  it('getWorkspaceSettingsPath returns project/.axe/settings.json', () => {
+    const expected = path.join(projectRoot, '.axe', 'settings.json');
     expect(storage.getWorkspaceSettingsPath()).toBe(expected);
   });
 
-  it('getUserCommandsDir returns ~/.qwen/commands', () => {
-    const expected = path.join(os.homedir(), '.qwen', 'commands');
+  it('getUserCommandsDir returns ~/.axe/commands', () => {
+    const expected = path.join(os.homedir(), '.axe', 'commands');
     expect(Storage.getUserCommandsDir()).toBe(expected);
   });
 
-  it('getProjectCommandsDir returns project/.qwen/commands', () => {
-    const expected = path.join(projectRoot, '.qwen', 'commands');
+  it('getProjectCommandsDir returns project/.axe/commands', () => {
+    const expected = path.join(projectRoot, '.axe', 'commands');
     expect(storage.getProjectCommandsDir()).toBe(expected);
   });
 
-  it('getMcpOAuthTokensPath returns ~/.qwen/mcp-oauth-tokens.json', () => {
-    const expected = path.join(os.homedir(), '.qwen', 'mcp-oauth-tokens.json');
+  it('getMcpOAuthTokensPath returns ~/.axe/mcp-oauth-tokens.json', () => {
+    const expected = path.join(os.homedir(), '.axe', 'mcp-oauth-tokens.json');
     expect(Storage.getMcpOAuthTokensPath()).toBe(expected);
   });
 });
@@ -141,8 +141,8 @@ describe('Storage – getRuntimeBaseDir / setRuntimeBaseDir', () => {
 
   it('resolves relative paths in setRuntimeBaseDir using explicit cwd', () => {
     const cwd = path.resolve('workspace', 'projectA');
-    Storage.setRuntimeBaseDir('.qwen', cwd);
-    expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.qwen'));
+    Storage.setRuntimeBaseDir('.axe', cwd);
+    expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.axe'));
   });
 
   it('ignores cwd when path is absolute', () => {
@@ -207,7 +207,7 @@ describe('Storage – getPlansDir', () => {
     mockRealpathSync.mockReset();
   });
 
-  it('defaults to ~/.qwen/plans when plansDirectory is not configured', () => {
+  it('defaults to ~/.axe/plans when plansDirectory is not configured', () => {
     expect(Storage.getPlansDir(projectRoot)).toBe(
       path.join(Storage.getGlobalQwenDir(), 'plans'),
     );
@@ -427,7 +427,7 @@ describe('Storage – runtime path methods use getRuntimeBaseDir', () => {
   });
 });
 
-describe('Storage – config paths remain at ~/.qwen regardless of runtime dir', () => {
+describe('Storage – config paths remain at ~/.axe regardless of runtime dir', () => {
   const originalEnv = process.env['QWEN_RUNTIME_DIR'];
   const globalQwenDir = Storage.getGlobalQwenDir();
 
@@ -445,53 +445,53 @@ describe('Storage – config paths remain at ~/.qwen regardless of runtime dir',
     }
   });
 
-  it('getGlobalSettingsPath still uses ~/.qwen', () => {
+  it('getGlobalSettingsPath still uses ~/.axe', () => {
     expect(Storage.getGlobalSettingsPath()).toBe(
       path.join(globalQwenDir, 'settings.json'),
     );
   });
 
-  it('getInstallationIdPath still uses ~/.qwen', () => {
+  it('getInstallationIdPath still uses ~/.axe', () => {
     expect(Storage.getInstallationIdPath()).toBe(
       path.join(globalQwenDir, 'installation_id'),
     );
   });
 
-  it('getGoogleAccountsPath still uses ~/.qwen', () => {
+  it('getGoogleAccountsPath still uses ~/.axe', () => {
     expect(Storage.getGoogleAccountsPath()).toBe(
       path.join(globalQwenDir, 'google_accounts.json'),
     );
   });
 
-  it('getMcpOAuthTokensPath still uses ~/.qwen', () => {
+  it('getMcpOAuthTokensPath still uses ~/.axe', () => {
     expect(Storage.getMcpOAuthTokensPath()).toBe(
       path.join(globalQwenDir, 'mcp-oauth-tokens.json'),
     );
   });
 
-  it('getOAuthCredsPath still uses ~/.qwen', () => {
+  it('getOAuthCredsPath still uses ~/.axe', () => {
     expect(Storage.getOAuthCredsPath()).toBe(
       path.join(globalQwenDir, 'oauth_creds.json'),
     );
   });
 
-  it('getUserCommandsDir still uses ~/.qwen', () => {
+  it('getUserCommandsDir still uses ~/.axe', () => {
     expect(Storage.getUserCommandsDir()).toBe(
       path.join(globalQwenDir, 'commands'),
     );
   });
 
-  it('getGlobalMemoryFilePath still uses ~/.qwen', () => {
+  it('getGlobalMemoryFilePath still uses ~/.axe', () => {
     expect(Storage.getGlobalMemoryFilePath()).toBe(
       path.join(globalQwenDir, 'memory.md'),
     );
   });
 
-  it('getGlobalBinDir still uses ~/.qwen', () => {
+  it('getGlobalBinDir still uses ~/.axe', () => {
     expect(Storage.getGlobalBinDir()).toBe(path.join(globalQwenDir, 'bin'));
   });
 
-  it('getUserSkillsDirs still includes ~/.qwen/skills', () => {
+  it('getUserSkillsDirs still includes ~/.axe/skills', () => {
     const storage = new Storage('/tmp/project');
     const skillsDirs = storage.getUserSkillsDirs();
     expect(
@@ -511,9 +511,9 @@ describe('Storage – QWEN_HOME env var', () => {
     }
   });
 
-  it('defaults to ~/.qwen when QWEN_HOME is not set', () => {
+  it('defaults to ~/.axe when QWEN_HOME is not set', () => {
     delete process.env['QWEN_HOME'];
-    const expected = path.join(os.homedir(), '.qwen');
+    const expected = path.join(os.homedir(), '.axe');
     expect(Storage.getGlobalQwenDir()).toBe(expected);
   });
 
@@ -557,10 +557,10 @@ describe('Storage – QWEN_HOME env var', () => {
     process.env['QWEN_HOME'] = configDir;
     const storage = new Storage(projectDir);
     expect(storage.getWorkspaceSettingsPath()).toBe(
-      path.join(projectDir, '.qwen', 'settings.json'),
+      path.join(projectDir, '.axe', 'settings.json'),
     );
     expect(storage.getProjectCommandsDir()).toBe(
-      path.join(projectDir, '.qwen', 'commands'),
+      path.join(projectDir, '.axe', 'commands'),
     );
   });
 
@@ -618,8 +618,8 @@ describe('Storage – runtime base dir async context isolation', () => {
     Storage.setRuntimeBaseDir(path.resolve('global-runtime'));
     const cwd = path.resolve('workspace', 'project-a');
 
-    await Storage.runWithRuntimeBaseDir('.qwen', cwd, async () => {
-      expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.qwen'));
+    await Storage.runWithRuntimeBaseDir('.axe', cwd, async () => {
+      expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.axe'));
     });
   });
 

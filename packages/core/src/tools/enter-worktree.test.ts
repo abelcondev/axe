@@ -143,7 +143,7 @@ describe('EnterWorktreeTool.execute', () => {
     const os = await import('node:os');
     const cwd = await fs.mkdtemp(pathMod.join(os.tmpdir(), 'qwen-nested-'));
     // Build a path that contains the nested-marker substring.
-    const nested = pathMod.join(cwd, '.qwen', 'worktrees', 'inner');
+    const nested = pathMod.join(cwd, '.axe', 'worktrees', 'inner');
     await fs.mkdir(nested, { recursive: true });
     const cfg = {
       getTargetDir: () => nested,
@@ -259,7 +259,7 @@ describe('GitWorktreeService.generateAutoSlug', () => {
 });
 
 describe('GitWorktreeService.getUserWorktreesDir / getUserWorktreePath', () => {
-  it('uses .qwen/worktrees under the project root', () => {
+  it('uses .axe/worktrees under the project root', () => {
     // Use the cwd (which exists) so simple-git's existence check passes.
     const root = process.cwd();
     const service = new GitWorktreeService(root);
@@ -267,10 +267,10 @@ describe('GitWorktreeService.getUserWorktreesDir / getUserWorktreePath', () => {
     // platform — the implementation uses path.join, so on Windows the
     // separator is `\`, not `/`.
     expect(service.getUserWorktreesDir()).toBe(
-      path.join(root, '.qwen', 'worktrees'),
+      path.join(root, '.axe', 'worktrees'),
     );
     expect(service.getUserWorktreePath('feat-x')).toBe(
-      path.join(root, '.qwen', 'worktrees', 'feat-x'),
+      path.join(root, '.axe', 'worktrees', 'feat-x'),
     );
   });
 });

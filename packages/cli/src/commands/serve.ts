@@ -13,14 +13,14 @@ import { normalizeServeChannelSelection } from '../serve/channel-selection.js';
 // with ~50ms of cold ESM resolution. The runtime import is deferred to the
 // handler below so it only loads when the user actually runs `qwen serve`.
 import { writeStderrLine } from '../utils/stdioHelpers.js';
-import { DEFAULT_RING_SIZE } from '@qwen-code/acp-bridge/eventBus';
+import { DEFAULT_RING_SIZE } from '@axe/acp-bridge/eventBus';
 import {
   ApprovalMode,
   MCP_BUDGET_WARN_FRACTION,
   openBrowserSecurely,
   parsePositiveIntegerEnv,
   shouldLaunchBrowser,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { loadSettings } from '../config/settings.js';
 import { HEADLESS_YOLO_NO_SANDBOX_WARNING } from '../utils/headlessSafetyWarnings.js';
 
@@ -132,7 +132,7 @@ interface ServeArgs {
 export const serveCommand: CommandModule<unknown, ServeArgs> = {
   command: 'serve',
   describe:
-    'Run Qwen Code as a local HTTP daemon (Stage 1 experimental: --http-bridge)',
+    'Run Axe as a local HTTP daemon (Stage 1 experimental: --http-bridge)',
   builder: (yargs: Argv) =>
     yargs
       .option('port', {

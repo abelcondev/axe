@@ -27,7 +27,7 @@ import {
   MCPServerConfig,
   AuthProviderType,
   type MCPOAuthConfig,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 const debugLogger = createDebugLogger('SYSTEM_CONTROLLER');
 

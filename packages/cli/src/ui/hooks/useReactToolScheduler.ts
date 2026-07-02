@@ -19,13 +19,13 @@ import type {
   ToolCall,
   Status as CoreStatus,
   EditorType,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   CoreToolScheduler,
   compactToolResultDisplayForHistory,
   createDebugLogger,
   isAnyAutoMemPath,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import * as path from 'node:path';
 import { useCallback, useState, useMemo } from 'react';
 import type {

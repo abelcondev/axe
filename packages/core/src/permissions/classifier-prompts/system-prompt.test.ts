@@ -148,9 +148,9 @@ describe('buildClassifierSystemPrompt', () => {
 
     const prompt = buildClassifierSystemPrompt(makeConfig({}));
     expect(prompt).toContain('Self-modification');
-    expect(prompt).toContain('.qwen/settings');
+    expect(prompt).toContain('.axe/settings');
     expect(prompt).toContain('QWEN.local.md');
-    expect(prompt).toContain('.qwen/rules/');
+    expect(prompt).toContain('.axe/rules/');
     expect(prompt).toContain('.mcp.json');
     // Keep wildcard allow-rule widening in the protected self-edit category.
     expect(prompt).toContain('adding or widening permission allow rules');

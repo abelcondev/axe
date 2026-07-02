@@ -7,10 +7,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import {
   AuthType,
-  qwenOAuth2Events,
-  QwenOAuth2Event,
+  axeOAuth2Events,
+  AxeOAuth2Event,
   type DeviceAuthorizationData,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 export interface QwenAuthState {
   deviceAuth: DeviceAuthorizationData | null;
@@ -40,7 +40,7 @@ export const useQwenAuth = (
     authMessage: null,
   });
 
-  const isQwenAuth = pendingAuthType === AuthType.QWEN_OAUTH;
+  const isQwenAuth = pendingAuthType === AuthType.AXE_OAUTH;
 
   // Set up event listeners when authentication starts
   useEffect(() => {
@@ -86,19 +86,19 @@ export const useQwenAuth = (
     };
 
     // Add event listeners
-    qwenOAuth2Events.on(QwenOAuth2Event.AuthUri, handleDeviceAuth);
-    qwenOAuth2Events.on(QwenOAuth2Event.AuthProgress, handleAuthProgress);
+    axeOAuth2Events.on(AxeOAuth2Event.AuthUri, handleDeviceAuth);
+    axeOAuth2Events.on(AxeOAuth2Event.AuthProgress, handleAuthProgress);
 
     // Cleanup event listeners when component unmounts or auth finishes
     return () => {
-      qwenOAuth2Events.off(QwenOAuth2Event.AuthUri, handleDeviceAuth);
-      qwenOAuth2Events.off(QwenOAuth2Event.AuthProgress, handleAuthProgress);
+      axeOAuth2Events.off(AxeOAuth2Event.AuthUri, handleDeviceAuth);
+      axeOAuth2Events.off(AxeOAuth2Event.AuthProgress, handleAuthProgress);
     };
   }, [isQwenAuth, isAuthenticating]);
 
   const cancelQwenAuth = useCallback(() => {
     // Emit cancel event to stop polling
-    qwenOAuth2Events.emit(QwenOAuth2Event.AuthCancel);
+    axeOAuth2Events.emit(AxeOAuth2Event.AuthCancel);
 
     setQwenAuthState({
       deviceAuth: null,

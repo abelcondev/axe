@@ -21,11 +21,11 @@ import type {
   ApprovalMode,
   TeammateApprovalRequestEvent,
   ToolConfirmationPayload,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   InputFormat,
   ToolConfirmationOutcome,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type {
   CLIControlPermissionRequest,
   CLIControlSetPermissionModeRequest,

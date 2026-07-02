@@ -33,7 +33,7 @@ describe('getAboutSystemInfoFields', () => {
     const labels = fields.map((f) => f.label);
 
     expect(labels).toEqual([
-      'Qwen Code',
+      'Axe',
       'Runtime',
       'IDE Client',
       'LSP',

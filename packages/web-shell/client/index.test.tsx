@@ -8,7 +8,7 @@ import { createRoot, type Root } from 'react-dom/client';
 // under them couldn't catch their own throw).
 let workspaceShouldThrow = false;
 const sessionProviderProps: Array<Record<string, unknown>> = [];
-vi.mock('@qwen-code/webui/daemon-react-sdk', async () => {
+vi.mock('@axe/webui/daemon-react-sdk', async () => {
   const React = await import('react');
   return {
     DaemonWorkspaceProvider: ({ children }: { children: React.ReactNode }) => {

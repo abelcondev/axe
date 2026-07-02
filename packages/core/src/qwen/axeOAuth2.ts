@@ -21,20 +21,20 @@ import {
 } from './sharedTokenManager.js';
 import { Storage } from '../config/storage.js';
 
-const debugLogger = createDebugLogger('QWEN_OAUTH');
+const debugLogger = createDebugLogger('AXE_OAUTH');
 
 // OAuth Endpoints
-const QWEN_OAUTH_BASE_URL = 'https://chat.qwen.ai';
+const AXE_OAUTH_BASE_URL = 'https://chat.qwen.ai';
 
-const QWEN_OAUTH_DEVICE_CODE_ENDPOINT = `${QWEN_OAUTH_BASE_URL}/api/v1/oauth2/device/code`;
-const QWEN_OAUTH_TOKEN_ENDPOINT = `${QWEN_OAUTH_BASE_URL}/api/v1/oauth2/token`;
+const AXE_OAUTH_DEVICE_CODE_ENDPOINT = `${AXE_OAUTH_BASE_URL}/api/v1/oauth2/device/code`;
+const AXE_OAUTH_TOKEN_ENDPOINT = `${AXE_OAUTH_BASE_URL}/api/v1/oauth2/token`;
 
 // OAuth Client Configuration
-const QWEN_OAUTH_CLIENT_ID = 'f0304373b74a44d2b584a3fb70ca9e56';
+const AXE_OAUTH_CLIENT_ID = 'f0304373b74a44d2b584a3fb70ca9e56';
 
-const QWEN_OAUTH_SCOPE = 'openid profile email model.completion';
-const QWEN_OAUTH_GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:device_code';
-const QWEN_OAUTH_REFRESH_TIMEOUT_MS = 30_000;
+const AXE_OAUTH_SCOPE = 'openid profile email model.completion';
+const AXE_OAUTH_GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:device_code';
+const AXE_OAUTH_REFRESH_TIMEOUT_MS = 30_000;
 
 // File System Configuration
 const QWEN_CREDENTIAL_FILENAME = 'oauth_creds.json';
@@ -94,7 +94,7 @@ function createTokenRefreshNetworkError(
   const prefix = timedOut ? 'Token refresh timeout' : 'Token refresh failed';
   return new Error(
     `${prefix}: ${formatFetchErrorForUser(error, {
-      url: QWEN_OAUTH_TOKEN_ENDPOINT,
+      url: AXE_OAUTH_TOKEN_ENDPOINT,
     })}`,
     { cause: error },
   );
@@ -124,7 +124,7 @@ export class CredentialsClearRequiredError extends Error {
 }
 
 /**
- * Typed error thrown by `QwenOAuth2Client.pollDeviceToken` for upstream
+ * Typed error thrown by `AxeOAuth2Client.pollDeviceToken` for upstream
  * RFC 8628 errors that aren't `authorization_pending` / `slow_down`.
  *
  * Earlier the class threw a plain `Error` with the OAuth code embedded
@@ -138,9 +138,9 @@ export class CredentialsClearRequiredError extends Error {
  * The thrown `message` keeps the same `"Device token poll failed:
  * ${error} - ${description}"` shape so existing log-parsing /
  * substring-matching code continues to work; new code should branch
- * on `instanceof QwenOAuthPollError` + read fields directly.
+ * on `instanceof AxeOAuthPollError` + read fields directly.
  */
-export class QwenOAuthPollError extends Error {
+export class AxeOAuthPollError extends Error {
   readonly status?: number;
   readonly oauthError?: string;
   readonly description?: string;
@@ -154,7 +154,7 @@ export class QwenOAuthPollError extends Error {
         opts.description ?? '(no description)'
       }`,
     );
-    this.name = 'QwenOAuthPollError';
+    this.name = 'AxeOAuthPollError';
     this.oauthError = opts.oauthError;
     this.description = opts.description;
     this.status = opts.status;
@@ -285,7 +285,7 @@ export type TokenRefreshResponse = TokenRefreshData | ErrorData;
 /**
  * Qwen OAuth2 client interface
  */
-export interface IQwenOAuth2Client {
+export interface IAxeOAuth2Client {
   setCredentials(credentials: QwenCredentials): void;
   getCredentials(): QwenCredentials;
   getAccessToken(): Promise<{ token?: string }>;
@@ -310,7 +310,7 @@ export interface IQwenOAuth2Client {
 /**
  * Qwen OAuth2 client implementation
  */
-export class QwenOAuth2Client implements IQwenOAuth2Client {
+export class AxeOAuth2Client implements IAxeOAuth2Client {
   private credentials: QwenCredentials = {};
   private sharedManager: SharedTokenManager;
 
@@ -354,13 +354,13 @@ export class QwenOAuth2Client implements IQwenOAuth2Client {
     fetchOpts?: { signal?: AbortSignal },
   ): Promise<DeviceAuthorizationResponse> {
     const bodyData = {
-      client_id: QWEN_OAUTH_CLIENT_ID,
+      client_id: AXE_OAUTH_CLIENT_ID,
       scope: options.scope,
       code_challenge: options.code_challenge,
       code_challenge_method: options.code_challenge_method,
     };
 
-    const response = await fetch(QWEN_OAUTH_DEVICE_CODE_ENDPOINT, {
+    const response = await fetch(AXE_OAUTH_DEVICE_CODE_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -426,13 +426,13 @@ export class QwenOAuth2Client implements IQwenOAuth2Client {
     fetchOpts?: { signal?: AbortSignal },
   ): Promise<DeviceTokenResponse> {
     const bodyData = {
-      grant_type: QWEN_OAUTH_GRANT_TYPE,
-      client_id: QWEN_OAUTH_CLIENT_ID,
+      grant_type: AXE_OAUTH_GRANT_TYPE,
+      client_id: AXE_OAUTH_CLIENT_ID,
       device_code: options.device_code,
       code_verifier: options.code_verifier,
     };
 
-    const response = await fetch(QWEN_OAUTH_TOKEN_ENDPOINT, {
+    const response = await fetch(AXE_OAUTH_TOKEN_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -482,12 +482,12 @@ export class QwenOAuth2Client implements IQwenOAuth2Client {
 
       // Handle other 400 errors (access_denied, expired_token, etc.) as real errors
 
-      // For other errors, throw a typed `QwenOAuthPollError` so
+      // For other errors, throw a typed `AxeOAuthPollError` so
       // downstream callers (PR #4255 device-flow registry) can branch
       // on `instanceof` + structured fields instead of substring-
       // matching the message text. The message format is preserved
       // for log-readers + any pre-existing substring matchers.
-      throw new QwenOAuthPollError({
+      throw new AxeOAuthPollError({
         oauthError: errorData.error,
         description: errorData.error_description,
         status: response.status,
@@ -505,18 +505,18 @@ export class QwenOAuth2Client implements IQwenOAuth2Client {
     const bodyData = {
       grant_type: 'refresh_token',
       refresh_token: this.credentials.refresh_token,
-      client_id: QWEN_OAUTH_CLIENT_ID,
+      client_id: AXE_OAUTH_CLIENT_ID,
     };
 
     const { signal, cleanup } = combineAbortSignals([], {
-      timeoutMs: QWEN_OAUTH_REFRESH_TIMEOUT_MS,
+      timeoutMs: AXE_OAUTH_REFRESH_TIMEOUT_MS,
     });
     debugLogger.debug('Refreshing access token...');
 
     try {
       let response: Response;
       try {
-        response = await fetch(QWEN_OAUTH_TOKEN_ENDPOINT, {
+        response = await fetch(AXE_OAUTH_TOKEN_ENDPOINT, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -597,7 +597,7 @@ export class QwenOAuth2Client implements IQwenOAuth2Client {
   }
 }
 
-export enum QwenOAuth2Event {
+export enum AxeOAuth2Event {
   AuthUri = 'auth-uri',
   AuthProgress = 'auth-progress',
   AuthCancel = 'auth-cancel',
@@ -615,15 +615,15 @@ export type AuthResult =
     };
 
 /**
- * Global event emitter instance for QwenOAuth2 authentication events
+ * Global event emitter instance for AxeOAuth2 authentication events
  */
-export const qwenOAuth2Events = new EventEmitter();
+export const axeOAuth2Events = new EventEmitter();
 
-export async function getQwenOAuthClient(
+export async function getAxeOAuthClient(
   config: Config,
   options?: { requireCachedCredentials?: boolean },
-): Promise<QwenOAuth2Client> {
-  const client = new QwenOAuth2Client();
+): Promise<AxeOAuth2Client> {
+  const client = new AxeOAuth2Client();
 
   // Use shared token manager to get valid credentials with cross-session synchronization
   const sharedManager = SharedTokenManager.getInstance();
@@ -659,7 +659,7 @@ export async function getQwenOAuthClient(
 
     if (options?.requireCachedCredentials) {
       throw new Error(
-        'Qwen OAuth credentials expired. Please use /auth to re-authenticate with qwen-oauth.',
+        'Qwen OAuth credentials expired. Please use /auth to re-authenticate with axe-oauth.',
       );
     }
 
@@ -670,8 +670,8 @@ export async function getQwenOAuthClient(
       // Only emit timeout event if the failure reason is actually timeout
       // Other error types (401, 429, etc.) have already emitted their specific events
       if (result.reason === 'timeout') {
-        qwenOAuth2Events.emit(
-          QwenOAuth2Event.AuthProgress,
+        axeOAuth2Events.emit(
+          AxeOAuth2Event.AuthProgress,
           'timeout',
           'Authentication timed out. Please try again or select a different authentication method.',
         );
@@ -805,7 +805,7 @@ function showFallbackMessage(verificationUriComplete: string): void {
 }
 
 async function authWithQwenDeviceFlow(
-  client: QwenOAuth2Client,
+  client: AxeOAuth2Client,
   config: Config,
 ): Promise<AuthResult> {
   let isCancelled = false;
@@ -814,7 +814,7 @@ async function authWithQwenDeviceFlow(
   const cancelHandler = () => {
     isCancelled = true;
   };
-  qwenOAuth2Events.once(QwenOAuth2Event.AuthCancel, cancelHandler);
+  axeOAuth2Events.once(AxeOAuth2Event.AuthCancel, cancelHandler);
 
   // Helper to check cancellation and return appropriate result
   const checkCancellation = (): AuthResult | null => {
@@ -823,7 +823,7 @@ async function authWithQwenDeviceFlow(
     }
     const message = 'Authentication cancelled by user.';
     debugLogger.debug('\n' + message);
-    qwenOAuth2Events.emit(QwenOAuth2Event.AuthProgress, 'error', message);
+    axeOAuth2Events.emit(AxeOAuth2Event.AuthProgress, 'error', message);
     return { success: false, reason: 'cancelled', message };
   };
 
@@ -832,7 +832,7 @@ async function authWithQwenDeviceFlow(
     status: 'polling' | 'success' | 'error' | 'timeout' | 'rate_limit',
     message: string,
   ): void => {
-    qwenOAuth2Events.emit(QwenOAuth2Event.AuthProgress, status, message);
+    axeOAuth2Events.emit(AxeOAuth2Event.AuthProgress, status, message);
   };
 
   // Helper to handle browser launch with error handling
@@ -851,7 +851,7 @@ async function authWithQwenDeviceFlow(
 
     // Request device authorization
     const deviceAuth = await client.requestDeviceAuthorization({
-      scope: QWEN_OAUTH_SCOPE,
+      scope: AXE_OAUTH_SCOPE,
       code_challenge,
       code_challenge_method: 'S256',
     });
@@ -865,7 +865,7 @@ async function authWithQwenDeviceFlow(
     }
 
     // Emit device authorization event for UI integration immediately
-    qwenOAuth2Events.emit(QwenOAuth2Event.AuthUri, deviceAuth);
+    axeOAuth2Events.emit(AxeOAuth2Event.AuthUri, deviceAuth);
 
     if (config.isBrowserLaunchSuppressed() || !config.isInteractive()) {
       showFallbackMessage(deviceAuth.verification_uri_complete);
@@ -1052,7 +1052,7 @@ async function authWithQwenDeviceFlow(
     return { success: false, reason: 'timeout', message: timeoutMessage };
   } catch (error: unknown) {
     const fullErrorMessage = formatFetchErrorForUser(error, {
-      url: QWEN_OAUTH_BASE_URL,
+      url: AXE_OAUTH_BASE_URL,
     });
     const message = `Device authorization flow failed: ${fullErrorMessage}`;
 
@@ -1060,7 +1060,7 @@ async function authWithQwenDeviceFlow(
     return { success: false, reason: 'error', message };
   } finally {
     // Clean up event listener
-    qwenOAuth2Events.off(QwenOAuth2Event.AuthCancel, cancelHandler);
+    axeOAuth2Events.off(AxeOAuth2Event.AuthCancel, cancelHandler);
   }
 }
 

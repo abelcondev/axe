@@ -283,7 +283,7 @@ describe('setupGithub service', () => {
 
   it('updates gitignore idempotently', async () => {
     const gitignorePath = path.join(scratchDir, '.gitignore');
-    await fsp.writeFile(gitignorePath, '.qwen/\nnode_modules/\n');
+    await fsp.writeFile(gitignorePath, '.axe/\nnode_modules/\n');
 
     const first = await updateGitignore(scratchDir);
     const second = await updateGitignore(scratchDir);
@@ -291,7 +291,7 @@ describe('setupGithub service', () => {
     expect(first.status).toBe('updated');
     expect(second.status).toBe('unchanged');
     await expect(fsp.readFile(gitignorePath, 'utf8')).resolves.toBe(
-      '.qwen/\nnode_modules/\n\ngha-creds-*.json\n',
+      '.axe/\nnode_modules/\n\ngha-creds-*.json\n',
     );
   });
 

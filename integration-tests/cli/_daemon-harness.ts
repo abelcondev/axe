@@ -44,7 +44,7 @@ import { DaemonClient, type SubscribeOptions } from '@qwen-code/sdk';
 import {
   hashMcpServerConfig,
   type MCPServerConfig,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

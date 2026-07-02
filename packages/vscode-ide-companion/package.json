@@ -291,8 +291,8 @@
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "^0.14.1",
-    "@qwen-code/sdk": "*",
-    "@qwen-code/webui": "*",
+    "@axe/sdk": "*",
+    "@axe/webui": "*",
     "@modelcontextprotocol/sdk": "^1.25.2",
     "cors": "^2.8.5",
     "dotenv": "^17.1.0",

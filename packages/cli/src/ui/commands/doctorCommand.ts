@@ -27,7 +27,7 @@ import { t } from '../../i18n/index.js';
 import {
   collectMemoryDiagnostics,
   type MemoryDiagnostics,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { formatMemoryUsage } from '../utils/formatters.js';
 
 const MEMORY_SUBCOMMAND = 'memory';
@@ -165,7 +165,7 @@ export const doctorCommand: SlashCommand = {
           if (isHighHeapPressure(latestDiagnostics)) {
             throw new Error(
               t(
-                'Heap snapshot skipped: V8 heap pressure is already high, and writing a synchronous heap snapshot could make the process unresponsive or trigger OOM. Restart Qwen Code first if it is unstable, or retry before memory pressure reaches the warning threshold.',
+                'Heap snapshot skipped: V8 heap pressure is already high, and writing a synchronous heap snapshot could make the process unresponsive or trigger OOM. Restart Axe first if it is unstable, or retry before memory pressure reaches the warning threshold.',
               ),
             );
           }
@@ -591,10 +591,10 @@ async function cpuProfileDoctorAction(
       const infoMsg =
         process.platform === 'win32'
           ? t(
-              'CPU profile was stopped externally. Check ~/.qwen/cpu-profiles/ for the output.',
+              'CPU profile was stopped externally. Check ~/.axe/cpu-profiles/ for the output.',
             )
           : t(
-              'CPU profile was stopped externally (e.g., via SIGUSR1). Check ~/.qwen/cpu-profiles/ for the output.',
+              'CPU profile was stopped externally (e.g., via SIGUSR1). Check ~/.axe/cpu-profiles/ for the output.',
             );
       if (executionMode === 'interactive') {
         context.ui.addItem({ type: 'info', text: infoMsg }, Date.now());

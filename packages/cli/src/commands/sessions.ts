@@ -9,7 +9,7 @@ import { listCommand } from './sessions/list.js';
 
 export const sessionsCommand: CommandModule = {
   command: 'sessions',
-  describe: 'Manage Qwen Code sessions',
+  describe: 'Manage Axe sessions',
   builder: (yargs: Argv) =>
     yargs
       .command(listCommand)

@@ -1,5 +1,5 @@
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import type { DaemonSettingDescriptor } from '@qwen-code/webui/daemon-react-sdk';
+import type { DaemonSettingDescriptor } from '@axe/webui/daemon-react-sdk';
 import type {
   ACPToolCall,
   PermissionRequest,

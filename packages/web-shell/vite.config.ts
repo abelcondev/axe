@@ -36,22 +36,22 @@ export default defineConfig(({ command }) => ({
     alias:
       command === 'serve'
         ? {
-            '@qwen-code/webui/daemon-react-sdk': resolve(
+            '@axe/webui/daemon-react-sdk': resolve(
               __dirname,
               '../webui/src/daemon-react-sdk.ts',
             ),
-            '@qwen-code/webui': resolve(__dirname, '../webui/src/index.ts'),
-            '@qwen-code/sdk/daemon': resolve(
+            '@axe/webui': resolve(__dirname, '../webui/src/index.ts'),
+            '@axe/sdk/daemon': resolve(
               __dirname,
               '../sdk-typescript/src/daemon/index.ts',
             ),
-            '@qwen-code/sdk': resolve(
+            '@axe/sdk': resolve(
               __dirname,
               '../sdk-typescript/src/index.ts',
             ),
           }
         : {},
-    dedupe: ['react', 'react-dom', '@qwen-code/webui', '@qwen-code/sdk'],
+    dedupe: ['react', 'react-dom', '@axe/webui', '@axe/sdk'],
   },
   build: {
     outDir: '../dist',

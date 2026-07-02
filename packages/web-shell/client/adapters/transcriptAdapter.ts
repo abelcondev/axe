@@ -1,4 +1,4 @@
-import type { DaemonTranscriptBlock } from '@qwen-code/webui/daemon-react-sdk';
+import type { DaemonTranscriptBlock } from '@axe/webui/daemon-react-sdk';
 import type { PermissionRequest, PermissionOptionKind } from './types';
 
 type PermissionTranscriptBlock = Extract<

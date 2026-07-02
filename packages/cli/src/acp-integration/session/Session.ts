@@ -32,7 +32,7 @@ import type {
   ToolCallResponseInfo,
   LoopTickResult,
   VisionBridgeResult,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   AuthType,
   ApprovalMode,
@@ -124,11 +124,11 @@ import {
   runVisionBridge,
   shouldRunVisionBridge,
   splitImageParts,
-} from '@qwen-code/qwen-code-core';
-import { NOT_CURRENTLY_GENERATING_CANCEL_MESSAGE } from '@qwen-code/acp-bridge/bridgeErrors';
+} from '@axe/core';
+import { NOT_CURRENTLY_GENERATING_CANCEL_MESSAGE } from '@axe/acp-bridge/bridgeErrors';
 // Single source of truth shared with the daemon-side answerer (BridgeClient),
 // so a rename can't desync caller and answerer into a silent -32601 latch.
-import { MID_TURN_QUEUE_DRAIN_METHOD } from '@qwen-code/acp-bridge/bridgeTypes';
+import { MID_TURN_QUEUE_DRAIN_METHOD } from '@axe/acp-bridge/bridgeTypes';
 import { getCommandSubcommandNames } from '../../services/commandMetadata.js';
 import { getEffectiveSupportedModes } from '../../services/commandUtils.js';
 
@@ -2827,9 +2827,9 @@ export class Session implements SessionContext {
         projectRoot: root,
         homeDir: homeConfineRoot,
         homeQwenDir,
-        // The project `.qwen/loop.md` is repo-controlled, so an untrusted folder
+        // The project `.axe/loop.md` is repo-controlled, so an untrusted folder
         // must not read it and feed it to the model (mirrors getProjectHooks()'s
-        // trust gate). The home/global `~/.qwen/loop.md` is user-owned and stays
+        // trust gate). The home/global `~/.axe/loop.md` is user-owned and stays
         // allowed. Pass a getter, not a snapshot: isTrustedFolder() can flip
         // mid-session on an IDE workspace-trust update, and the resolver outlives
         // a single tick — re-read it on every resolve() so a trusted→untrusted
@@ -2896,7 +2896,7 @@ export class Session implements SessionContext {
                 try {
                   loopTick = await resolver.resolve(loopMode, trustedAtResolve);
                 } catch (resolveErr) {
-                  // resolve() reads .qwen/loop.md (project or home/global); an
+                  // resolve() reads .axe/loop.md (project or home/global); an
                   // EACCES/EIO here is a sentinel-RESOLUTION failure, not a
                   // model-call failure — tag it so the two are distinguishable
                   // in logs.
@@ -2906,7 +2906,7 @@ export class Session implements SessionContext {
                   // path (OS username + dir layout) — stays in this LOCAL debug
                   // log only; debug logs are never sent to the ACP client.
                   debugLogger.warn(
-                    `loop.md sentinel resolution failed (mode=${loopMode}, code=${code}) — check .qwen/loop.md permissions/IO`,
+                    `loop.md sentinel resolution failed (mode=${loopMode}, code=${code}) — check .axe/loop.md permissions/IO`,
                     resolveErr,
                   );
                   if (
@@ -3645,7 +3645,7 @@ export class Session implements SessionContext {
       selectedAuthType,
       parsed.modelId,
       selectedAuthType !== previousAuthType &&
-        selectedAuthType === AuthType.QWEN_OAUTH
+        selectedAuthType === AuthType.AXE_OAUTH
         ? { requireCachedCredentials: true }
         : undefined,
     );
@@ -4728,7 +4728,7 @@ export class Session implements SessionContext {
               if (hooksEnabled && messageBus) {
                 this.fireNotificationHookWithTerminalSequence(
                   messageBus,
-                  `Qwen Code needs your permission to use ${toolName}`,
+                  `Axe needs your permission to use ${toolName}`,
                   NotificationType.PermissionPrompt,
                   'Permission needed',
                 );
@@ -4932,7 +4932,7 @@ export class Session implements SessionContext {
           try {
             const sleepInhibitorHandle = acquireSleepInhibitor(
               this.config,
-              `Qwen Code is executing tool ${toolName}`,
+              `Axe is executing tool ${toolName}`,
             );
             try {
               toolResult = await invocation.execute(activeToolAbortSignal);

@@ -7,13 +7,13 @@
 import type {
   Config,
   ConfigInitializeOptions,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   createDebugLogger,
   detectTurnInterruption,
   SendMessageType,
   TURN_INTERRUPTION_HISTORY_TAIL_COUNT,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { StreamJsonInputReader } from './io/StreamJsonInputReader.js';
 import { StreamJsonOutputAdapter } from './io/StreamJsonOutputAdapter.js';
 import { ControlContext } from './control/ControlContext.js';

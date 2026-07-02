@@ -16,7 +16,7 @@ import {
   createDebugLogger,
   isSubpath,
   SessionService,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import {
   collectSessionData,
   normalizeSessionData,

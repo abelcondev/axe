@@ -33,7 +33,7 @@ import {
   DEFAULT_BUILTIN_SUBAGENT_TYPE as CORE_DEFAULT_SUBAGENT_TYPE,
   ToolDisplayNames,
   ToolNames,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { localizeToolDisplayName } from '../../../i18n/index.js';
 import {
   useBackgroundTaskViewActions,

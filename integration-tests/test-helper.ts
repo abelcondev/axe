@@ -218,7 +218,7 @@ export class TestRig {
   } {
     const isNpmReleaseTest =
       process.env.INTEGRATION_TEST_USE_INSTALLED_GEMINI === 'true';
-    const command = isNpmReleaseTest ? 'qwen' : 'node';
+    const command = isNpmReleaseTest ? 'axe' : 'node';
     const initialArgs = isNpmReleaseTest
       ? ['--no-chat-recording', ...extraInitialArgs]
       : [this.bundlePath, '--no-chat-recording', ...extraInitialArgs];

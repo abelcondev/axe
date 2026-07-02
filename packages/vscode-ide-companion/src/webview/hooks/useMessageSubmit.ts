@@ -8,7 +8,7 @@ import { useCallback } from 'react';
 import type { VSCodeAPI } from './useVSCode.js';
 import { getRandomLoadingMessage } from '../../constants/loadingMessages.js';
 import type { ImageAttachment } from './useImage.js';
-import { ZERO_WIDTH_SPACE, stripZeroWidthSpaces } from '@qwen-code/webui';
+import { ZERO_WIDTH_SPACE, stripZeroWidthSpaces } from '@axe/webui';
 
 interface UseMessageSubmitProps {
   vscode: VSCodeAPI;

@@ -33,10 +33,10 @@ describe('QwenIgnoreParser', () => {
     vi.restoreAllMocks();
   });
 
-  describe('when .qwenignore exists', () => {
+  describe('when .axeignore exists', () => {
     beforeEach(async () => {
       await createTestFile(
-        '.qwenignore',
+        '.axeignore',
         'ignored.txt\n# A comment\n/ignored_dir/\n',
       );
       await createTestFile('ignored.txt', 'ignored');
@@ -51,12 +51,12 @@ describe('QwenIgnoreParser', () => {
       );
     });
 
-    it('should ignore files specified in .qwenignore', () => {
+    it('should ignore files specified in .axeignore', () => {
       const parser = new QwenIgnoreParser(projectRoot);
       expect(parser.getPatterns()).toEqual(['ignored.txt', '/ignored_dir/']);
       expect(parser.isIgnored('ignored.txt')).toBe(true);
       expect(parser.getIgnoreFileNameForPath('ignored.txt')).toBe(
-        '.qwenignore',
+        '.axeignore',
       );
       expect(parser.isIgnored('not_ignored.txt')).toBe(false);
       expect(parser.getIgnoreFileNameForPath('not_ignored.txt')).toBe(
@@ -69,7 +69,7 @@ describe('QwenIgnoreParser', () => {
     });
 
     it('should still evaluate files whose names start with two dots', async () => {
-      await createTestFile('.qwenignore', '..secret.log');
+      await createTestFile('.axeignore', '..secret.log');
 
       const parser = new QwenIgnoreParser(projectRoot);
 
@@ -112,18 +112,18 @@ describe('QwenIgnoreParser', () => {
 
   describe('when compatibility ignore files contain negations', () => {
     beforeEach(async () => {
-      await createTestFile('.qwenignore', 'secrets/**\n');
+      await createTestFile('.axeignore', 'secrets/**\n');
       await createTestFile('.agentignore', '!secrets/**\n');
       await createTestFile(path.join('secrets', 'token.txt'), 'secret');
     });
 
-    it('should not let custom ignore negations unignore .qwenignore matches', () => {
+    it('should not let custom ignore negations unignore .axeignore matches', () => {
       const parser = new QwenIgnoreParser(projectRoot);
 
       expect(parser.isIgnored(path.join('secrets', 'token.txt'))).toBe(true);
       expect(
         parser.getIgnoreFileNameForPath(path.join('secrets', 'token.txt')),
-      ).toBe('.qwenignore');
+      ).toBe('.axeignore');
     });
   });
 
@@ -140,7 +140,7 @@ describe('QwenIgnoreParser', () => {
       const parser = new QwenIgnoreParser(projectRoot, ['.cursorignore']);
 
       expect(parser.getIgnoreFileNames()).toEqual([
-        '.qwenignore',
+        '.axeignore',
         '.cursorignore',
       ]);
       expect(parser.getPatterns()).toEqual(['cursor-secret.txt']);
@@ -160,7 +160,7 @@ describe('QwenIgnoreParser', () => {
           ' .cursorignore ',
           '.cursorignore',
           'nested\\.ignore',
-          '.qwenignore',
+          '.axeignore',
           '',
           '/absolute',
           '../escape',
@@ -170,21 +170,21 @@ describe('QwenIgnoreParser', () => {
       ).toEqual(['.cursorignore', 'nested/.ignore']);
     });
 
-    it('should include .qwenignore plus default custom ignore files by default', () => {
+    it('should include .axeignore plus default custom ignore files by default', () => {
       expect(getQwenIgnoreFileNames()).toEqual([
-        '.qwenignore',
+        '.axeignore',
         '.agentignore',
         '.aiignore',
       ]);
     });
 
-    it('should keep .qwenignore when custom ignore files are empty', () => {
-      expect(getQwenIgnoreFileNames([])).toEqual(['.qwenignore']);
+    it('should keep .axeignore when custom ignore files are empty', () => {
+      expect(getQwenIgnoreFileNames([])).toEqual(['.axeignore']);
     });
 
     it('should format ignore file names for user-facing messages', () => {
       expect(formatQwenIgnoreFileNames(['.cursorignore'])).toBe(
-        '.qwenignore, .cursorignore',
+        '.axeignore, .cursorignore',
       );
     });
   });

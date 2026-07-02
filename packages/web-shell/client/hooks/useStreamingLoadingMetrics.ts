@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   useStreamingState,
   useTranscriptBlocks,
-} from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
 
 interface LoadingMetrics {
   estimatedOutputTokens: number;

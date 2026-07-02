@@ -6,7 +6,7 @@
 
 // Pre-submission checks for /review Step 7. Runs three deterministic
 // gh-API queries and emits a single JSON report describing self-PR status,
-// CI / build status, existing Qwen Code comment classification, and the
+// CI / build status, existing Axe comment classification, and the
 // downgrade decisions the LLM should apply when constructing the review
 // event.
 
@@ -182,14 +182,14 @@ async function runPresubmit(args: PresubmitArgs): Promise<void> {
   const statuses = statusResp?.statuses ?? [];
   const ciStatus = classifyCi(checkRuns, statuses);
 
-  // --- Existing Qwen Code comments --------------------------------------
+  // --- Existing Axe comments --------------------------------------
   // Paginate: PRs can have >30 inline comments and the latest pages carry
   // the most recent (and most likely to overlap with new findings).
   const allComments = ghApiAll(
     `repos/${owner}/${repo}/pulls/${prNumber}/comments`,
   ) as RawComment[];
   const qwenComments = allComments.filter((c) =>
-    /via Qwen Code \/review/.test(c.body ?? ''),
+    /via Axe \/review/.test(c.body ?? ''),
   );
 
   const repliedToIds = new Set<number>();

@@ -38,7 +38,7 @@ export const DEVICE_FLOW_EXPIRY_GRACE_MS = 30_000;
  * High-level convenience wrapper around the four `client.*DeviceFlow*` HTTP
  * helpers. SDK users should normally write:
  *
- *   const flow = await client.auth.start({ providerId: 'qwen-oauth' });
+ *   const flow = await client.auth.start({ providerId: 'axe-oauth' });
  *   console.log(`Open ${flow.verificationUri}\nCode: ${flow.userCode}`);
  *   const result = await flow.awaitCompletion({ signal });
  *
@@ -246,7 +246,7 @@ async function pollUntilTerminal(
     expiresAt: number;
     /** Carried through from the parent `start` so the synthetic 404
      *  fallback below reports the actual provider rather than the
-     *  hardcoded `'qwen-oauth'` (PR #4255 review C1). */
+     *  hardcoded `'axe-oauth'` (PR #4255 review C1). */
     providerId: DaemonAuthProviderId;
   },
   clientId: string | undefined,

@@ -36,7 +36,7 @@ import {
   SchemaValidator,
   type ConfigParameters,
   type MCPServerConfig,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { extensionsCommand } from '../commands/extensions.js';
 import { hooksCommand } from '../commands/hooks.js';
 import { normalizeDisabledToolList } from './normalizeDisabledTools.js';
@@ -199,7 +199,7 @@ export interface CliArgs {
    * - `--worktree=#123` / `--worktree https://github.com/o/r/pull/123` → PR ref
    *
    * Consumed by `setupStartupWorktree()` before `loadCliConfig()`. When set,
-   * the CLI chdirs into `<repoRoot>/.qwen/worktrees/<slug>/` and the entire
+   * the CLI chdirs into `<repoRoot>/.axe/worktrees/<slug>/` and the entire
    * session runs inside that worktree.
    */
   worktree?: string | undefined;
@@ -536,7 +536,7 @@ export async function parseArguments(): Promise<CliArgs> {
   // hack: if the first argument is the CLI entry point, remove it
   if (
     rawArgv.length > 0 &&
-    (rawArgv[0].endsWith('/dist/qwen-cli/cli.js') ||
+    (rawArgv[0].endsWith('/dist/axe-cli/cli.js') ||
       rawArgv[0].endsWith('/dist/cli.js') ||
       rawArgv[0].endsWith('/dist/cli/cli.js'))
   ) {
@@ -545,9 +545,9 @@ export async function parseArguments(): Promise<CliArgs> {
 
   const yargsInstance = yargs(rawArgv)
     .locale('en')
-    .scriptName('qwen')
+    .scriptName('axe')
     .usage(
-      'Usage: qwen [options] [command]\n\nQwen Code - Launch an interactive CLI, use -p/--prompt for non-interactive mode',
+      'Usage: axe [options] [command]\n\nAxe - Launch an interactive CLI, use -p/--prompt for non-interactive mode',
     )
     .option('telemetry', {
       type: 'boolean',
@@ -623,7 +623,7 @@ export async function parseArguments(): Promise<CliArgs> {
     })
     .option('proxy', {
       type: 'string',
-      description: 'Proxy for Qwen Code, like schema://user:password@host:port',
+      description: 'Proxy for Axe, like schema://user:password@host:port',
     })
     .deprecateOption(
       'proxy',
@@ -640,7 +640,7 @@ export async function parseArguments(): Promise<CliArgs> {
       description:
         'Enable chat recording to disk. If false, chat history is not saved and --continue/--resume will not work.',
     })
-    .command('$0 [query..]', 'Launch Qwen Code CLI', (yargsInstance: Argv) =>
+    .command('$0 [query..]', 'Launch Axe CLI', (yargsInstance: Argv) =>
       yargsInstance
         .positional('query', {
           description:
@@ -868,7 +868,7 @@ export async function parseArguments(): Promise<CliArgs> {
         .option('worktree', {
           type: 'string',
           description:
-            'Start the session inside a git worktree at <repoRoot>/.qwen/worktrees/<slug>/. ' +
+            'Start the session inside a git worktree at <repoRoot>/.axe/worktrees/<slug>/. ' +
             'Pass a slug (`--worktree my-feature`), a PR reference (`--worktree=#123` or a full ' +
             'GitHub pull-request URL), or use bare `--worktree` to auto-generate a slug. ' +
             'On exit, the WorktreeExitDialog prompts to keep or remove the worktree.',
@@ -924,7 +924,7 @@ export async function parseArguments(): Promise<CliArgs> {
           choices: [
             AuthType.USE_OPENAI,
             AuthType.USE_ANTHROPIC,
-            AuthType.QWEN_OAUTH,
+            AuthType.AXE_OAUTH,
             AuthType.USE_GEMINI,
             AuthType.USE_VERTEX_AI,
           ],
@@ -1033,7 +1033,7 @@ export async function parseArguments(): Promise<CliArgs> {
             const hasPositionalQuery = Array.isArray(query)
               ? query.length > 0
               : !!query;
-            // Allow stdin piping (`echo "..." | qwen --json-schema ...`):
+            // Allow stdin piping (`echo "..." | axe --json-schema ...`):
             // when stdin is not a TTY, the prompt is supplied via the pipe
             // and headless mode runs normally. Only reject true interactive
             // invocations with neither flag nor positional nor pipe — the
@@ -1059,7 +1059,7 @@ export async function parseArguments(): Promise<CliArgs> {
     .command(channelCommand)
     // Register /review skill helpers (presubmit checks, cleanup)
     .command(reviewCommand)
-    // Register `qwen serve` (Stage 1 daemon)
+    // Register `axe serve` (Stage 1 daemon)
     .command(serveCommand)
     // Register sessions subcommands
     .command(sessionsCommand);
@@ -1445,7 +1445,7 @@ export async function loadCliConfig(
 
   // Set runtime output directory from settings (env var QWEN_RUNTIME_DIR
   // is auto-detected inside getRuntimeBaseDir() at each call site).
-  // Pass cwd so that relative paths like ".qwen" resolve per-project.
+  // Pass cwd so that relative paths like '.axe' resolve per-project.
   Storage.setRuntimeBaseDir(settings.advanced?.runtimeOutputDir, cwd);
 
   const ideMode = settings.ide?.enabled ?? false;
@@ -1822,7 +1822,7 @@ export async function loadCliConfig(
       sessionId = argv.resume;
       sessionData = await sessionService.loadSession(argv.resume);
       if (!sessionData) {
-        const message = `No saved session found with ID ${argv.resume}. Run \`qwen --resume\` without an ID to choose from existing sessions.`;
+        const message = `No saved session found with ID ${argv.resume}. Run \`axe --resume\` without an ID to choose from existing sessions.`;
         writeStderrLine(message);
         process.exit(1);
       }
@@ -2027,7 +2027,7 @@ export async function loadCliConfig(
       // effective config isn't a silent surprise during debugging.
       if (tunnelOn && settings.tools?.computerUse?.enabled === true) {
         writeStderrLine(
-          'qwen serve: ignoring tools.computerUse.enabled=true — the CDP ' +
+          'axe serve: ignoring tools.computerUse.enabled=true — the CDP ' +
             'tunnel (QWEN_SERVE_CDP_TUNNEL_OVER_WS) routes browser automation ' +
             'through the CDP tunnel, so computer-use stays disabled.',
         );

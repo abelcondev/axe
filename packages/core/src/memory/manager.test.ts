@@ -138,8 +138,8 @@ describe('MemoryManager', () => {
     });
 
     it.each([
-      ['private', '.qwen/memory/user/test.md'],
-      ['team', '.qwen/team-memory/test.md'],
+      ['private', '.axe/memory/user/test.md'],
+      ['team', '.axe/team-memory/test.md'],
     ])(
       'skips extraction when history writes to a %s memory file',
       async (_label, filePath) => {
@@ -240,7 +240,7 @@ describe('MemoryManager', () => {
     beforeEach(() => {
       vi.resetAllMocks();
       vi.mocked(runSkillReviewByAgent).mockResolvedValue({
-        touchedSkillFiles: ['/project/.qwen/skills/test/SKILL.md'],
+        touchedSkillFiles: ['/project/.axe/skills/test/SKILL.md'],
       });
     });
 
@@ -369,7 +369,7 @@ describe('MemoryManager', () => {
       await fs.mkdir(projectRoot, { recursive: true });
       skillFilePath = path.join(
         projectRoot,
-        '.qwen',
+        '.axe',
         'skills',
         'auto-skill-foo',
         'SKILL.md',
@@ -414,7 +414,7 @@ describe('MemoryManager', () => {
       expect(pendingSkills).toBeDefined();
       expect(pendingSkills).toHaveLength(1);
 
-      // The skill must no longer be under .qwen/skills/
+      // The skill must no longer be under .axe/skills/
       await expect(fs.access(skillFilePath)).rejects.toThrow();
     });
 
@@ -437,7 +437,7 @@ describe('MemoryManager', () => {
       expect(record.status).toBe('completed');
       expect(record.metadata?.['pendingSkills']).toBeUndefined();
 
-      // The skill must still be under .qwen/skills/
+      // The skill must still be under .axe/skills/
       await expect(fs.access(skillFilePath)).resolves.toBeUndefined();
     });
 
@@ -598,7 +598,7 @@ describe('MemoryManager', () => {
       await fs.mkdir(projectRoot, { recursive: true });
       skillFilePath = path.join(
         projectRoot,
-        '.qwen',
+        '.axe',
         'skills',
         'auto-skill-foo',
         'SKILL.md',
@@ -660,10 +660,10 @@ describe('MemoryManager', () => {
       const taskId = record.id;
       await mgr.acceptPendingSkillFromTask(taskId, 'auto-skill-foo');
 
-      // The skill must now exist at its final path under .qwen/skills/
+      // The skill must now exist at its final path under .axe/skills/
       const finalPath = path.join(
         projectRoot,
-        '.qwen',
+        '.axe',
         'skills',
         'auto-skill-foo',
         'SKILL.md',
@@ -683,10 +683,10 @@ describe('MemoryManager', () => {
       const taskId = record.id;
       await mgr.rejectPendingSkillFromTask(taskId, 'auto-skill-foo');
 
-      // The skill must NOT exist under .qwen/skills/
+      // The skill must NOT exist under .axe/skills/
       const finalPath = path.join(
         projectRoot,
-        '.qwen',
+        '.axe',
         'skills',
         'auto-skill-foo',
         'SKILL.md',
@@ -696,7 +696,7 @@ describe('MemoryManager', () => {
       // The staged dir must also be gone
       const stagedPath = path.join(
         projectRoot,
-        '.qwen',
+        '.axe',
         'pending-skills',
         'auto-skill-foo',
       );
@@ -712,7 +712,7 @@ describe('MemoryManager', () => {
       const mgr = new MemoryManager();
       const names = ['auto-skill-a', 'auto-skill-b', 'auto-skill-c'];
       const files = names.map((n) =>
-        path.join(projectRoot, '.qwen', 'skills', n, 'SKILL.md'),
+        path.join(projectRoot, '.axe', 'skills', n, 'SKILL.md'),
       );
       vi.mocked(runSkillReviewByAgent).mockImplementation(async () => {
         for (const f of files) {
@@ -1642,14 +1642,14 @@ describe('MemoryManager', () => {
       // Without forceFullProtocol (all indexes empty → condensed path)
       const condensed = mgr.appendToUserMemory(
         '',
-        '/project/.qwen/memory',
+        '/project/.axe/memory',
         null,
       );
 
       // With forceFullProtocol → full verbose path
       const full = mgr.appendToUserMemory(
         '',
-        '/project/.qwen/memory',
+        '/project/.axe/memory',
         null,
         undefined,
         undefined,

@@ -15,7 +15,7 @@ import {
   computeModelListVersion,
   getDefaultModelIds,
   resolveBaseUrl,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 describe('coding plan provider', () => {
   it('creates a Coding Plan install plan', () => {

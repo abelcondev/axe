@@ -7,11 +7,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as vscode from 'vscode';
 import { activate } from './extension.js';
-import { IDE_DEFINITIONS, detectIdeFromEnv } from '@qwen-code/qwen-code-core';
+import { IDE_DEFINITIONS, detectIdeFromEnv } from '@axe/core';
 
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
   return {
     ...actual,
     detectIdeFromEnv: vi.fn(() => actual.IDE_DEFINITIONS.vscode),

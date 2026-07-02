@@ -36,7 +36,7 @@ import type {
   PromptResult,
   SessionMetadataResult,
   SetModelResult,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 
 export type DaemonConnectionStatus =
   | 'idle'

@@ -159,7 +159,7 @@ describe('must-translate locale coverage', () => {
         'Save a durable memory to the memory system.',
       );
       expect(statuslineCommand.description).not.toBe(
-        "Set up Qwen Code's status line UI",
+        "Set up Axe's status line UI",
       );
     },
     SLOW_LOCALE_TEST_TIMEOUT_MS,

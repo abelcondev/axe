@@ -256,7 +256,7 @@ export interface WorkflowRunRequest {
   /**
    * P-nested: resolver for the `workflow(nameOrRef, args)` global. When
    * provided, the top-level sandbox exposes `workflow`, which resolves a
-   * saved workflow (by name from `.qwen/workflows/<name>.js`, or by
+   * saved workflow (by name from `.axe/workflows/<name>.js`, or by
    * `{scriptPath}`) and runs it as a nested orchestration that shares THIS
    * run's agent-count cap, concurrency window, token budget, and emitter
    * (so nested phases/logs and token spend roll into the same registry
@@ -701,7 +701,7 @@ async function runOverridePath(
   // only after createSchemaConfigOverride / createSchemaModeState /
   // addEventListener — so any throw in those three (e.g. a broken MCP
   // server during the schema override's tool-registry rebuild) orphaned
-  // the just-provisioned worktree on disk under .qwen/worktrees/. Move
+  // the just-provisioned worktree on disk under .axe/worktrees/. Move
   // schema setup + signal chaining + emitter creation inside.
   try {
     // Schema mode: build a per-call Config override with a fresh ToolRegistry
@@ -940,7 +940,7 @@ interface WorktreePreservedInfo {
  *    `hasUnmergedWorktreeCommits` (which resolves the slug to its
  *    branch name internally).
  *  - `path` — absolute worktree directory under
- *    `<projectRoot>/.qwen/worktrees/`; the subagent's rebound cwd.
+ *    `<projectRoot>/.axe/worktrees/`; the subagent's rebound cwd.
  *  - `branch` — the branch created for this worktree
  *    (`worktree-<slug>`); appears verbatim in the user-facing preserved
  *    suffix.

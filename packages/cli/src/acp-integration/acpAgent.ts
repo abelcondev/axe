@@ -24,8 +24,8 @@ import {
   getDefaultBaseUrlForProtocol,
   getDefaultModelIds,
   getScopedEnvContents,
-  QwenOAuth2Event,
-  qwenOAuth2Events,
+  AxeOAuth2Event,
+  axeOAuth2Events,
   resolveBaseUrl,
   MCP_BUDGET_WARN_FRACTION,
   MCPServerConfig,
@@ -63,7 +63,7 @@ import {
   FORK_SUBAGENT_TYPE,
   runManagedRememberByAgent,
   matchesAnyServerPattern,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { randomUUID } from 'node:crypto';
 import type {
   AgentParams,
@@ -82,7 +82,7 @@ import type {
   DiscoveredMCPResource,
   DiscoveredMCPPrompt,
   WorkspaceRememberContextMode,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js';
 import {
   AgentSideConnection,
@@ -231,11 +231,11 @@ import {
   type ServeExtensionCapabilities,
   type ServeWorkspaceExtensionsStatus,
   IDLE_HOOK_EVENTS,
-} from '@qwen-code/acp-bridge/status';
+} from '@axe/acp-bridge/status';
 import {
   CLIENT_MCP_OVER_WS_CONFIG_FLAG,
   type ClientMcpOverWsRuntimeConfig,
-} from '@qwen-code/acp-bridge/bridgeTypes';
+} from '@axe/acp-bridge/bridgeTypes';
 import { isValidServerName } from '../serve/validate-server-name.js';
 import { MAX_REMEMBER_CONTENT_BYTES } from '../serve/workspace-memory-remember-constants.js';
 import {
@@ -286,7 +286,7 @@ function hasFailedDisplayStatus(
  *
  * Drift detection: `AUTH_PREFLIGHT_AUDITED_AUTH_TYPES` below lists every
  * `AuthType` enum value that has been triaged for this map (either keyed
- * here, or explicitly waived for non-env-based auth like qwen-oauth). The
+ * here, or explicitly waived for non-env-based auth like axe-oauth). The
  * paired test `AUTH_PREFLIGHT_AUDITED_AUTH_TYPES covers every AuthType`
  * walks the public enum and fails CI when core adds a new auth method
  * without a deliberate decision here.
@@ -306,7 +306,7 @@ export const AUTH_PREFLIGHT_ENV_KEYS: Readonly<
  * waived rather than a missing entry.
  */
 export const AUTH_PREFLIGHT_WAIVED_AUTH_TYPES: ReadonlySet<string> = new Set([
-  'qwen-oauth',
+  'axe-oauth',
 ]);
 
 type QwenMemorySettings = {
@@ -350,7 +350,7 @@ type QwenManagedSkillFile = {
   content: string;
 };
 
-const PROJECT_SKILL_DIRS = ['.qwen', '.agents'] as const;
+const PROJECT_SKILL_DIRS = ['.axe', '.agents'] as const;
 const SKILLS_DIR = 'skills';
 
 type DownloadedSkillFile = {
@@ -2773,7 +2773,7 @@ class QwenAgent implements Agent {
       protocolVersion: PROTOCOL_VERSION,
       agentInfo: {
         name: 'qwen-code',
-        title: 'Qwen Code',
+        title: 'Axe',
         version,
       },
       authMethods,
@@ -2807,8 +2807,8 @@ class QwenAgent implements Agent {
       });
     };
 
-    if (method === AuthType.QWEN_OAUTH) {
-      qwenOAuth2Events.once(QwenOAuth2Event.AuthUri, authUriHandler);
+    if (method === AuthType.AXE_OAUTH) {
+      axeOAuth2Events.once(AxeOAuth2Event.AuthUri, authUriHandler);
     }
 
     await clearCachedCredentialFile();
@@ -2820,8 +2820,8 @@ class QwenAgent implements Agent {
         method,
       );
     } finally {
-      if (method === AuthType.QWEN_OAUTH) {
-        qwenOAuth2Events.off(QwenOAuth2Event.AuthUri, authUriHandler);
+      if (method === AuthType.AXE_OAUTH) {
+        axeOAuth2Events.off(AxeOAuth2Event.AuthUri, authUriHandler);
       }
     }
   }
@@ -4078,7 +4078,7 @@ class QwenAgent implements Agent {
         Boolean(process.env[name]),
       );
       const hasToken = Boolean(presentVar);
-      // No env-var registration → either OAuth-style auth (qwen-oauth) or
+      // No env-var registration → either OAuth-style auth (axe-oauth) or
       // a custom provider whose key is sourced from settings rather than
       // env. Surface as `unknown` (the SDK consumer can defer to the
       // `/session` boot for definitive validation) rather than a false
@@ -7720,7 +7720,7 @@ class QwenAgent implements Agent {
     if (!selectedType) {
       throw RequestError.authRequired(
         { authMethods: pickAuthMethodsForAuthRequired() },
-        'Use Qwen Code CLI to authenticate first.',
+        'Use Axe CLI to authenticate first.',
       );
     }
 

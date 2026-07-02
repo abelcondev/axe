@@ -240,14 +240,14 @@ describe('WriteFileTool', () => {
       try {
         const privatePath = path.join(
           rootDir,
-          '.qwen',
+          '.axe',
           'memory',
           'user',
           'x.md',
         );
         const teamPath = path.join(
           rootDir,
-          '.qwen',
+          '.axe',
           'team-memory',
           'feedback',
           'x.md',
@@ -274,7 +274,7 @@ describe('WriteFileTool', () => {
 
     it('blocks writing a secret to a team-memory path', () => {
       const params = {
-        file_path: path.join(rootDir, '.qwen', 'team-memory', 'feedback.md'),
+        file_path: path.join(rootDir, '.axe', 'team-memory', 'feedback.md'),
         content: `token = ghp_${'a'.repeat(36)}`,
       };
       expect(() => tool.build(params)).toThrow(
@@ -285,7 +285,7 @@ describe('WriteFileTool', () => {
     it('blocks a secret added to team-memory content before execute', async () => {
       const filePath = path.join(
         rootDir,
-        '.qwen',
+        '.axe',
         'team-memory',
         'feedback.md',
       );

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { IdeInfo } from '@qwen-code/qwen-code-core';
+import type { IdeInfo } from '@axe/core';
 import { Box, Text } from 'ink';
 import type { RadioSelectItem } from './components/shared/RadioButtonSelect.js';
 import { RadioButtonSelect } from './components/shared/RadioButtonSelect.js';
@@ -93,7 +93,7 @@ export function IdeIntegrationNudge({
       <Box marginBottom={1} flexDirection="column">
         <Text>
           <Text color={theme.status.warning}>{'> '}</Text>
-          {`Do you want to connect ${ideName ?? 'your editor'} to Qwen Code?`}
+          {`Do you want to connect ${ideName ?? 'your editor'} to Axe?`}
         </Text>
         <Text color={theme.text.secondary}>{installText}</Text>
       </Box>

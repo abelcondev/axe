@@ -17,13 +17,13 @@ import type {
 /**
  * Option B: writes the artifact to the local Qwen home and returns a file://
  * URL. No network, no sharing — the page opens directly in the browser. Keyed
- * by id under `~/.qwen/artifacts/{id}/index.html`, so redeploys overwrite in
+ * by id under `~/.axe/artifacts/{id}/index.html`, so redeploys overwrite in
  * place and keep the same URL.
  */
 export class LocalPublisher implements ArtifactPublisher {
   readonly kind = 'local';
 
-  /** @param baseDir Override the output root (defaults to ~/.qwen/artifacts). */
+  /** @param baseDir Override the output root (defaults to ~/.axe/artifacts). */
   constructor(private readonly baseDir?: string) {}
 
   private getBaseDir(): string {

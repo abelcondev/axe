@@ -170,8 +170,8 @@ describe('oscITerm2Notify', () => {
   it('formats notification with title and message', () => {
     process.env['TERM_PROGRAM'] = 'iTerm.app';
     delete process.env['TERM'];
-    const result = oscITerm2Notify('Qwen Code', 'Hello');
-    expect(result).toContain('Qwen Code:\nHello');
+    const result = oscITerm2Notify('Axe', 'Hello');
+    expect(result).toContain('Axe:\nHello');
   });
 
   it('formats notification without title', () => {

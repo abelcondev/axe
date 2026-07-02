@@ -18,7 +18,7 @@
  *   DaemonWorkspaceProvider,
  *   useConnection,
  *   useStreamingState,
- * } from '@qwen-code/webui/daemon-react-sdk';
+ * } from '@axe/webui/daemon-react-sdk';
  * ```
  */
 
@@ -331,4 +331,4 @@ export type {
   DaemonTranscriptState,
   /** External store interface: getSnapshot, subscribe, dispatch, reset. */
   DaemonTranscriptStore,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';

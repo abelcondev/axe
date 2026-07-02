@@ -11,14 +11,14 @@ import { createMockCommandContext } from '../../test-utils/mockCommandContext.js
 import * as doctorChecksModule from '../../utils/doctorChecks.js';
 import * as memoryDiagnosticsModule from '../../utils/memoryDiagnostics.js';
 import * as cpuProfilerModule from '../../utils/cpuProfiler.js';
-import { collectMemoryDiagnostics } from '@qwen-code/qwen-code-core';
+import { collectMemoryDiagnostics } from '@axe/core';
 import type { DoctorCheckResult } from '../types.js';
 
 vi.mock('../../utils/doctorChecks.js');
 vi.mock('../../utils/memoryDiagnostics.js');
 vi.mock('../../utils/cpuProfiler.js');
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@qwen-code/qwen-code-core')>()),
+vi.mock('@axe/core', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@axe/core')>()),
   collectMemoryDiagnostics: vi.fn(),
 }));
 

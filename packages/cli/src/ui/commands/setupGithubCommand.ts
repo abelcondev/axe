@@ -32,7 +32,7 @@ function getOpenUrlsCommands(readmeUrl: string, secretsUrl?: string): string[] {
   return commands;
 }
 
-// Add Qwen Code specific entries to .gitignore file
+// Add Axe specific entries to .gitignore file
 export async function updateGitignore(gitRepoRoot: string): Promise<void> {
   await updateGitignoreWithStatus(gitRepoRoot);
 }

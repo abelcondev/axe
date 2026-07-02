@@ -15,7 +15,7 @@ export {
   groupContent,
   hasToolCallOutput,
   mapToolStatusToContainerStatus,
-} from '@qwen-code/webui';
+} from '@axe/webui';
 
 // Re-export types for backward compatibility
 export type {
@@ -23,4 +23,4 @@ export type {
   GroupedContent,
   ToolCallData,
   ToolCallStatus,
-} from '@qwen-code/webui';
+} from '@axe/webui';

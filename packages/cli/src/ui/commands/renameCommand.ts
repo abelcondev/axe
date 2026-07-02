@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -8,7 +8,7 @@ import {
   SESSION_TITLE_MAX_LENGTH,
   tryGenerateSessionTitle,
   type SessionTitleFailureReason,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { SlashCommand, SlashCommandActionReturn } from './types.js';
 import { CommandKind } from './types.js';
 import { t } from '../../i18n/index.js';

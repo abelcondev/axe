@@ -10,7 +10,7 @@ import type {
   ToolRegistry,
   ServerGeminiStreamEvent,
   SessionMetrics,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { CLIUserMessage } from './nonInteractive/types.js';
 import {
   executeToolCall,
@@ -29,7 +29,7 @@ import {
   AUTONOMOUS_SENTINEL_DYNAMIC,
   LOOP_SENTINEL_CRON,
   LOOP_SENTINEL_DYNAMIC,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { Part } from '@google/genai';
 import {
   runNonInteractive,
@@ -50,9 +50,9 @@ import {
 
 // Mock core modules
 vi.mock('./ui/hooks/atCommandProcessor.js');
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const original =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
 
   class MockChatRecordingService {
     initialize = vi.fn();
@@ -4602,12 +4602,12 @@ describe('runNonInteractive', () => {
       );
       const realTmpDir = await fs.realpath(tmpDir);
       // restoreWorktreeContext enforces a structural invariant:
-      // worktreePath MUST live under `<originalCwd>/.qwen/worktrees/`
+      // worktreePath MUST live under `<originalCwd>/.axe/worktrees/`
       // (PR #4174 review #3256839787). The test fixture mirrors that
       // shape so the restore path isn't rejected as tampered.
       const worktreeDir = path.join(
         realTmpDir,
-        '.qwen',
+        '.axe',
         'worktrees',
         'worktree-real',
       );

@@ -20,8 +20,8 @@ import {
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { DEFAULT_CONTEXT_FILENAME } from '@qwen-code/qwen-code-core/src/memory/const.js';
-import { Storage } from '@qwen-code/qwen-code-core/src/config/storage.js';
+import { DEFAULT_CONTEXT_FILENAME } from '@axe/core/src/memory/const.js';
+import { Storage } from '@axe/core/src/config/storage.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');

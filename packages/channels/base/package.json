@@ -1,5 +1,5 @@
 {
-  "name": "@qwen-code/channel-base",
+  "name": "@axe/channel-base",
   "version": "0.19.5",
   "description": "Base channel infrastructure for Qwen Code",
   "type": "module",

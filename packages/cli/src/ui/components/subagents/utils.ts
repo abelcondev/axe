@@ -52,12 +52,12 @@ export type StepKind =
   | 'COLOR'
   | 'FINAL';
 
-export function getTotalSteps(method: 'qwen' | 'manual'): number {
+export function getTotalSteps(method: 'axe' | 'manual'): number {
   return method === 'manual' ? 8 : TOTAL_WIZARD_STEPS;
 }
 
 export function getStepKind(
-  method: 'qwen' | 'manual',
+  method: 'axe' | 'manual',
   stepNumber: number,
 ): StepKind {
   if (method === 'manual') {

@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import type { DaemonTranscriptBlock } from '@qwen-code/sdk/daemon';
+import type { DaemonTranscriptBlock } from '@axe/sdk/daemon';
 import { daemonTranscriptToUnifiedMessages } from './transcriptAdapter.js';
 
 describe('daemonTranscriptToUnifiedMessages', () => {

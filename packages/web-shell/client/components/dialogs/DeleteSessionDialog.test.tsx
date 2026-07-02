@@ -36,7 +36,7 @@ const deleteSessionMock = vi.fn();
 const deleteSessionsMock = vi.fn();
 const initialSessions = sessions.slice();
 
-vi.mock('@qwen-code/webui/daemon-react-sdk', () => ({
+vi.mock('@axe/webui/daemon-react-sdk', () => ({
   useConnection: () => ({ sessionId: 'me' }),
   useSessions: () => ({
     sessions,

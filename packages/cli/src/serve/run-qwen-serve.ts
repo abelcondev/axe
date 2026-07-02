@@ -18,21 +18,21 @@ import express, {
   type Response,
 } from 'express';
 import { writeStderrLine, writeStdoutLine } from '../utils/stdioHelpers.js';
-import type { BridgeEvent } from '@qwen-code/acp-bridge/eventBus';
+import type { BridgeEvent } from '@axe/acp-bridge/eventBus';
 import { getDeviceFlowRegistry } from './auth/device-flow.js';
 import {
   loadServeFastPathSettings,
   preResolveServeFastPathHomeEnvOverrides,
   type ServeFastPathSettings,
 } from './fast-path-settings.js';
-import type { AcpSessionBridge } from '@qwen-code/acp-bridge/bridgeTypes';
-import { canonicalizeWorkspace } from '@qwen-code/acp-bridge/workspacePaths';
+import type { AcpSessionBridge } from '@axe/acp-bridge/bridgeTypes';
+import { canonicalizeWorkspace } from '@axe/acp-bridge/workspacePaths';
 import type {
   AuthType,
   ProviderSetupInputs,
   TelemetryRuntimeConfig,
   TelemetrySettings,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { createBridgeFileSystemAdapter } from './bridge-file-system-adapter.js';
 import { isLoopbackBind } from './loopback-binds.js';
 import { RUNTIME_STARTUP_CANCELLED_MESSAGE } from './runtime-startup-errors.js';
@@ -67,7 +67,7 @@ import {
   type ServeOptions,
 } from './types.js';
 import type { WorkspaceFileSystemFactory } from './fs/index.js';
-import type { PermissionPolicy } from '@qwen-code/acp-bridge';
+import type { PermissionPolicy } from '@axe/acp-bridge';
 import { getCliVersion } from '../utils/version.js';
 import { getRateLimiter } from './rate-limit.js';
 import type { AcpHttpHandle } from './acp-http/index.js';
@@ -439,7 +439,7 @@ export interface RunHandle {
   close(): Promise<void>;
 }
 
-type CoreRuntime = typeof import('@qwen-code/qwen-code-core');
+type CoreRuntime = typeof import('@axe/core');
 type ProviderConfig = NonNullable<ReturnType<CoreRuntime['findProviderById']>>;
 type SettingsRuntime = typeof import('../config/settings.js');
 type LoadedSettingsAdapterRuntime =
@@ -628,7 +628,7 @@ function shouldPreheatBridge(deps: RunQwenServeDeps): boolean {
 
 let coreRuntimePromise: Promise<CoreRuntime> | undefined;
 function loadCoreRuntime(): Promise<CoreRuntime> {
-  coreRuntimePromise ??= import('@qwen-code/qwen-code-core');
+  coreRuntimePromise ??= import('@axe/core');
   return coreRuntimePromise;
 }
 
@@ -695,8 +695,8 @@ async function loadServeRuntimeModules() {
     workspaceSkillsStatusModule,
   ] = await Promise.all([
     import('./server.js'),
-    import('@qwen-code/acp-bridge/bridge'),
-    import('@qwen-code/acp-bridge/spawnChannel'),
+    import('@axe/acp-bridge/bridge'),
+    import('@axe/acp-bridge/spawnChannel'),
     import('./workspace-service/index.js'),
     import('./workspace-service/types.js'),
     import('./daemon-status-provider.js'),

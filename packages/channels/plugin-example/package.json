@@ -1,5 +1,5 @@
 {
-  "name": "@qwen-code/channel-plugin-example",
+  "name": "@axe/channel-plugin-example",
   "version": "0.19.5",
   "private": true,
   "type": "module",
@@ -24,7 +24,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@qwen-code/channel-base": "file:../base",
+    "@axe/channel-base": "file:../base",
     "ws": "^8.18.0"
   },
   "devDependencies": {

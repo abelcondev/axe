@@ -28,7 +28,7 @@ import {
   type TokenUsageGroupSummary,
   type TokenUsagePeriod,
   type TokenUsageSummary,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 
 const VALID_EXPORT_FORMATS = new Set<TokenUsageExportFormat>(['csv', 'json']);
 

@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { AuthType, type Config } from '@qwen-code/qwen-code-core';
+import { AuthType, type Config } from '@axe/core';
 import {
   formatAcpModelId,
   isInlineModelOverrideAllowed,
@@ -16,8 +16,8 @@ import {
 
 describe('acpModelUtils', () => {
   it('formats modelId(authType)', () => {
-    expect(formatAcpModelId('qwen3', AuthType.QWEN_OAUTH)).toBe(
-      `qwen3(${AuthType.QWEN_OAUTH})`,
+    expect(formatAcpModelId('qwen3', AuthType.AXE_OAUTH)).toBe(
+      `qwen3(${AuthType.AXE_OAUTH})`,
     );
   });
 
@@ -94,9 +94,9 @@ describe('acpModelUtils', () => {
       expect(isInlineModelOverrideAllowed(config, 'shared-id')).toBe(true);
     });
 
-    it('allows a model when both sides have no baseUrl/envKey (e.g. qwen-oauth)', () => {
-      const config = makeConfig({ authType: AuthType.QWEN_OAUTH }, [
-        { id: 'qwen-max', authType: AuthType.QWEN_OAUTH },
+    it('allows a model when both sides have no baseUrl/envKey (e.g. axe-oauth)', () => {
+      const config = makeConfig({ authType: AuthType.AXE_OAUTH }, [
+        { id: 'qwen-max', authType: AuthType.AXE_OAUTH },
       ]);
       expect(isInlineModelOverrideAllowed(config, 'qwen-max')).toBe(true);
     });
@@ -140,16 +140,16 @@ describe('acpModelUtils', () => {
     });
 
     it('rejects an unknown model id', () => {
-      const config = makeConfig({ authType: AuthType.QWEN_OAUTH }, [
-        { id: 'qwen-max', authType: AuthType.QWEN_OAUTH },
+      const config = makeConfig({ authType: AuthType.AXE_OAUTH }, [
+        { id: 'qwen-max', authType: AuthType.AXE_OAUTH },
       ]);
       expect(isInlineModelOverrideAllowed(config, 'missing')).toBe(false);
     });
 
     it('does not match fast-only or voice-only models', () => {
-      const config = makeConfig({ authType: AuthType.QWEN_OAUTH }, [
-        { id: 'qwen-fast', authType: AuthType.QWEN_OAUTH, fastOnly: true },
-        { id: 'qwen-voice', authType: AuthType.QWEN_OAUTH, voiceOnly: true },
+      const config = makeConfig({ authType: AuthType.AXE_OAUTH }, [
+        { id: 'qwen-fast', authType: AuthType.AXE_OAUTH, fastOnly: true },
+        { id: 'qwen-voice', authType: AuthType.AXE_OAUTH, voiceOnly: true },
       ]);
       expect(isInlineModelOverrideAllowed(config, 'qwen-fast')).toBe(false);
       expect(isInlineModelOverrideAllowed(config, 'qwen-voice')).toBe(false);

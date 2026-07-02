@@ -54,6 +54,6 @@ describe('helpCommand', () => {
     expect(helpCommand.name).toBe('help');
     expect(helpCommand.kind).toBe(CommandKind.BUILT_IN);
     expect(helpCommand.argumentHint).toBeUndefined();
-    expect(helpCommand.description).toBe('for help on Qwen Code');
+    expect(helpCommand.description).toBe('for help on Axe');
   });
 });

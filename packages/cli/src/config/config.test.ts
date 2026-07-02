@@ -13,10 +13,10 @@ import {
   OutputFormat,
   NativeLspService,
   Storage,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { loadCliConfig, parseArguments, type CliArgs } from './config.js';
 import type { Settings } from './settings.js';
-import * as ServerConfig from '@qwen-code/qwen-code-core';
+import * as ServerConfig from '@axe/core';
 import { isWorkspaceTrusted } from './trustedFolders.js';
 import { resetMcpApprovalsForTesting } from './mcpApprovals.js';
 
@@ -150,7 +150,7 @@ vi.mock('command-exists', () => ({
   },
 }));
 
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const actualServer = await importOriginal<typeof ServerConfig>();
   const SkillManagerMock = vi.fn();
   SkillManagerMock.prototype.startWatching = vi
@@ -2380,7 +2380,7 @@ describe('loadCliConfig with --mcp-config', () => {
 describe('loadCliConfig model selection', () => {
   const originalArgv = process.argv;
   const authEnvKeys = [
-    'QWEN_OAUTH',
+    'AXE_OAUTH',
     'OPENAI_API_KEY',
     'OPENAI_MODEL',
     'OPENAI_BASE_URL',
@@ -3827,11 +3827,11 @@ describe('loadCliConfig runtimeOutputDir', () => {
   it('should resolve relative runtimeOutputDir against cwd', async () => {
     const argv = await parseArguments();
     const settings: Settings = {
-      advanced: { runtimeOutputDir: '.qwen' },
+      advanced: { runtimeOutputDir: '.axe' },
     };
     const cwd = path.resolve('workspace', 'my-project');
     await loadCliConfig(settings, argv, cwd);
-    expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.qwen'));
+    expect(Storage.getRuntimeBaseDir()).toBe(path.join(cwd, '.axe'));
   });
 
   it('should not set runtime base dir when runtimeOutputDir is absent', async () => {

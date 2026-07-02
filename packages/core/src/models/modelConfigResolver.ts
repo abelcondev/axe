@@ -40,7 +40,7 @@ import { parsePositiveIntegerEnv } from '../utils/env.js';
 import {
   AUTH_ENV_MAPPINGS,
   DEFAULT_MODELS,
-  QWEN_OAUTH_ALLOWED_MODELS,
+  AXE_OAUTH_ALLOWED_MODELS,
   MODEL_GENERATION_CONFIG_FIELDS,
 } from './constants.js';
 import type { ModelConfig as ModelProviderConfig } from './types.js';
@@ -152,8 +152,8 @@ export function resolveModelConfig(
   const sources: ConfigSources = {};
 
   // Special handling for Qwen OAuth
-  if (authType === AuthType.QWEN_OAUTH) {
-    return resolveQwenOAuthConfig(input, warnings);
+  if (authType === AuthType.AXE_OAUTH) {
+    return resolveAxeOAuthConfig(input, warnings);
   }
 
   // Get auth-specific env var mappings.
@@ -303,7 +303,7 @@ export function resolveModelConfig(
  * Special resolver for Qwen OAuth authentication.
  * Qwen OAuth has fixed model options and uses dynamic tokens.
  */
-function resolveQwenOAuthConfig(
+function resolveAxeOAuthConfig(
   input: ModelConfigSourcesInput,
   warnings: string[],
 ): ModelConfigResolutionResult {
@@ -311,7 +311,7 @@ function resolveQwenOAuthConfig(
   const sources: ConfigSources = {};
 
   // Qwen OAuth only allows specific models
-  const allowedModels = new Set<string>(QWEN_OAUTH_ALLOWED_MODELS);
+  const allowedModels = new Set<string>(AXE_OAUTH_ALLOWED_MODELS);
 
   // Determine requested model
   const requestedModel = cli?.model || settings?.model;
@@ -350,7 +350,7 @@ function resolveQwenOAuthConfig(
   const generationConfig = resolveGenerationConfig(
     settings?.generationConfig,
     modelProvider?.generationConfig,
-    AuthType.QWEN_OAUTH,
+    AuthType.AXE_OAUTH,
     resolvedModel,
     sources,
   );
@@ -359,9 +359,9 @@ function resolveQwenOAuthConfig(
   applyTimeoutEnvOverride(input.env, generationConfig, sources, modelProvider);
 
   const config: ContentGeneratorConfig = {
-    authType: AuthType.QWEN_OAUTH,
+    authType: AuthType.AXE_OAUTH,
     model: resolvedModel,
-    apiKey: 'QWEN_OAUTH_DYNAMIC_TOKEN',
+    apiKey: 'AXE_OAUTH_DYNAMIC_TOKEN',
     proxy,
     ...generationConfig,
   };

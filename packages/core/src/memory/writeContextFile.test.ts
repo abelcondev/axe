@@ -108,7 +108,7 @@ describe('writeWorkspaceContextFile', () => {
     );
   });
 
-  it('writes to the global ~/.qwen directory when scope=global', async () => {
+  it('writes to the global ~/.axe directory when scope=global', async () => {
     const result = await writeWorkspaceContextFile({
       scope: 'global',
       mode: 'append',

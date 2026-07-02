@@ -12,8 +12,8 @@ import {
 // Import the canonical `PermissionPolicy` union from acp-bridge
 // instead of inlining the string literals, so upstream changes
 // are compiler-flagged here.
-import type { PermissionPolicy } from '@qwen-code/acp-bridge';
-import type { AuthType, InputModalities } from '@qwen-code/qwen-code-core';
+import type { PermissionPolicy } from '@axe/acp-bridge';
+import type { AuthType, InputModalities } from '@axe/core';
 
 /**
  * Stage 1 daemon mode shape.
@@ -263,7 +263,7 @@ export interface CapabilitiesEnvelope {
    */
   protocolVersions?: ServeProtocolVersions;
   /**
-   * Qwen Code CLI/SDK version served by this daemon. Optional because this is
+   * Axe CLI/SDK version served by this daemon. Optional because this is
    * additive to v=1; older v=1 daemons omit it.
    */
   qwenCodeVersion?: string;

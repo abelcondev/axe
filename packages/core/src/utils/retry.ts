@@ -339,7 +339,7 @@ export async function retryWithBackoff<T>(
       }
 
       // Check for Qwen OAuth quota exceeded error - throw immediately without retry
-      if (authType === AuthType.QWEN_OAUTH && isQwenQuotaExceededError(error)) {
+      if (authType === AuthType.AXE_OAUTH && isQwenQuotaExceededError(error)) {
         debugLogger.error(
           'Qwen OAuth quota exceeded, fast-failing',
           retryDiagnostics,
@@ -347,7 +347,7 @@ export async function retryWithBackoff<T>(
         );
         throw new Error(
           `Qwen OAuth free tier has been discontinued as of 2026-04-15.\n\n` +
-            `To continue using Qwen Code, try one of these alternatives:\n` +
+            `To continue using Axe, try one of these alternatives:\n` +
             `  - OpenRouter:    https://openrouter.ai/docs/quickstart\n` +
             `  - Fireworks AI:  https://docs.fireworks.ai/api-reference/introduction\n` +
             `  - ModelStudio:   https://help.aliyun.com/zh/model-studio/coding-plan\n\n` +

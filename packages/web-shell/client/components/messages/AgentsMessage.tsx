@@ -12,7 +12,7 @@ import {
   type DaemonWorkspaceAgentSummary,
   type DaemonWorkspaceAgentDetail,
   type DaemonWorkspaceToolStatus,
-} from '@qwen-code/webui/daemon-react-sdk';
+} from '@axe/webui/daemon-react-sdk';
 import { useI18n } from '../../i18n';
 import { trimDialogLabel } from '../../utils/dialogLabels';
 import styles from './AgentsMessage.module.css';

@@ -42,7 +42,7 @@ type NormalizedEventBase = Pick<
 >;
 
 const DAEMON_ERROR_KIND_SET = new Set<string>(DAEMON_ERROR_KINDS);
-const DEVICE_FLOW_PROVIDER_SET = new Set<string>(['qwen', 'qwen-oauth']);
+const DEVICE_FLOW_PROVIDER_SET = new Set<string>(['qwen', 'axe-oauth']);
 const MCP_RESTART_REFUSED_REASONS = new Set<string>([
   'in_flight',
   'disabled',

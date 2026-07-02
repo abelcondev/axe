@@ -13,7 +13,7 @@ import { spawn, execFile } from 'node:child_process';
 import { pipeline } from 'node:stream/promises';
 import { fetch } from 'undici';
 import * as tar from 'tar';
-import { createDebugLogger } from '@qwen-code/qwen-code-core';
+import { createDebugLogger } from '@axe/core';
 import { verifySignature } from './standalone-update-verify.js';
 
 const debugLogger = createDebugLogger('STANDALONE_UPDATE');
@@ -602,7 +602,7 @@ export function ensurePathInShellRc(binDir: string): void {
       : '';
     // Use a marker to detect our managed PATH entry precisely,
     // avoiding false positives from comments or $PATH-appended entries
-    const marker = '# Added by Qwen Code standalone installer';
+    const marker = '# Added by Axe standalone installer';
     if (content.includes(marker)) return;
 
     const exportLine = shell.endsWith('/fish')
@@ -649,7 +649,7 @@ export async function performStandaloneUpdate(
     // Directory exists but has no manifest — not a managed Qwen install.
     // Refuse to overwrite to avoid data loss.
     throw new Error(
-      `${standaloneDir} exists but is not a Qwen Code standalone install. Remove it manually to proceed.`,
+      `${standaloneDir} exists but is not a Axe standalone install. Remove it manually to proceed.`,
     );
   } else {
     // First-time migration from npm — directory will be created after lock

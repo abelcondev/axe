@@ -541,8 +541,8 @@ export class AnthropicContentGenerator implements ContentGenerator {
    * `cache_control` entries this request. Requires both
    * `enableCacheControl !== false` AND an Anthropic-native baseURL.
    * Computed per request: `Config.handleModelChange()` hot-updates
-   * `enableCacheControl` in-place on the qwen-oauth path (without
-   * recreating the ContentGenerator); non-qwen-oauth providers refresh
+   * `enableCacheControl` in-place on the axe-oauth path (without
+   * recreating the ContentGenerator); non-axe-oauth providers refresh
    * via generator recreation, which captures `baseUrl` fresh at
    * construct time (not mutated). Reading both fields each request is
    * the right defense — cheap and avoids stale-cache surprises if the
@@ -650,9 +650,9 @@ export class AnthropicContentGenerator implements ContentGenerator {
     // Sample the live cache-control flags once per request and forward
     // them to the converter (body-side `cache_control`). The converter's
     // constructor-time value would otherwise diverge from the live value
-    // on the qwen-oauth path, where `Config.handleModelChange()`
+    // on the axe-oauth path, where `Config.handleModelChange()`
     // hot-updates `enableCacheControl` in place without recreating the
-    // ContentGenerator. (Non-qwen-oauth providers refresh via generator
+    // ContentGenerator. (Non-axe-oauth providers refresh via generator
     // recreation, so `baseUrl` is captured fresh at construct time, not
     // mutated mid-session — defensive per-request reads on both fields
     // cover both paths.) `useGlobalCacheScope` is a strict subset of

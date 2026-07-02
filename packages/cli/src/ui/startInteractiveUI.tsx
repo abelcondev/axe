@@ -11,7 +11,7 @@ import {
   createDebugLogger,
   type Config,
   writeRuntimeStatus,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { LoadedSettings } from '../config/settings.js';
 import type { InitializationResult } from '../core/initializer.js';
 import { DualOutputBridge } from '../dualOutput/DualOutputBridge.js';

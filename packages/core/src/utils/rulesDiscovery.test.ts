@@ -335,7 +335,7 @@ Use hooks.`,
           path.join(customQwenHome, 'rules', 'fromCustomHome.md'),
           'CustomHome rule.',
         );
-        // A stale rule in the legacy ~/.qwen/rules location should NOT be
+        // A stale rule in the legacy ~/.axe/rules location should NOT be
         // loaded once QWEN_HOME points elsewhere.
         await createTestFile(
           path.join(homedir, QWEN_DIR, 'rules', 'fromLegacyHome.md'),

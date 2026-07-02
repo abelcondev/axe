@@ -22,7 +22,7 @@
  * import {
  *   negotiateTransport,
  *   AcpHttpTransport,
- * } from '@qwen-code/sdk/daemon/transports';
+ * } from '@axe/sdk/daemon/transports';
  *
  * const transport = await negotiateTransport(baseUrl, token);
  * const client = new DaemonClient({ baseUrl, token, transport });

@@ -8,7 +8,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import * as dotenv from 'dotenv';
-import { getErrorMessage, QWEN_DIR, Storage } from '@qwen-code/qwen-code-core';
+import { getErrorMessage, QWEN_DIR, Storage } from '@axe/core';
 import { isWorkspaceTrusted } from './trustedFolders.js';
 import {
   DEFAULT_EXCLUDED_ENV_VARS,
@@ -55,7 +55,7 @@ let lastReloadSnapshotSeeded = false;
  *
  * User-level paths cover the home `.env` and the global Qwen config dir
  * `.env` (which respects `QWEN_HOME`). When `QWEN_HOME` redirects elsewhere,
- * the legacy `<homedir>/.qwen/.env` is also included so credentials users
+ * the legacy `<homedir>/.axe/.env` is also included so credentials users
  * left there continue to load (and the trust check in untrusted workspaces
  * still allows reading it).
  */
@@ -77,7 +77,7 @@ function getUserLevelEnvPaths(): Set<string> {
  * module-load `Storage.getGlobalQwenDir()` would otherwise snapshot legacy
  * paths for settings.json, OAuth tokens, installation_id, etc., while the
  * regular `.env` load only runs later — splitting global state between
- * `~/.qwen/...` and `<QWEN_HOME>/...`.
+ * `~/.axe/...` and `<QWEN_HOME>/...`.
  */
 let homeEnvBootstrapped = false;
 export function preResolveHomeEnvOverrides(): void {
@@ -148,7 +148,7 @@ export function resetEnvironmentTrackingForTesting(): void {
  * Collects environment variables from user-level `.env` files and returns
  * them as a plain dictionary **without** mutating `process.env`.
  *
- * Candidates are iterated most-specific-first (`~/.qwen/.env` before
+ * Candidates are iterated most-specific-first (`~/.axe/.env` before
  * `~/.env`). `??=` ensures the first file to define a key wins, matching
  * dotenv's first-occurrence-wins semantics used elsewhere.
  */
@@ -190,7 +190,7 @@ export function getHomeEnvFallbackVars(
  * Finds the .env files to load, respecting workspace trust settings.
  *
  * When workspace is untrusted, only allow user-level .env files at:
- * - ~/.qwen/.env
+ * - ~/.axe/.env
  * - ~/.env
  * - <QWEN_HOME>/.env (when set)
  */
@@ -222,7 +222,7 @@ function findEnvFiles(
     isTrusted !== false || userLevelPaths.has(path.normalize(filePath));
 
   // Home-dir candidates in priority order: globalQwenDir/.env, then legacy
-  // ~/.qwen/.env (only when QWEN_HOME redirects), then ~/.env.
+  // ~/.axe/.env (only when QWEN_HOME redirects), then ~/.env.
   const pushCandidate = (filePath: string): boolean => {
     const normalized = path.normalize(filePath);
     if (
@@ -256,7 +256,7 @@ function findEnvFiles(
       pushHomeCandidates();
       return found;
     } else {
-      // Workspace step: prefer .qwen/.env, then plain .env.
+      // Workspace step: prefer .axe/.env, then plain .env.
       const geminiEnvPath = path.join(currentDir, QWEN_DIR, '.env');
       if (pushCandidate(geminiEnvPath)) {
         pushHomeCandidates();
@@ -353,7 +353,7 @@ export function loadEnvironment(
       // homeScoped: `.env` lives under the user's home Qwen dir or `~/.env` —
       //   only these may set QWEN_HOME / QWEN_RUNTIME_DIR.
       // qwenScoped: any `.env` whose immediate parent is `.qwen` (including
-      //   `<repo>/.qwen/.env`) — exempt from the user `excludedEnvVars` list.
+      //   `<repo>/.axe/.env`) — exempt from the user `excludedEnvVars` list.
       const isHomeScopedEnvFile = userLevelPaths.has(normalizedEnvFilePath);
       const isQwenScopedEnvFile =
         isHomeScopedEnvFile ||

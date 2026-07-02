@@ -76,13 +76,13 @@ export function classifyRetryError(
   };
 
   if (
-    context.authType === AuthType.QWEN_OAUTH &&
+    context.authType === AuthType.AXE_OAUTH &&
     isQwenQuotaExceededError(error)
   ) {
     return {
       kind: 'provider-business',
       diagnosis: 'fail-fast',
-      reason: 'qwen-oauth-free-tier-quota',
+      reason: 'axe-oauth-free-tier-quota',
       ...common,
     };
   }

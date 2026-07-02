@@ -66,7 +66,7 @@ vi.mock('../../services/sessionExportService.js', () => ({
   exportSessionToFile: mockExportSessionToFile,
 }));
 
-vi.mock('@qwen-code/webui', () => ({
+vi.mock('@axe/webui', () => ({
   stripZeroWidthSpaces: (text: string) => text.replace(/\u200B/g, ''),
 }));
 
@@ -1182,7 +1182,7 @@ describe('SessionMessageHandler', () => {
 
       await handler.handle({
         type: 'setModel',
-        data: { modelId: 'qwen3-coder-plus(qwen-oauth)' },
+        data: { modelId: 'qwen3-coder-plus(axe-oauth)' },
       });
 
       expect(setModelFromUi).not.toHaveBeenCalled();
@@ -1217,12 +1217,12 @@ describe('SessionMessageHandler', () => {
       await handler.handle({
         type: 'setModel',
         data: {
-          modelId: '$runtime|qwen-oauth|qwen3-coder-plus(qwen-oauth)',
+          modelId: '$runtime|axe-oauth|qwen3-coder-plus(axe-oauth)',
         },
       });
 
       expect(setModelFromUi).toHaveBeenCalledWith(
-        '$runtime|qwen-oauth|qwen3-coder-plus(qwen-oauth)',
+        '$runtime|axe-oauth|qwen3-coder-plus(axe-oauth)',
       );
       expect(mockShowErrorMessage).not.toHaveBeenCalled();
     });

@@ -13,7 +13,7 @@ import {
   Storage,
   atomicWriteFile,
   type MCPServerConfig,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import stripJsonComments from 'strip-json-comments';
 import { writeStderrLine } from '../utils/stdioHelpers.js';
 
@@ -161,7 +161,7 @@ export function loadMcpApprovals(): LoadedMcpApprovals {
 /**
  * Names of gated servers in `mcpServers` that are NOT approved (pending or
  * rejected) for `projectRoot`. Only checked-in / shareable scopes are gated —
- * project `.mcp.json` and workspace `.qwen/settings.json` (see
+ * project `.mcp.json` and workspace `.axe/settings.json` (see
  * {@link isGatedMcpScope}); user/system/extension servers are ignored. The
  * returned list is what the discovery layer skips
  * (`Config.isMcpServerPendingApproval`). See issue #4615.

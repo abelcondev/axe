@@ -8,8 +8,8 @@ import { useState, useEffect } from 'react';
 import fs from 'node:fs';
 import fsPromises from 'node:fs/promises';
 import path from 'node:path';
-import type { Config, WorktreeSession } from '@qwen-code/qwen-code-core';
-import { readWorktreeSession } from '@qwen-code/qwen-code-core';
+import type { Config, WorktreeSession } from '@axe/core';
+import { readWorktreeSession } from '@axe/core';
 
 /**
  * Watches the active session's WorktreeSession sidecar file and returns

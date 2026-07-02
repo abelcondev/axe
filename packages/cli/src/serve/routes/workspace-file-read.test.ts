@@ -10,13 +10,13 @@ import * as path from 'node:path';
 import { createHash, randomBytes } from 'node:crypto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { Ignore } from '@qwen-code/qwen-code-core';
+import { Ignore } from '@axe/core';
 import { createServeApp } from '../server.js';
 import {
   canonicalizeWorkspace,
   createWorkspaceFileSystemFactory,
 } from '../fs/index.js';
-import type { BridgeEvent } from '@qwen-code/acp-bridge/eventBus';
+import type { BridgeEvent } from '@axe/acp-bridge/eventBus';
 import type { ServeOptions } from '../types.js';
 
 const baseOpts: ServeOptions = {

@@ -72,7 +72,7 @@ describe('auth command', () => {
     ['auth'],
     ['auth status'],
     ['auth api-key'],
-    ['auth qwen-oauth'],
+    ['auth axe-oauth'],
     ['auth openrouter --key test-key'],
     ['auth coding-plan --region china --key sk-sp-test'],
     ['auth --key test-key'],

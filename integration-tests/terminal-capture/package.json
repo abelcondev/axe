@@ -1,5 +1,5 @@
 {
-  "name": "@qwen-code/terminal-capture",
+  "name": "@axe/terminal-capture",
   "version": "0.1.0",
   "private": true,
   "description": "Terminal UI screenshot automation for CLI visual testing",

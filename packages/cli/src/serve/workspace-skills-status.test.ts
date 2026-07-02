@@ -11,7 +11,7 @@ vi.mock('../utils/stdioHelpers.js', () => ({
   writeStderrLine: mockWriteStderrLine,
 }));
 
-import { SkillManager } from '@qwen-code/qwen-code-core';
+import { SkillManager } from '@axe/core';
 import { createWorkspaceSkillsStatusProvider } from './workspace-skills-status.js';
 
 describe('createWorkspaceSkillsStatusProvider', () => {

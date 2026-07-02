@@ -7,7 +7,7 @@
 import {
   SessionService,
   type SessionArchiveState,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type {
   AcpSessionBridge,
   BridgeSessionSummary,

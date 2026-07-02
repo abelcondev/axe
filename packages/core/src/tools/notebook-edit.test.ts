@@ -137,7 +137,7 @@ describe('NotebookEditTool', () => {
   });
 
   it('blocks writing a secret into a team-memory notebook', async () => {
-    const teamDir = path.join(tempDir, '.qwen', 'team-memory');
+    const teamDir = path.join(tempDir, '.axe', 'team-memory');
     fs.mkdirSync(teamDir, { recursive: true });
     const filePath = path.join(teamDir, 'analysis.ipynb');
     fs.writeFileSync(
@@ -184,7 +184,7 @@ describe('NotebookEditTool', () => {
     // new_source has no secret), so only execute()'s scan of the whole
     // serialized notebook — the backstop edit/write-file can't run on an
     // .ipynb — catches it. Exercises the execute-time path, not the build-time one.
-    const teamDir = path.join(tempDir, '.qwen', 'team-memory');
+    const teamDir = path.join(tempDir, '.axe', 'team-memory');
     fs.mkdirSync(teamDir, { recursive: true });
     const filePath = path.join(teamDir, 'analysis.ipynb');
     fs.writeFileSync(
@@ -793,7 +793,7 @@ describe('NotebookEditTool', () => {
   });
 
   it('rejects qwenignored notebooks during validation', () => {
-    fs.writeFileSync(path.join(tempDir, '.qwenignore'), '*.ipynb\n', 'utf-8');
+    fs.writeFileSync(path.join(tempDir, '.axeignore'), '*.ipynb\n', 'utf-8');
     const filePath = writeNotebook('ignored.ipynb', {
       cells: [],
       metadata: {},
@@ -805,7 +805,7 @@ describe('NotebookEditTool', () => {
         edit_mode: 'insert',
         new_source: 'x = 1',
       }),
-    ).toThrow(/ignored by \.qwenignore/);
+    ).toThrow(/ignored by \.axeignore/);
   });
 
   it('rejects notebooks ignored by .agentignore during validation', () => {

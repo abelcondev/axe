@@ -18,7 +18,7 @@ import { PluginChoicePrompt } from './PluginChoicePrompt.js';
 import { ThemeDialog } from './ThemeDialog.js';
 import { SettingsDialog } from './SettingsDialog.js';
 import { StatusLineDialog } from './StatusLineDialog.js';
-import { QwenOAuthProgress } from './QwenOAuthProgress.js';
+import { AxeOAuthProgress } from './AxeOAuthProgress.js';
 import { ExternalAuthProgress } from './ExternalAuthProgress.js';
 import { AuthDialog } from '../auth/AuthDialog.js';
 import { EditorSettingsDialog } from './EditorSettingsDialog.js';
@@ -37,7 +37,7 @@ import { useUIActions } from '../contexts/UIActionsContext.js';
 import { useConfig } from '../contexts/ConfigContext.js';
 import { useSettings } from '../contexts/SettingsContext.js';
 import { AuthState } from '../types.js';
-import { AuthType } from '@qwen-code/qwen-code-core';
+import { AuthType } from '@axe/core';
 import process from 'node:process';
 import { type UseHistoryManagerReturn } from '../hooks/useHistoryManager.js';
 import { IdeTrustChangeDialog } from './IdeTrustChangeDialog.js';
@@ -429,9 +429,9 @@ export const DialogManager = ({
 
     // OpenAI authentication now handled through AuthDialog with coding-plan/custom sub-modes
     // Qwen OAuth remains as a separate flow
-    if (uiState.auth.pendingAuthType === AuthType.QWEN_OAUTH) {
+    if (uiState.auth.pendingAuthType === AuthType.AXE_OAUTH) {
       return (
-        <QwenOAuthProgress
+        <AxeOAuthProgress
           deviceAuth={uiState.auth.qwenAuthState.deviceAuth || undefined}
           authStatus={uiState.auth.qwenAuthState.authStatus}
           authMessage={uiState.auth.qwenAuthState.authMessage}

@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from 'node:fs';
 import * as path from 'node:path';
-import { Storage } from '@qwen-code/qwen-code-core';
+import { Storage } from '@axe/core';
 import type { CommandModule } from 'yargs';
 import { writeStdoutLine } from '../../utils/stdioHelpers.js';
 import { readServiceInfo } from './pidfile.js';
-import type { SessionTarget } from '@qwen-code/channel-base';
+import type { SessionTarget } from '@axe/channel-base';
 
 interface PersistedEntry {
   sessionId: string;

@@ -13,7 +13,7 @@ import {
   addDaemonRequestAttribute,
   type ApprovalMode,
   type SessionArchiveState,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { Application, Request, RequestHandler, Response } from 'express';
 import { writeStderrLine } from '../../utils/stdioHelpers.js';
 import {

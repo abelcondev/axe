@@ -10,7 +10,7 @@ import ignore from 'ignore';
 import { createDebugLogger } from './debugLogger.js';
 import { isPathWithinRoot } from './workspaceContext.js';
 
-const QWEN_IGNORE_FILE_NAME = '.qwenignore';
+const QWEN_IGNORE_FILE_NAME = '.axeignore';
 const debugLogger = createDebugLogger('QWEN_IGNORE');
 
 export const DEFAULT_QWEN_CUSTOM_IGNORE_FILE_NAMES = [
@@ -57,7 +57,7 @@ function getCustomIgnoreFileNameSkipReason(candidate: string): string | null {
     return 'null bytes are not allowed';
   }
   if (candidate === QWEN_IGNORE_FILE_NAME) {
-    return '.qwenignore is always included';
+    return '.axeignore is always included';
   }
   if (candidate.split('/').includes('..')) {
     return 'parent directory segments are not allowed';

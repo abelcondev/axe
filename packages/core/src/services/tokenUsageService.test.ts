@@ -101,7 +101,7 @@ describe('tokenUsageService', () => {
         totalTokenCount: 35,
       },
       {
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
         subagentName: 'agent-a',
       },
     );
@@ -115,7 +115,7 @@ describe('tokenUsageService', () => {
       localMonth: '2026-05',
       sessionId: 'session-1',
       model: 'qwen-model',
-      authType: AuthType.QWEN_OAUTH,
+      authType: AuthType.AXE_OAUTH,
       source: 'agent-a',
       inputTokens: 10,
       outputTokens: 20,

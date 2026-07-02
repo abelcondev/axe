@@ -21,7 +21,7 @@ import type {
   DeviceFlowProvider,
   DeviceFlowRegistry,
 } from './auth/device-flow.js';
-import type { DaemonStatusProvider } from '@qwen-code/acp-bridge';
+import type { DaemonStatusProvider } from '@axe/acp-bridge';
 import { createBridgeFileSystemAdapter } from './bridge-file-system-adapter.js';
 import { createDaemonStatusProvider } from './daemon-status-provider.js';
 import { createWorkspaceProvidersStatusProvider } from './workspace-providers-status.js';
@@ -152,7 +152,7 @@ export interface ServeAppDeps {
    */
   webShellDir?: string;
   /**
-   * Qwen Code version advertised to web/SDK clients. Production passes the
+   * Axe version advertised to web/SDK clients. Production passes the
    * resolved CLI package version; tests/direct embeds may omit it.
    */
   qwenCodeVersion?: string;
@@ -188,7 +188,7 @@ export interface ServeAppDeps {
   maxExtensionOperationHistory?: number;
   /**
    * Extra device-flow providers for tests / future extensions.
-   * Production builds register only `QwenOAuthDeviceFlowProvider`;
+   * Production builds register only `AxeOAuthDeviceFlowProvider`;
    * passing extra entries here registers them in addition.
    */
   deviceFlowProviders?: DeviceFlowProvider[];

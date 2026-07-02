@@ -7,7 +7,7 @@
 import type React from 'react';
 import { Box, Text } from 'ink';
 import Gradient from 'ink-gradient';
-import { shortenPath, tildeifyPath } from '@qwen-code/qwen-code-core';
+import { shortenPath, tildeifyPath } from '@axe/core';
 import { theme } from '../semantic-colors.js';
 import { shortAsciiLogo } from './AsciiArt.js';
 import { getAsciiArtWidth, getCachedStringWidth } from '../utils/textUtils.js';
@@ -21,7 +21,7 @@ import { t } from '../../i18n/index.js';
  * Simplified representation of authentication method shown to users.
  */
 export enum AuthDisplayType {
-  QWEN_OAUTH = 'qwen_oauth',
+  AXE_OAUTH = 'qwen_oauth',
   CODING_PLAN = 'coding_plan',
   API_KEY = 'api_key',
   UNKNOWN = 'unknown',
@@ -36,7 +36,7 @@ function formatAuthDisplayType(
 
   const value = authDisplayType.trim();
   switch (value) {
-    case AuthDisplayType.QWEN_OAUTH:
+    case AuthDisplayType.AXE_OAUTH:
       return t('Qwen OAuth');
     case AuthDisplayType.CODING_PLAN:
       return t('Coding Plan');
@@ -58,7 +58,7 @@ interface HeaderProps {
    */
   customAsciiArt?: { small?: string; large?: string };
   /**
-   * Sanitized replacement for the bold ">_ Qwen Code" title in the info
+   * Sanitized replacement for the bold ">_ Axe" title in the info
    * panel. The version suffix is always appended. When undefined or empty
    * the default title is used; the leading `>_` glyph is part of the
    * default brand and is dropped when a custom title is set.
@@ -204,10 +204,10 @@ export const Header: React.FC<HeaderProps> = ({
         width={showLogo ? availableInfoPanelWidth : undefined}
       >
         {/* Title line: customBannerTitle (already sanitized) or the default
-            ">_ Qwen Code" brand. Version suffix is always appended. */}
+            ">_ Axe" brand. Version suffix is always appended. */}
         <Text>
           <Text bold color={theme.text.accent}>
-            {customBannerTitle ? customBannerTitle : '>_ Qwen Code'}
+            {customBannerTitle ? customBannerTitle : '>_ Axe'}
           </Text>
           <Text color={theme.text.secondary}> (v{version})</Text>
         </Text>

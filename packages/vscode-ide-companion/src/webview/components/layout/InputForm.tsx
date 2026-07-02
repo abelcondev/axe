@@ -8,11 +8,11 @@
  */
 
 import type { ClipboardEvent, FC, ReactNode } from 'react';
-import { InputForm as BaseInputForm, getEditModeIcon } from '@qwen-code/webui';
+import { InputForm as BaseInputForm, getEditModeIcon } from '@axe/webui';
 import type {
   InputFormProps as BaseInputFormProps,
   EditModeInfo,
-} from '@qwen-code/webui';
+} from '@axe/webui';
 import type { CompletionItem } from '../../../types/completionItemTypes.js';
 import { getApprovalModeInfoFromString } from '../../../types/acpTypes.js';
 import type { ApprovalModeValue } from '../../../types/approvalModeValueTypes.js';

@@ -32,7 +32,7 @@ describe('team auto-memory paths', () => {
 
   it('anchors the team root inside the repo .qwen directory', () => {
     expect(getTeamAutoMemoryRoot(projectRoot)).toBe(
-      path.join(projectRoot, '.qwen', TEAM_AUTO_MEMORY_DIRNAME),
+      path.join(projectRoot, '.axe', TEAM_AUTO_MEMORY_DIRNAME),
     );
   });
 
@@ -53,7 +53,7 @@ describe('team auto-memory paths', () => {
       );
 
       expect(getTeamAutoMemoryRoot(worktree)).toBe(
-        path.join(worktree, '.qwen', TEAM_AUTO_MEMORY_DIRNAME),
+        path.join(worktree, '.axe', TEAM_AUTO_MEMORY_DIRNAME),
       );
     } finally {
       fs.rmSync(main, { recursive: true, force: true });
@@ -63,7 +63,7 @@ describe('team auto-memory paths', () => {
 
   it('places MEMORY.md at the team root', () => {
     expect(getTeamAutoMemoryIndexPath(projectRoot)).toBe(
-      path.join(projectRoot, '.qwen', TEAM_AUTO_MEMORY_DIRNAME, 'MEMORY.md'),
+      path.join(projectRoot, '.axe', TEAM_AUTO_MEMORY_DIRNAME, 'MEMORY.md'),
     );
   });
 
@@ -139,13 +139,13 @@ describe('team auto-memory paths', () => {
     try {
       // Primes the cache with the no-git fallback (nested itself).
       expect(getTeamAutoMemoryRoot(nested)).toBe(
-        path.join(nested, '.qwen', TEAM_AUTO_MEMORY_DIRNAME),
+        path.join(nested, '.axe', TEAM_AUTO_MEMORY_DIRNAME),
       );
       fs.mkdirSync(path.join(fresh, '.git'));
       clearAutoMemoryRootCache();
       // After clearing, it must re-resolve to the new git root.
       expect(getTeamAutoMemoryRoot(nested)).toBe(
-        path.join(fresh, '.qwen', TEAM_AUTO_MEMORY_DIRNAME),
+        path.join(fresh, '.axe', TEAM_AUTO_MEMORY_DIRNAME),
       );
     } finally {
       fs.rmSync(fresh, { recursive: true, force: true });

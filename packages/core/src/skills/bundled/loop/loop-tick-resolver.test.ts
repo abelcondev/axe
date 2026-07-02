@@ -65,15 +65,15 @@ describe('LoopTickResolver', () => {
   let homeDir: string;
   let resolver: LoopTickResolver;
 
-  const projectFile = () => path.join(projectRoot, '.qwen', 'loop.md');
-  const homeFile = () => path.join(homeDir, '.qwen', 'loop.md');
+  const projectFile = () => path.join(projectRoot, '.axe', 'loop.md');
+  const homeFile = () => path.join(homeDir, '.axe', 'loop.md');
   const writeProject = (content: string) =>
     fs
-      .mkdir(path.join(projectRoot, '.qwen'), { recursive: true })
+      .mkdir(path.join(projectRoot, '.axe'), { recursive: true })
       .then(() => fs.writeFile(projectFile(), content));
   const writeHome = (content: string) =>
     fs
-      .mkdir(path.join(homeDir, '.qwen'), { recursive: true })
+      .mkdir(path.join(homeDir, '.axe'), { recursive: true })
       .then(() => fs.writeFile(homeFile(), content));
 
   beforeEach(async () => {
@@ -453,8 +453,8 @@ describe('LoopTickResolver', () => {
     expect(absent.modelText).toContain('loop.md is not currently present');
   });
 
-  it('names the real home loop.md in the absent reminder (QWEN_HOME-aware, not a hardcoded ~/.qwen)', async () => {
-    // Regression: the absent body hardcoded `~/.qwen/loop.md (home)`, which is
+  it('names the real home loop.md in the absent reminder (QWEN_HOME-aware, not a hardcoded ~/.axe)', async () => {
+    // Regression: the absent body hardcoded `~/.axe/loop.md (home)`, which is
     // wrong once the global dir is relocated (QWEN_HOME). The resolver checks
     // `<homeQwenDir>/loop.md`, but the label is MODEL-FACING, so a $QWEN_HOME
     // outside $HOME (tildeifyPath no-op there) must read as the literal
@@ -477,8 +477,8 @@ describe('LoopTickResolver', () => {
       );
       expect(relocatedTick.modelText).toContain('$QWEN_HOME/loop.md (home)');
       // The old hardcoded home location is gone; the project label stays relative.
-      expect(relocatedTick.modelText).not.toContain('~/.qwen/loop.md');
-      expect(relocatedTick.modelText).toContain('.qwen/loop.md (project)');
+      expect(relocatedTick.modelText).not.toContain('~/.axe/loop.md');
+      expect(relocatedTick.modelText).toContain('.axe/loop.md (project)');
       // Privacy: the raw absolute global dir never reaches the model text.
       expect(relocatedTick.modelText).not.toContain(relocated);
     } finally {
@@ -590,7 +590,7 @@ describe('LoopTickResolver', () => {
       allowProjectFile: () => true,
     });
     expect(underHome.homeLoopLabel()).toBe(
-      `~/.qwen-loop-trailing-${process.pid}/loop.md`,
+      `~/.axe-loop-trailing-${process.pid}/loop.md`,
     );
     expect(underHome.homeLoopLabel()).not.toContain(os.homedir());
   });
@@ -681,7 +681,7 @@ describe('LoopTickResolver', () => {
         allowProjectFile: () => true,
       });
 
-      expect(windowsPathResolver.homeLoopLabel()).toBe('~/.qwen-loop/loop.md');
+      expect(windowsPathResolver.homeLoopLabel()).toBe('~/.axe-loop/loop.md');
     } finally {
       vi.doUnmock('node:path');
       vi.doUnmock('node:os');

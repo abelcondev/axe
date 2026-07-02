@@ -193,7 +193,7 @@ describe('SkillManager', () => {
     name: 'test-skill',
     description: 'A test skill',
     level: 'project',
-    filePath: '/test/project/.qwen/skills/test-skill/SKILL.md',
+    filePath: '/test/project/.axe/skills/test-skill/SKILL.md',
     body: 'You are a helpful assistant with this skill.',
   };
 
@@ -450,8 +450,8 @@ Body.
     });
 
     it('should determine level from file path', () => {
-      const projectPath = '/test/project/.qwen/skills/test-skill/SKILL.md';
-      const userPath = '/home/user/.qwen/skills/test-skill/SKILL.md';
+      const projectPath = '/test/project/.axe/skills/test-skill/SKILL.md';
+      const userPath = '/home/user/.axe/skills/test-skill/SKILL.md';
 
       const projectConfig = manager.parseSkillContent(
         validMarkdown,
@@ -653,10 +653,10 @@ You are a helpful assistant.
       // Use path.join to construct expected paths so separators match on all platforms.
       const projectQwenSkillsDir = path.join(
         '/test/project',
-        '.qwen',
+        '.axe',
         'skills',
       );
-      const userQwenSkillsDir = path.join('/home/user', '.qwen', 'skills');
+      const userQwenSkillsDir = path.join('/home/user', '.axe', 'skills');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.mocked(fs.readdir).mockImplementation((dirPath: any) => {
@@ -767,7 +767,7 @@ Skill 3 content`);
       );
       const projectQwenSkillsDir = path.join(
         '/test/project',
-        '.qwen',
+        '.axe',
         'skills',
       );
       vi.mocked(fs.readdir).mockImplementation((dirPath) => {
@@ -863,7 +863,7 @@ Body`);
     it('should deduplicate same-name skills across provider dirs within a level', async () => {
       // Override readdir to return the same skill name from both .qwen and .agents dirs
       vi.mocked(fs.readdir).mockReset();
-      const projectQwenDir = path.join('/test/project', '.qwen', 'skills');
+      const projectQwenDir = path.join('/test/project', '.axe', 'skills');
       const projectAgentDir = path.join('/test/project', '.agents', 'skills');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -896,7 +896,7 @@ Body`);
 
       vi.mocked(fs.readFile).mockImplementation((filePath) => {
         const pathStr = String(filePath);
-        if (pathStr.includes('.qwen') && pathStr.includes('shared-skill')) {
+        if (pathStr.includes('.axe') && pathStr.includes('shared-skill')) {
           return Promise.resolve(
             `---\nname: shared-skill\ndescription: From qwen dir\n---\nQwen content`,
           );
@@ -946,7 +946,7 @@ Body`);
       const baseDirs = manager.getSkillsBaseDirs('project');
 
       expect(baseDirs).toHaveLength(2);
-      expect(baseDirs).toContain(path.join('/test/project', '.qwen', 'skills'));
+      expect(baseDirs).toContain(path.join('/test/project', '.axe', 'skills'));
       expect(baseDirs).toContain(
         path.join('/test/project', '.agents', 'skills'),
       );
@@ -956,7 +956,7 @@ Body`);
       const baseDirs = manager.getSkillsBaseDirs('user');
 
       expect(baseDirs).toHaveLength(2);
-      expect(baseDirs).toContain(path.join('/home/user', '.qwen', 'skills'));
+      expect(baseDirs).toContain(path.join('/home/user', '.axe', 'skills'));
       expect(baseDirs).toContain(path.join('/home/user', '.agents', 'skills'));
     });
 
@@ -975,8 +975,8 @@ Body`);
 
   describe('bundled skills', () => {
     const bundledDirSegment = path.join('skills', 'bundled');
-    const projectDirSegment = path.join('.qwen', 'skills');
-    const userDirSegment = path.join('.qwen', 'skills');
+    const projectDirSegment = path.join('.axe', 'skills');
+    const userDirSegment = path.join('.axe', 'skills');
     const projectPrefix = path.join('/test/project');
     const userPrefix = path.join('/home/user');
 
@@ -1446,10 +1446,10 @@ Body.
       // declared paths.
       const projectQwenSkillsDir = path.join(
         '/test/project',
-        '.qwen',
+        '.axe',
         'skills',
       );
-      const userQwenSkillsDir = path.join('/home/user', '.qwen', 'skills');
+      const userQwenSkillsDir = path.join('/home/user', '.axe', 'skills');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.mocked(fs.readdir).mockImplementation((dirPath: any) => {
         const pathStr = String(dirPath);
@@ -1704,7 +1704,7 @@ Symlinked skill content`);
 
   describe('file watchers', () => {
     it('should pass ignored function and shallow depth to chokidar', async () => {
-      const projectSkillsDir = path.join('/test/project', '.qwen', 'skills');
+      const projectSkillsDir = path.join('/test/project', '.axe', 'skills');
       vi.mocked(fsSync.existsSync).mockImplementation(
         (p) => String(p) === projectSkillsDir,
       );

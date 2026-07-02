@@ -49,7 +49,7 @@ function makeFakeClient(opts: {
   const calls: FakeClientCalls = { start: 0, get: [], cancel: [] };
   const startResult: DaemonDeviceFlowStartResult = opts.startResult ?? {
     deviceFlowId: 'flow-A',
-    providerId: 'qwen-oauth',
+    providerId: 'axe-oauth',
     status: 'pending',
     userCode: 'USER-1',
     verificationUri: 'https://idp.example/verify',
@@ -104,16 +104,16 @@ describe('DaemonAuthFlow.start (fold-in 10 #2)', () => {
         // exercises start, so reply shape is irrelevant.
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           createdAt: Date.now(),
         },
       ],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     expect(handle.deviceFlowId).toBe('flow-A');
-    expect(handle.providerId).toBe('qwen-oauth');
+    expect(handle.providerId).toBe('axe-oauth');
     expect(handle.userCode).toBe('USER-1');
     expect(handle.attached).toBe(false);
     expect(handle.intervalMs).toBe(50);
@@ -128,20 +128,20 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
         // First two GETs: still pending.
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           createdAt: Date.now(),
         },
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           createdAt: Date.now(),
         },
         // Third GET: terminal authorized.
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'authorized',
           expiresAt,
           createdAt: Date.now(),
@@ -149,7 +149,7 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
       ],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     const final = await handle.awaitCompletion({ pollOverrideMs: 1_000 });
     expect(final.status).toBe('authorized');
     expect(final.expiresAt).toBe(expiresAt);
@@ -163,7 +163,7 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
         // First GET: daemon reports a bumped interval (slow_down).
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           intervalMs: 10_000, // bumped from start's 50
           createdAt: Date.now(),
@@ -171,14 +171,14 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
         // Second GET: terminal so the loop exits.
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'authorized',
           createdAt: Date.now(),
         },
       ],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     await handle.awaitCompletion({
       onThrottled: (ms) => observedIntervals.push(ms),
       pollOverrideMs: 1_000,
@@ -193,14 +193,14 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
       getReplies: [
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           createdAt: Date.now(),
         },
       ],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     const ctrl = new AbortController();
     const completion = handle.awaitCompletion({
       signal: ctrl.signal,
@@ -217,14 +217,14 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
       getReplies: [
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'authorized',
           createdAt: Date.now(),
         },
       ],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     const ctrl = new AbortController();
     await handle.awaitCompletion({ signal: ctrl.signal });
     expect(calls.get.length).toBeGreaterThanOrEqual(1);
@@ -237,14 +237,14 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
         // Stays pending forever; timeoutMs ceiling is what exits.
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           createdAt: Date.now(),
         },
       ],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     const final = await handle.awaitCompletion({
       timeoutMs: 60, // very short; ceiling fires after a few ticks
       pollOverrideMs: 1_000,
@@ -258,14 +258,14 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
       getReplies: [
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           createdAt: Date.now(),
         },
       ],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     const final = await handle.awaitCompletion({ timeoutMs: 0 });
     expect(final.status).toBe('pending');
     // Exactly one GET — the immediate ceiling-read path.
@@ -286,7 +286,7 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
     const { client } = makeFakeClient({
       startResult: {
         deviceFlowId: 'flow-A',
-        providerId: 'qwen-oauth',
+        providerId: 'axe-oauth',
         status: 'pending',
         userCode: 'USER-1',
         verificationUri: 'https://idp.example/verify',
@@ -297,14 +297,14 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
       getReplies: [
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           createdAt: Date.now(),
         },
       ],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     const final = await handle.awaitCompletion({ timeoutMs: NaN });
     expect(final.status).toBe('pending');
   });
@@ -314,11 +314,11 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
       getReplies: [new DaemonHttpError(404, null, 'not found')],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     const final = await handle.awaitCompletion({ pollOverrideMs: 1_000 });
     expect(final.status).toBe('error');
     expect(final.errorKind).toBe('not_found_or_evicted');
-    expect(final.providerId).toBe('qwen-oauth');
+    expect(final.providerId).toBe('axe-oauth');
   });
 
   it('routes the timeoutMs:0 ceiling read through the same 404 helper (fold-in 7 #4)', async () => {
@@ -331,7 +331,7 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
       getReplies: [new DaemonHttpError(404, null, 'evicted')],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     const final = await handle.awaitCompletion({ timeoutMs: 0 });
     expect(final.status).toBe('error');
     expect(final.errorKind).toBe('not_found_or_evicted');
@@ -342,7 +342,7 @@ describe('DaemonAuthFlow.awaitCompletion (fold-in 10 #2)', () => {
       getReplies: [new DaemonHttpError(500, null, 'daemon exploded')],
     });
     const auth = new DaemonAuthFlow(client);
-    const handle = await auth.start({ providerId: 'qwen-oauth' });
+    const handle = await auth.start({ providerId: 'axe-oauth' });
     await expect(
       handle.awaitCompletion({ pollOverrideMs: 1_000 }),
     ).rejects.toBeInstanceOf(DaemonHttpError);
@@ -355,7 +355,7 @@ describe('DaemonAuthFlow.cancel (fold-in 10 #2)', () => {
       getReplies: [
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           createdAt: Date.now(),
         },
@@ -363,7 +363,7 @@ describe('DaemonAuthFlow.cancel (fold-in 10 #2)', () => {
     });
     const auth = new DaemonAuthFlow(client);
     const handle = await auth.start({
-      providerId: 'qwen-oauth',
+      providerId: 'axe-oauth',
       clientId: 'sdk-client-X',
     });
     await handle.cancel();
@@ -377,7 +377,7 @@ describe('DaemonAuthFlow.cancel (fold-in 10 #2)', () => {
       getReplies: [
         {
           deviceFlowId: 'flow-A',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'pending',
           createdAt: Date.now(),
         },
@@ -395,7 +395,7 @@ describe('DaemonAuthFlow.cancel (fold-in 10 #2)', () => {
       getReplies: [
         {
           deviceFlowId: 'flow-Q',
-          providerId: 'qwen-oauth',
+          providerId: 'axe-oauth',
           status: 'authorized',
           createdAt: Date.now(),
         },

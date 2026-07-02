@@ -6,15 +6,15 @@
 
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Config, PromptSuggestionEvent } from '@qwen-code/qwen-code-core';
+import type { Config, PromptSuggestionEvent } from '@axe/core';
 
 const { mockLogPromptSuggestion } = vi.hoisted(() => ({
   mockLogPromptSuggestion: vi.fn(),
 }));
 
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
   return {
     ...actual,
     logPromptSuggestion: mockLogPromptSuggestion,

@@ -136,7 +136,7 @@ export interface CollectMemoryPressureSamplesOptions {
 }
 
 function defaultHeapSnapshotDir(): string {
-  return path.join(os.homedir(), '.qwen', 'memory-snapshots');
+  return path.join(os.homedir(), '.axe', 'memory-snapshots');
 }
 
 function formatSnapshotTimestamp(now: Date): string {
@@ -424,7 +424,7 @@ function buildMemoryInsights(diagnostics: MemoryDiagnostics): MemoryInsights {
       'V8 heap statistics are unavailable; heap pressure assessment may be incomplete.',
     );
     recommendations.push(
-      'Re-run /doctor memory after restarting Qwen Code; if V8 diagnostics remain unavailable, include this report when filing an issue.',
+      'Re-run /doctor memory after restarting Axe; if V8 diagnostics remain unavailable, include this report when filing an issue.',
     );
   }
 
@@ -433,7 +433,7 @@ function buildMemoryInsights(diagnostics: MemoryDiagnostics): MemoryInsights {
       'V8 heap usage is high; the process is close to its configured heap limit.',
     );
     recommendations.push(
-      'If the CLI is sluggish or near OOM, restart Qwen Code to recover memory, then capture a heap snapshot before the next restart to identify retained objects.',
+      'If the CLI is sluggish or near OOM, restart Axe to recover memory, then capture a heap snapshot before the next restart to identify retained objects.',
     );
   }
 

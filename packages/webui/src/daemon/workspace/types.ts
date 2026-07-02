@@ -53,7 +53,7 @@ import type {
   DaemonSessionSummary,
   DaemonWriteMemoryRequest,
   DaemonWriteMemoryResult,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 
 // ── Resource Hook Types (shared by workspace hooks) ────────────────
 
@@ -83,7 +83,7 @@ export interface DaemonWorkspaceProviderProps {
    * Optional pluggable transport forwarded to `DaemonClient`. When
    * omitted the client uses the default REST+SSE transport.
    */
-  transport?: import('@qwen-code/sdk/daemon').DaemonTransport;
+  transport?: import('@axe/sdk/daemon').DaemonTransport;
   children: ReactNode;
 }
 

@@ -2000,7 +2000,7 @@ export class GeminiChat {
     return (async function* () {
       const sleepInhibitorHandle = acquireSleepInhibitor(
         self.config,
-        'Qwen Code is streaming a model response',
+        'Axe is streaming a model response',
       );
       try {
         // Surface a successful auto-compression to the caller as the first

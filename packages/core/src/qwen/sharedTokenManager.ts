@@ -8,19 +8,19 @@ import path from 'node:path';
 import { promises as fs, unlinkSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 
-import type { IQwenOAuth2Client } from './qwenOAuth2.js';
+import type { IAxeOAuth2Client } from './axeOAuth2.js';
 import {
   type QwenCredentials,
   type TokenRefreshData,
   type ErrorData,
   isErrorResponse,
   CredentialsClearRequiredError,
-} from './qwenOAuth2.js';
+} from './axeOAuth2.js';
 import { createDebugLogger } from '../utils/debugLogger.js';
 import { atomicWriteFile } from '../utils/atomicFileWrite.js';
 import { Storage } from '../config/storage.js';
 
-const debugLogger = createDebugLogger('QWEN_OAUTH');
+const debugLogger = createDebugLogger('AXE_OAUTH');
 
 // File System Configuration
 const QWEN_CREDENTIAL_FILENAME = 'oauth_creds.json';
@@ -28,7 +28,7 @@ const QWEN_LOCK_FILENAME = 'oauth_creds.lock';
 
 // Token and Cache Configuration
 const TOKEN_REFRESH_BUFFER_MS = 30 * 1000; // 30 seconds
-// Must exceed QWEN_OAUTH_REFRESH_TIMEOUT_MS so an in-flight refresh keeps its lock.
+// Must exceed AXE_OAUTH_REFRESH_TIMEOUT_MS so an in-flight refresh keeps its lock.
 const LOCK_TIMEOUT_MS = 35_000;
 const CACHE_CHECK_INTERVAL_MS = 5000; // 5 seconds cache check interval (increased from 1 second)
 
@@ -208,7 +208,7 @@ export class SharedTokenManager {
    * @throws TokenManagerError if unable to obtain valid credentials
    */
   async getValidCredentials(
-    qwenClient: IQwenOAuth2Client,
+    qwenClient: IAxeOAuth2Client,
     forceRefresh = false,
   ): Promise<QwenCredentials> {
     try {
@@ -264,7 +264,7 @@ export class SharedTokenManager {
    * Uses promise-based locking to prevent concurrent file checks
    */
   private async checkAndReloadIfNeeded(
-    qwenClient?: IQwenOAuth2Client,
+    qwenClient?: IAxeOAuth2Client,
   ): Promise<void> {
     // If there's already an ongoing check, wait for it to complete
     if (this.checkPromise) {
@@ -329,7 +329,7 @@ export class SharedTokenManager {
    * This is separated to enable proper promise-based synchronization
    */
   private async performFileCheck(
-    qwenClient: IQwenOAuth2Client | undefined,
+    qwenClient: IAxeOAuth2Client | undefined,
     checkTime: number,
   ): Promise<void> {
     // Update lastCheck atomically at the start to prevent other calls from proceeding
@@ -377,7 +377,7 @@ export class SharedTokenManager {
   /**
    * Force a file check without time-based throttling (used during refresh operations)
    */
-  private async forceFileCheck(qwenClient?: IQwenOAuth2Client): Promise<void> {
+  private async forceFileCheck(qwenClient?: IAxeOAuth2Client): Promise<void> {
     try {
       const filePath = this.getCredentialFilePath();
       const stats = await fs.stat(filePath);
@@ -416,7 +416,7 @@ export class SharedTokenManager {
    * Load credentials from the file system into memory cache and sync with qwenClient
    */
   private async reloadCredentialsFromFile(
-    qwenClient?: IQwenOAuth2Client,
+    qwenClient?: IAxeOAuth2Client,
   ): Promise<void> {
     try {
       const filePath = this.getCredentialFilePath();
@@ -464,7 +464,7 @@ export class SharedTokenManager {
    * @throws TokenManagerError if refresh fails or lock cannot be acquired
    */
   private async performTokenRefresh(
-    qwenClient: IQwenOAuth2Client,
+    qwenClient: IAxeOAuth2Client,
     forceRefresh = false,
   ): Promise<QwenCredentials> {
     const startTime = Date.now();

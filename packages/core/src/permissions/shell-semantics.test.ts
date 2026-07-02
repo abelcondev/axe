@@ -174,24 +174,24 @@ describe('extractShellOperations', () => {
 
   it('find: extracts write ops from exec clauses', () => {
     const ops = extractShellOperations(
-      'find . -exec cp payload .qwen/settings.json ;',
+      'find . -exec cp payload .axe/settings.json ;',
       CWD,
     );
     expect(ops).toEqual([
       { virtualTool: 'list_directory', filePath: CWD },
       { virtualTool: 'read_file', filePath: `${CWD}/payload` },
-      { virtualTool: 'write_file', filePath: `${CWD}/.qwen/settings.json` },
+      { virtualTool: 'write_file', filePath: `${CWD}/.axe/settings.json` },
     ]);
   });
 
   it('find: preserves exec placeholder operands for write detection', () => {
     const ops = extractShellOperations(
-      'find . -exec cp {} .qwen/settings.json ;',
+      'find . -exec cp {} .axe/settings.json ;',
       CWD,
     );
     expect(ops).toContainEqual({
       virtualTool: 'write_file',
-      filePath: `${CWD}/.qwen/settings.json`,
+      filePath: `${CWD}/.axe/settings.json`,
     });
   });
 
@@ -232,31 +232,31 @@ describe('extractShellOperations', () => {
       sorted(extractShellOperations('cp -t .qwen /tmp/settings.json', CWD)),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/settings.json' },
-      { virtualTool: 'write_file', filePath: `${CWD}/.qwen/settings.json` },
+      { virtualTool: 'write_file', filePath: `${CWD}/.axe/settings.json` },
     ]);
     expect(
       sorted(extractShellOperations('mv --target-directory=.qwen /tmp/a', CWD)),
     ).toEqual([
       { virtualTool: 'edit', filePath: '/tmp/a' },
-      { virtualTool: 'write_file', filePath: `${CWD}/.qwen/a` },
+      { virtualTool: 'write_file', filePath: `${CWD}/.axe/a` },
     ]);
     expect(
       sorted(extractShellOperations('install -t .qwen /tmp/tool', CWD)),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/tool' },
-      { virtualTool: 'write_file', filePath: `${CWD}/.qwen/tool` },
+      { virtualTool: 'write_file', filePath: `${CWD}/.axe/tool` },
     ]);
     expect(
       sorted(extractShellOperations('ln -t .qwen /tmp/target', CWD)),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/target' },
-      { virtualTool: 'write_file', filePath: `${CWD}/.qwen/target` },
+      { virtualTool: 'write_file', filePath: `${CWD}/.axe/target` },
     ]);
     expect(
       sorted(extractShellOperations('cp -rt .qwen /tmp/payload', CWD)),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/payload' },
-      { virtualTool: 'write_file', filePath: `${CWD}/.qwen/payload` },
+      { virtualTool: 'write_file', filePath: `${CWD}/.axe/payload` },
     ]);
   });
 
@@ -363,50 +363,50 @@ describe('extractShellOperations', () => {
 
   it('rsync destination is a write', () => {
     const ops = extractShellOperations(
-      'rsync /tmp/payload .qwen/settings.json',
+      'rsync /tmp/payload .axe/settings.json',
       CWD,
     );
     expect(sorted(ops)).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/payload' },
-      { virtualTool: 'write_file', filePath: `${CWD}/.qwen/settings.json` },
+      { virtualTool: 'write_file', filePath: `${CWD}/.axe/settings.json` },
     ]);
   });
 
   it('perl -i edits file operands', () => {
     const ops = extractShellOperations(
-      "perl -i -pe 's/x/y/' .qwen/settings.json",
+      "perl -i -pe 's/x/y/' .axe/settings.json",
       CWD,
     );
     expect(ops).toEqual([
-      { virtualTool: 'edit', filePath: `${CWD}/.qwen/settings.json` },
+      { virtualTool: 'edit', filePath: `${CWD}/.axe/settings.json` },
     ]);
 
     expect(
-      extractShellOperations("perl -i -e 's/x/y/' .qwen/settings.json", CWD),
+      extractShellOperations("perl -i -e 's/x/y/' .axe/settings.json", CWD),
     ).toEqual([
-      { virtualTool: 'edit', filePath: `${CWD}/.qwen/settings.json` },
+      { virtualTool: 'edit', filePath: `${CWD}/.axe/settings.json` },
     ]);
   });
 
   it('patch edits positional target files', () => {
     const ops = extractShellOperations(
-      'patch .qwen/settings.json fix.patch',
+      'patch .axe/settings.json fix.patch',
       CWD,
     );
     expect(ops).toContainEqual({
       virtualTool: 'edit',
-      filePath: `${CWD}/.qwen/settings.json`,
+      filePath: `${CWD}/.axe/settings.json`,
     });
   });
 
   it('patch edits output flag targets', () => {
     for (const command of [
-      'patch --output=.qwen/settings.json -i fix.patch',
-      'patch -o .qwen/settings.json -i fix.patch',
+      'patch --output=.axe/settings.json -i fix.patch',
+      'patch -o .axe/settings.json -i fix.patch',
     ]) {
       expect(extractShellOperations(command, CWD)).toContainEqual({
         virtualTool: 'edit',
-        filePath: `${CWD}/.qwen/settings.json`,
+        filePath: `${CWD}/.axe/settings.json`,
       });
     }
   });
@@ -438,23 +438,23 @@ describe('extractShellOperations', () => {
   it('sort -o emits the output path as a write', () => {
     expect(
       sorted(
-        extractShellOperations('sort -o .qwen/settings.json /tmp/in', CWD),
+        extractShellOperations('sort -o .axe/settings.json /tmp/in', CWD),
       ),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/in' },
-      { virtualTool: 'write_file', filePath: `${CWD}/.qwen/settings.json` },
+      { virtualTool: 'write_file', filePath: `${CWD}/.axe/settings.json` },
     ]);
 
     expect(
       sorted(
         extractShellOperations(
-          'sort --output=.qwen/settings.json /tmp/in',
+          'sort --output=.axe/settings.json /tmp/in',
           CWD,
         ),
       ),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/in' },
-      { virtualTool: 'write_file', filePath: `${CWD}/.qwen/settings.json` },
+      { virtualTool: 'write_file', filePath: `${CWD}/.axe/settings.json` },
     ]);
   });
 
@@ -467,18 +467,18 @@ describe('extractShellOperations', () => {
   });
 
   it('combined stdout fd redirect 1>file without space', () => {
-    const ops = extractShellOperations('echo hi 1>.qwen/settings.json', CWD);
+    const ops = extractShellOperations('echo hi 1>.axe/settings.json', CWD);
     expect(ops).toContainEqual({
       virtualTool: 'write_file',
-      filePath: `${CWD}/.qwen/settings.json`,
+      filePath: `${CWD}/.axe/settings.json`,
     });
   });
 
   it('combined stdout fd append redirect 1>>file without space', () => {
-    const ops = extractShellOperations('echo hi 1>>.qwen/settings.json', CWD);
+    const ops = extractShellOperations('echo hi 1>>.axe/settings.json', CWD);
     expect(ops).toContainEqual({
       virtualTool: 'write_file',
-      filePath: `${CWD}/.qwen/settings.json`,
+      filePath: `${CWD}/.axe/settings.json`,
     });
   });
 
@@ -705,29 +705,29 @@ describe('extractShellOperationsAcrossCommand', () => {
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
     ]);
   });
 
   it('handles leading env assignments before redirected commands', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        'FOO=bar echo x > .qwen/settings.json',
+        'FOO=bar echo x > .axe/settings.json',
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
     ]);
   });
 
   it('handles leading env assignments before write commands', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        'FOO=bar tee .qwen/settings.json',
+        'FOO=bar tee .axe/settings.json',
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
     ]);
   });
 
@@ -738,7 +738,7 @@ describe('extractShellOperationsAcrossCommand', () => {
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
     ]);
   });
 
@@ -755,11 +755,11 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('preserves sibling segments after a shell wrapper', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        "bash -lc 'echo ok' && echo hi > .qwen/settings.json",
+        "bash -lc 'echo ok' && echo hi > .axe/settings.json",
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
     ]);
   });
 
@@ -776,7 +776,7 @@ describe('extractShellOperationsAcrossCommand', () => {
       },
       {
         virtualTool: 'write_file',
-        filePath: '/repo/.qwen/settings.json',
+        filePath: '/repo/.axe/settings.json',
       },
     ]);
   });
@@ -790,7 +790,7 @@ describe('extractShellOperationsAcrossCommand', () => {
     ).toEqual([
       {
         virtualTool: 'write_file',
-        filePath: '/repo/.qwen/settings.json',
+        filePath: '/repo/.axe/settings.json',
       },
     ]);
   });
@@ -798,12 +798,12 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('strips grouping and background syntax from command and path tokens', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        '(echo > .qwen/settings.json) && echo > .qwen/hooks/run.sh&',
+        '(echo > .axe/settings.json) && echo > .axe/hooks/run.sh&',
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/hooks/run.sh' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/hooks/run.sh' },
     ]);
   });
 
@@ -820,7 +820,7 @@ describe('extractShellOperationsAcrossCommand', () => {
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
     ]);
   });
 
@@ -831,7 +831,7 @@ describe('extractShellOperationsAcrossCommand', () => {
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
     ]);
   });
 
@@ -844,7 +844,7 @@ describe('extractShellOperationsAcrossCommand', () => {
     ).toEqual([
       {
         virtualTool: 'write_file',
-        filePath: '/repo/.qwen/settings.local.json',
+        filePath: '/repo/.axe/settings.local.json',
       },
     ]);
   });
@@ -870,7 +870,7 @@ describe('extractShellOperationsAcrossCommand', () => {
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
     ]);
   });
 
@@ -883,7 +883,7 @@ describe('extractShellOperationsAcrossCommand', () => {
     ).toEqual([
       {
         virtualTool: 'write_file',
-        filePath: '/repo/.qwen/settings.local.json',
+        filePath: '/repo/.axe/settings.local.json',
       },
     ]);
   });
@@ -1009,7 +1009,7 @@ describe('extractShellOperationsAcrossCommand', () => {
         '/repo',
       ),
     ).toEqual([
-      { virtualTool: 'write_file', filePath: '/repo/.qwen/settings.json' },
+      { virtualTool: 'write_file', filePath: '/repo/.axe/settings.json' },
     ]);
   });
 

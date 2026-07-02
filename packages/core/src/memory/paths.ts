@@ -24,7 +24,7 @@ export const AUTO_MEMORY_CONSOLIDATION_LOCK_FILENAME = 'consolidation.lock';
 export const USER_AUTO_MEMORY_DIRNAME = 'memories';
 
 /**
- * Directory name (under the repo's `.qwen/`) for the team auto-memory layer —
+ * Directory name (under the repo's `.axe/`) for the team auto-memory layer —
  * project memory shared with every collaborator. Unlike the private layers it
  * lives INSIDE the repository and is tracked by git, which is the sync transport.
  */
@@ -224,7 +224,7 @@ export function getAutoMemoryFilePath(
 
 /**
  * Returns the user-level (cross-project) auto-memory root.
- * Lives at `${getMemoryBaseDir()}/memories/` — typically `~/.qwen/memories/`.
+ * Lives at `${getMemoryBaseDir()}/memories/` — typically `~/.axe/memories/`.
  * Unlike project memory, this is NOT scoped to a git root; it is shared
  * across every project the user works in.
  */
@@ -253,7 +253,7 @@ export function isUserAutoMemPath(absolutePath: string): boolean {
 }
 
 /**
- * Returns the team auto-memory root: `<gitRoot>/.qwen/team-memory/`.
+ * Returns the team auto-memory root: `<gitRoot>/.axe/team-memory/`.
  * Anchored at the current worktree root so tracked writes appear in the active
  * branch diff. Falls back to projectRoot when there is no git root.
  */
@@ -296,7 +296,7 @@ export function isTeamAutoMemPath(
  *
  * Security-load-bearing: `fs.existsSync` follows links and reports a dangling
  * symlink as "missing". Relying on it lets an attacker pre-place
- * `decoy.md -> .qwen/team-memory/leak.md` (target absent) so the path classifies
+ * `decoy.md -> .axe/team-memory/leak.md` (target absent) so the path classifies
  * OUTSIDE team memory and the secret scanner is skipped — while the real write
  * follows the link INTO team memory. lstat/readlink (no-follow) resolve the link
  * target so classification matches where the bytes will actually land.

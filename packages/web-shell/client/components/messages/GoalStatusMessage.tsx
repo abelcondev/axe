@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DAEMON_GOAL_STATUS_SENTINEL_PREFIX } from '@qwen-code/sdk/daemon';
+import { DAEMON_GOAL_STATUS_SENTINEL_PREFIX } from '@axe/sdk/daemon';
 import { useI18n } from '../../i18n';
 import { formatRuntime } from '../../utils/formatRuntime';
 import { createSentinelSerializer } from '../../utils/sentinelMessage';

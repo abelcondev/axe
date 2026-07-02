@@ -560,8 +560,8 @@ describe('selectVisionBridgeModel (same-provider only)', () => {
           // OAuth/runtime model on yet another endpoint must never be picked.
           {
             id: 'coder-model',
-            authType: 'qwen-oauth',
-            baseUrl: 'DYNAMIC_QWEN_OAUTH_BASE_URL',
+            authType: 'axe-oauth',
+            baseUrl: 'DYNAMIC_AXE_OAUTH_BASE_URL',
             isVision: true,
           },
         ],

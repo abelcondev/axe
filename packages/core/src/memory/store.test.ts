@@ -86,22 +86,22 @@ describe('auto-memory storage scaffold', () => {
 
   it('builds stable auto-memory paths under project .qwen directory', () => {
     expect(getAutoMemoryRoot(projectRoot)).toBe(
-      path.join(projectRoot, '.qwen', 'memory'),
+      path.join(projectRoot, '.axe', 'memory'),
     );
     expect(getAutoMemoryIndexPath(projectRoot)).toBe(
-      path.join(projectRoot, '.qwen', 'memory', 'MEMORY.md'),
+      path.join(projectRoot, '.axe', 'memory', 'MEMORY.md'),
     );
     expect(getAutoMemoryMetadataPath(projectRoot)).toBe(
-      path.join(projectRoot, '.qwen', 'meta.json'),
+      path.join(projectRoot, '.axe', 'meta.json'),
     );
     expect(getAutoMemoryExtractCursorPath(projectRoot)).toBe(
-      path.join(projectRoot, '.qwen', 'extract-cursor.json'),
+      path.join(projectRoot, '.axe', 'extract-cursor.json'),
     );
     expect(getAutoMemoryConsolidationLockPath(projectRoot)).toBe(
-      path.join(projectRoot, '.qwen', 'consolidation.lock'),
+      path.join(projectRoot, '.axe', 'consolidation.lock'),
     );
     expect(getAutoMemoryTopicPath(projectRoot, 'feedback')).toBe(
-      path.join(projectRoot, '.qwen', 'memory', 'feedback.md'),
+      path.join(projectRoot, '.axe', 'memory', 'feedback.md'),
     );
   });
 

@@ -98,13 +98,13 @@ describe('mcp-client', () => {
   describe('getMcpOAuthDialogInstruction', () => {
     it('builds an authenticate instruction for the named MCP server', () => {
       expect(getMcpOAuthDialogInstruction('authenticate', 'foo')).toBe(
-        "In interactive Qwen Code sessions, open the /mcp dialog to authenticate with MCP server 'foo'. For headless or SDK usage, configure MCP OAuth with qwen mcp add --oauth-* or settings.json, then authenticate once in an interactive session before connecting.",
+        "In interactive Axe sessions, open the /mcp dialog to authenticate with MCP server 'foo'. For headless or SDK usage, configure MCP OAuth with qwen mcp add --oauth-* or settings.json, then authenticate once in an interactive session before connecting.",
       );
     });
 
     it('builds a re-authenticate instruction for the named MCP server', () => {
       expect(getMcpOAuthDialogInstruction('re-authenticate', 'foo')).toBe(
-        "In interactive Qwen Code sessions, open the /mcp dialog to re-authenticate with MCP server 'foo'. For headless or SDK usage, configure MCP OAuth with qwen mcp add --oauth-* or settings.json, then re-authenticate once in an interactive session before connecting.",
+        "In interactive Axe sessions, open the /mcp dialog to re-authenticate with MCP server 'foo'. For headless or SDK usage, configure MCP OAuth with qwen mcp add --oauth-* or settings.json, then re-authenticate once in an interactive session before connecting.",
       );
     });
   });

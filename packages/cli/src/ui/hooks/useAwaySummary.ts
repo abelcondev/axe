@@ -1,11 +1,11 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { useEffect, useRef } from 'react';
-import { generateSessionRecap, type Config } from '@qwen-code/qwen-code-core';
+import { generateSessionRecap, type Config } from '@axe/core';
 import type {
   HistoryItem,
   HistoryItemAwayRecap,

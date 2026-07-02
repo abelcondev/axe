@@ -518,7 +518,7 @@ describe('HookSystem', () => {
       ).mockResolvedValue(mockResult);
 
       const result = await hookSystem.fireInstructionsLoadedEvent(
-        '/repo/.qwen/QWEN.local.md',
+        '/repo/.axe/QWEN.local.md',
         'local',
         'include',
         { parentFilePath: '/repo/QWEN.md' },
@@ -1519,13 +1519,13 @@ describe('HookSystem', () => {
       );
 
       await hookSystem.fireNotificationEvent(
-        'Qwen Code is waiting for your input',
+        'Axe is waiting for your input',
         NotificationType.IdlePrompt,
         'Waiting for input',
       );
 
       expect(mockHookEventHandler.fireNotificationEvent).toHaveBeenCalledWith(
-        'Qwen Code is waiting for your input',
+        'Axe is waiting for your input',
         NotificationType.IdlePrompt,
         'Waiting for input',
         undefined,

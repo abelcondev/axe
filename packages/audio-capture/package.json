@@ -1,5 +1,5 @@
 {
-  "name": "@qwen-code/audio-capture",
+  "name": "@axe/audio-capture",
   "version": "0.19.5",
   "description": "Native microphone capture backend for Qwen Code voice input",
   "type": "module",

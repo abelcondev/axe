@@ -539,17 +539,17 @@ describe('ModelsConfig', () => {
   it('should always force Qwen OAuth apiKey placeholder when applying model defaults', async () => {
     // Simulate a stale/explicit apiKey existing before switching models.
     const modelsConfig = new ModelsConfig({
-      initialAuthType: AuthType.QWEN_OAUTH,
+      initialAuthType: AuthType.AXE_OAUTH,
       generationConfig: {
         apiKey: 'manual-key-should-not-leak',
       },
     });
 
-    // Switching within qwen-oauth triggers applyResolvedModelDefaults().
-    await modelsConfig.switchModel(AuthType.QWEN_OAUTH, 'coder-model');
+    // Switching within axe-oauth triggers applyResolvedModelDefaults().
+    await modelsConfig.switchModel(AuthType.AXE_OAUTH, 'coder-model');
 
     const gc = currentGenerationConfig(modelsConfig);
-    expect(gc.apiKey).toBe('QWEN_OAUTH_DYNAMIC_TOKEN');
+    expect(gc.apiKey).toBe('AXE_OAUTH_DYNAMIC_TOKEN');
     expect(gc.apiKeyEnvKey).toBeUndefined();
   });
 
@@ -594,13 +594,13 @@ describe('ModelsConfig', () => {
 
     // Config.refreshAuth passes modelId from modelsConfig.getModel(), which falls back to DEFAULT_QWEN_MODEL.
     modelsConfig.syncAfterAuthRefresh(
-      AuthType.QWEN_OAUTH,
+      AuthType.AXE_OAUTH,
       modelsConfig.getModel(),
     );
 
     const gc = currentGenerationConfig(modelsConfig);
     expect(gc.model).toBe('coder-model');
-    expect(gc.apiKey).toBe('QWEN_OAUTH_DYNAMIC_TOKEN');
+    expect(gc.apiKey).toBe('AXE_OAUTH_DYNAMIC_TOKEN');
     expect(gc.apiKeyEnvKey).toBeUndefined();
   });
 
@@ -614,19 +614,19 @@ describe('ModelsConfig', () => {
       },
     });
 
-    // User switches to qwen-oauth via AuthDialog
+    // User switches to axe-oauth via AuthDialog
     // refreshAuth calls syncAfterAuthRefresh with the current model (gpt-4o)
-    // which doesn't exist in qwen-oauth registry, so it should use default
-    modelsConfig.syncAfterAuthRefresh(AuthType.QWEN_OAUTH, 'gpt-4o');
+    // which doesn't exist in axe-oauth registry, so it should use default
+    modelsConfig.syncAfterAuthRefresh(AuthType.AXE_OAUTH, 'gpt-4o');
 
     const gc = currentGenerationConfig(modelsConfig);
-    // Should use default qwen-oauth model (coder-model), not the OPENAI model
+    // Should use default axe-oauth model (coder-model), not the OPENAI model
     expect(gc.model).toBe('coder-model');
-    expect(gc.apiKey).toBe('QWEN_OAUTH_DYNAMIC_TOKEN');
+    expect(gc.apiKey).toBe('AXE_OAUTH_DYNAMIC_TOKEN');
     expect(gc.apiKeyEnvKey).toBeUndefined();
   });
 
-  it('should clear manual credentials when switching from USE_OPENAI to QWEN_OAUTH', () => {
+  it('should clear manual credentials when switching from USE_OPENAI to AXE_OAUTH', () => {
     // User manually set credentials for OpenAI
     const modelsConfig = new ModelsConfig({
       initialAuthType: AuthType.USE_OPENAI,
@@ -644,17 +644,17 @@ describe('ModelsConfig', () => {
       model: 'gpt-4o',
     });
 
-    // User switches to qwen-oauth
+    // User switches to axe-oauth
     // Since authType is not USE_OPENAI, manual credentials should be cleared
-    // and default qwen-oauth model should be applied
-    modelsConfig.syncAfterAuthRefresh(AuthType.QWEN_OAUTH, 'gpt-4o');
+    // and default axe-oauth model should be applied
+    modelsConfig.syncAfterAuthRefresh(AuthType.AXE_OAUTH, 'gpt-4o');
 
     const gc = currentGenerationConfig(modelsConfig);
-    // Should use default qwen-oauth model, not preserve manual OpenAI credentials
+    // Should use default axe-oauth model, not preserve manual OpenAI credentials
     expect(gc.model).toBe('coder-model');
-    expect(gc.apiKey).toBe('QWEN_OAUTH_DYNAMIC_TOKEN');
-    // baseUrl should be set to qwen-oauth default, not preserved from manual OpenAI config
-    expect(gc.baseUrl).toBe('DYNAMIC_QWEN_OAUTH_BASE_URL');
+    expect(gc.apiKey).toBe('AXE_OAUTH_DYNAMIC_TOKEN');
+    // baseUrl should be set to axe-oauth default, not preserved from manual OpenAI config
+    expect(gc.baseUrl).toBe('DYNAMIC_AXE_OAUTH_BASE_URL');
     expect(gc.apiKeyEnvKey).toBeUndefined();
   });
 
@@ -1552,10 +1552,10 @@ describe('ModelsConfig', () => {
     });
   });
 
-  it('refreshes model-derived modalities when hot-switching to the default qwen-oauth model', async () => {
-    // Start on qwen-oauth with a text-only model so modalities are empty.
+  it('refreshes model-derived modalities when hot-switching to the default axe-oauth model', async () => {
+    // Start on axe-oauth with a text-only model so modalities are empty.
     const modelsConfig = new ModelsConfig({
-      initialAuthType: AuthType.QWEN_OAUTH,
+      initialAuthType: AuthType.AXE_OAUTH,
       generationConfig: {
         model: 'qwen3-coder-flash',
         modalities: {},
@@ -1623,7 +1623,7 @@ describe('ModelsConfig', () => {
   });
 
   describe('getAllConfiguredModels', () => {
-    it('should return all models across all authTypes and put qwen-oauth first', () => {
+    it('should return all models across all authTypes and put axe-oauth first', () => {
       const modelProvidersConfig: ModelProvidersConfig = {
         openai: [
           {
@@ -1663,25 +1663,25 @@ describe('ModelsConfig', () => {
 
       const allModels = modelsConfig.getAllConfiguredModels();
 
-      // qwen-oauth models should be ordered first
+      // axe-oauth models should be ordered first
       const firstNonQwenIndex = allModels.findIndex(
-        (m) => m.authType !== AuthType.QWEN_OAUTH,
+        (m) => m.authType !== AuthType.AXE_OAUTH,
       );
       expect(firstNonQwenIndex).toBeGreaterThan(0);
       expect(
         allModels
           .slice(0, firstNonQwenIndex)
-          .every((m) => m.authType === AuthType.QWEN_OAUTH),
+          .every((m) => m.authType === AuthType.AXE_OAUTH),
       ).toBe(true);
       expect(
         allModels
           .slice(firstNonQwenIndex)
-          .every((m) => m.authType !== AuthType.QWEN_OAUTH),
+          .every((m) => m.authType !== AuthType.AXE_OAUTH),
       ).toBe(true);
 
-      // Should include qwen-oauth models (hard-coded)
+      // Should include axe-oauth models (hard-coded)
       const qwenModels = allModels.filter(
-        (m) => m.authType === AuthType.QWEN_OAUTH,
+        (m) => m.authType === AuthType.AXE_OAUTH,
       );
       expect(qwenModels.length).toBeGreaterThan(0);
 
@@ -1713,10 +1713,10 @@ describe('ModelsConfig', () => {
 
       const allModels = modelsConfig.getAllConfiguredModels();
 
-      // Should still include qwen-oauth models (hard-coded)
+      // Should still include axe-oauth models (hard-coded)
       expect(allModels.length).toBeGreaterThan(0);
       const qwenModels = allModels.filter(
-        (m) => m.authType === AuthType.QWEN_OAUTH,
+        (m) => m.authType === AuthType.AXE_OAUTH,
       );
       expect(qwenModels.length).toBeGreaterThan(0);
     });
@@ -1753,7 +1753,7 @@ describe('ModelsConfig', () => {
       expect(testModel?.capabilities?.vision).toBe(true);
     });
 
-    it('should support filtering by authTypes and still put qwen-oauth first when included', () => {
+    it('should support filtering by authTypes and still put axe-oauth first when included', () => {
       const modelProvidersConfig: ModelProvidersConfig = {
         openai: [
           {
@@ -1777,7 +1777,7 @@ describe('ModelsConfig', () => {
         modelProvidersConfig,
       });
 
-      // Filter: OpenAI only (should not include qwen-oauth)
+      // Filter: OpenAI only (should not include axe-oauth)
       const openaiOnly = modelsConfig.getAllConfiguredModels([
         AuthType.USE_OPENAI,
       ]);
@@ -1786,21 +1786,21 @@ describe('ModelsConfig', () => {
       );
       expect(openaiOnly.map((m) => m.id)).toContain('openai-model-1');
 
-      // Filter: include qwen-oauth but request it later -> still ordered first
+      // Filter: include axe-oauth but request it later -> still ordered first
       const withQwen = modelsConfig.getAllConfiguredModels([
         AuthType.USE_OPENAI,
-        AuthType.QWEN_OAUTH,
+        AuthType.AXE_OAUTH,
         AuthType.USE_ANTHROPIC,
       ]);
       expect(withQwen.length).toBeGreaterThan(0);
       const firstNonQwenIndex = withQwen.findIndex(
-        (m) => m.authType !== AuthType.QWEN_OAUTH,
+        (m) => m.authType !== AuthType.AXE_OAUTH,
       );
       expect(firstNonQwenIndex).toBeGreaterThan(0);
       expect(
         withQwen
           .slice(0, firstNonQwenIndex)
-          .every((m) => m.authType === AuthType.QWEN_OAUTH),
+          .every((m) => m.authType === AuthType.AXE_OAUTH),
       ).toBe(true);
     });
 
@@ -1837,8 +1837,8 @@ describe('ModelsConfig', () => {
       expect(openaiModel?.id).toBe('my-openai-model');
       expect(openaiModel?.isRuntimeModel).toBe(true);
 
-      // qwen-oauth registry models still come first and are still listed.
-      expect(allModels.some((m) => m.authType === AuthType.QWEN_OAUTH)).toBe(
+      // axe-oauth registry models still come first and are still listed.
+      expect(allModels.some((m) => m.authType === AuthType.AXE_OAUTH)).toBe(
         true,
       );
     });
@@ -1862,9 +1862,9 @@ describe('ModelsConfig', () => {
       modelsConfig.detectAndCaptureRuntimeModel();
 
       const qwenOnly = modelsConfig.getAllConfiguredModels([
-        AuthType.QWEN_OAUTH,
+        AuthType.AXE_OAUTH,
       ]);
-      expect(qwenOnly.every((m) => m.authType === AuthType.QWEN_OAUTH)).toBe(
+      expect(qwenOnly.every((m) => m.authType === AuthType.AXE_OAUTH)).toBe(
         true,
       );
     });
@@ -2362,18 +2362,18 @@ describe('ModelsConfig', () => {
       expect(
         modelsConfig
           .getAllConfiguredModels()
-          .filter((m) => m.authType !== 'qwen-oauth').length,
+          .filter((m) => m.authType !== 'axe-oauth').length,
       ).toBeGreaterThan(0);
 
       // Reload with empty config
       modelsConfig.reloadModelProvidersConfig({});
 
-      // Only qwen-oauth models should remain
+      // Only axe-oauth models should remain
       const models = modelsConfig.getAllConfiguredModels();
-      expect(models.every((m) => m.authType === 'qwen-oauth')).toBe(true);
+      expect(models.every((m) => m.authType === 'axe-oauth')).toBe(true);
     });
 
-    it('should preserve qwen-oauth models after reload', () => {
+    it('should preserve axe-oauth models after reload', () => {
       const modelsConfig = new ModelsConfig({
         modelProvidersConfig: {
           openai: [{ id: 'gpt-4', name: 'GPT-4' }],
@@ -2382,16 +2382,16 @@ describe('ModelsConfig', () => {
 
       const initialQwenModels = modelsConfig
         .getAllConfiguredModels()
-        .filter((m) => m.authType === 'qwen-oauth');
+        .filter((m) => m.authType === 'axe-oauth');
 
       modelsConfig.reloadModelProvidersConfig({
         gemini: [{ id: 'gemini-pro', name: 'Gemini Pro' }],
       });
 
-      // qwen-oauth models should still exist
+      // axe-oauth models should still exist
       const qwenModelsAfterReload = modelsConfig
         .getAllConfiguredModels()
-        .filter((m) => m.authType === 'qwen-oauth');
+        .filter((m) => m.authType === 'axe-oauth');
       expect(qwenModelsAfterReload.length).toBe(initialQwenModels.length);
     });
 

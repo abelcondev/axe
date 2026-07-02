@@ -87,7 +87,7 @@ async function runCliEntry(): Promise<void> {
 
 async function handleCriticalError(error: unknown): Promise<void> {
   const [{ FatalError }, { AlreadyReportedError }] = await Promise.all([
-    import('@qwen-code/qwen-code-core'),
+    import('@axe/core'),
     import('./src/utils/errors.js'),
   ]);
 

@@ -1,5 +1,5 @@
 {
-  "name": "@qwen-code/chrome-bridge",
+  "name": "@axe/chrome-bridge",
   "version": "0.19.5",
   "description": "Chrome extension bridge for Qwen CLI - enables AI-powered browser interactions",
   "private": true,

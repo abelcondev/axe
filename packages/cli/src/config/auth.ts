@@ -10,7 +10,7 @@ import {
   type ModelProvidersConfig,
   type ProviderModelConfig,
   type ProviderProtocolConfig,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import { loadEnvironment, loadSettings, type Settings } from './settings.js';
 import { collectProviderModelsForProtocol } from '../utils/modelConfigUtils.js';
 import { t } from '../i18n/index.js';
@@ -259,7 +259,7 @@ export function validateAuthMethod(
     return null;
   }
 
-  if (authMethod === AuthType.QWEN_OAUTH) {
+  if (authMethod === AuthType.AXE_OAUTH) {
     // Qwen OAuth free tier was discontinued on 2026-04-15.
     // Block new OAuth setups; existing cached tokens still work until server rejects them.
     return t(

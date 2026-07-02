@@ -16,14 +16,14 @@ import type {
   SetSessionModelRequest,
   SetSessionModelResponse,
 } from '@agentclientprotocol/sdk';
-import type { ApprovalMode } from '@qwen-code/qwen-code-core';
+import type { ApprovalMode } from '@axe/core';
 import {
   DAEMON_TRACEPARENT_META_KEY,
   DAEMON_TRACESTATE_META_KEY,
   TrustGateError,
   ShellExecutionService,
   type ShellOutputEvent,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { ShellCommandResult } from './bridgeTypes.js';
 import type { AcpChannel } from './channel.js';
 import {

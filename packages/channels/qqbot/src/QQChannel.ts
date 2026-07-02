@@ -19,12 +19,12 @@ import {
   sanitizeSenderName,
   sanitizePromptText,
   sanitizeLogText,
-} from '@qwen-code/channel-base';
+} from '@axe/channel-base';
 import type {
   ChannelConfig,
   ChannelBaseOptions,
   ChannelAgentBridge,
-} from '@qwen-code/channel-base';
+} from '@axe/channel-base';
 import WebSocket from 'ws';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';

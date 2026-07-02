@@ -41,7 +41,7 @@ import { formatAgentId } from '../agents/team/teamHelpers.js';
 vi.mock('../config/storage.js', () => {
   let mockDir = '/tmp/test';
   return {
-    QWEN_DIR: '.qwen',
+    QWEN_DIR: '.axe',
     Storage: {
       getGlobalQwenDir: () => mockDir,
     },

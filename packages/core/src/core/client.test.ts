@@ -3898,7 +3898,7 @@ hello
         selectedDocs: [
           {
             type: 'user',
-            filePath: '/test/project/root/.qwen/memory/user.md',
+            filePath: '/test/project/root/.axe/memory/user.md',
             relativePath: 'user.md',
             filename: 'user.md',
             title: 'User Memory',
@@ -3957,7 +3957,7 @@ hello
           selectedDocs: [
             {
               type: 'user',
-              filePath: '/test/project/root/.qwen/memory/user.md',
+              filePath: '/test/project/root/.axe/memory/user.md',
               relativePath: 'user.md',
               filename: 'user.md',
               title: 'User Memory',
@@ -4009,7 +4009,7 @@ hello
         'Keep it short again',
         expect.objectContaining({
           excludedFilePaths: new Set([
-            '/test/project/root/.qwen/memory/user.md',
+            '/test/project/root/.axe/memory/user.md',
           ]),
         }),
       );
@@ -5139,7 +5139,7 @@ hello
         expect(client['skillsModifiedInSession']).toBe(false);
 
         client.recordCompletedToolCall('write_file', {
-          file_path: '/project/.qwen/skills/my-skill.md',
+          file_path: '/project/.axe/skills/my-skill.md',
         });
 
         expect(client['skillsModifiedInSession']).toBe(true);
@@ -5160,7 +5160,7 @@ hello
           '/project',
         );
         client.recordCompletedToolCall('edit', {
-          path: '/project/.qwen/skills/my-skill.md',
+          path: '/project/.axe/skills/my-skill.md',
         });
         expect(client['skillsModifiedInSession']).toBe(true);
       });
@@ -5170,7 +5170,7 @@ hello
           '/project',
         );
         client.recordCompletedToolCall('read_file', {
-          file_path: '/project/.qwen/skills/my-skill.md',
+          file_path: '/project/.axe/skills/my-skill.md',
         });
         expect(client['skillsModifiedInSession']).toBe(false);
       });
@@ -7940,7 +7940,7 @@ Other open files:
 
       // Main config uses a different authType
       vi.mocked(mockConfig.getContentGeneratorConfig).mockReturnValue({
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
         apiKey: 'test-key',
         apiModel: 'test-model',
       } as unknown as ContentGeneratorConfig);
@@ -7956,7 +7956,7 @@ Other open files:
       );
 
       // VERIFY: retryWithBackoff was called with the fast model's authType ('openai'),
-      // not the main model's authType ('QWEN_OAUTH').
+      // not the main model's authType ('AXE_OAUTH').
       expect(retryWithBackoff).toHaveBeenCalledWith(
         expect.any(Function),
         expect.objectContaining({
@@ -8041,9 +8041,9 @@ Other open files:
         getResolvedModel,
       } as unknown as ModelsConfig);
 
-      // Main config uses QWEN_OAUTH — fast model registered under USE_OPENAI
+      // Main config uses AXE_OAUTH — fast model registered under USE_OPENAI
       vi.mocked(mockConfig.getContentGeneratorConfig).mockReturnValue({
-        authType: AuthType.QWEN_OAUTH,
+        authType: AuthType.AXE_OAUTH,
         apiKey: 'test-key',
         apiModel: 'test-model',
       } as unknown as ContentGeneratorConfig);

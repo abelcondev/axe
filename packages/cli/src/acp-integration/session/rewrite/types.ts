@@ -6,7 +6,7 @@
 
 /**
  * Configuration for ACP message rewriting.
- * Loaded from .qwen/settings.json under "messageRewrite" key.
+ * Loaded from .axe/settings.json under "messageRewrite" key.
  */
 export interface MessageRewriteConfig {
   /** Whether message rewriting is enabled */

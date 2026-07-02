@@ -11,7 +11,7 @@ import {
   writeSync,
 } from 'node:fs';
 import * as path from 'node:path';
-import { Storage } from '@qwen-code/qwen-code-core';
+import { Storage } from '@axe/core';
 
 export interface ServiceInfo {
   owner: 'channel' | 'serve';

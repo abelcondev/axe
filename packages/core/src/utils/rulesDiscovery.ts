@@ -6,7 +6,7 @@
 
 // Path-based context rule injection.
 //
-// Discovers .qwen/rules/ files (recursively) with optional YAML frontmatter.
+// Discovers .axe/rules/ files (recursively) with optional YAML frontmatter.
 // Rules declare applicable file paths via glob patterns in `paths:`.
 //
 // - Rules WITHOUT `paths:` always load at session start (baseline rules).
@@ -142,7 +142,7 @@ async function collectMdFiles(dir: string): Promise<string[]> {
 }
 
 /**
- * Discover and load rule files from a single `.qwen/rules/` directory.
+ * Discover and load rule files from a single `.axe/rules/` directory.
  * Scans recursively; files are sorted alphabetically for deterministic ordering.
  *
  * @param excludes - Glob patterns to skip (matched against absolute paths).
@@ -203,7 +203,7 @@ export function formatRules(rules: RuleFile[], projectRoot: string): string {
       // Normalize to forward slashes for cross-platform consistency in the
       // system prompt. Glob patterns in `paths:` use forward slashes, so
       // display paths should match — otherwise Windows shows `.qwen\rules\foo.md`
-      // and Linux shows `.qwen/rules/foo.md`, which is confusing in diffs/tests.
+      // and Linux shows `.axe/rules/foo.md`, which is confusing in diffs/tests.
       const displayPath = rawDisplayPath.replace(/\\/g, '/');
       return (
         `--- Rule from: ${displayPath} ---\n` +
@@ -300,8 +300,8 @@ export class ConditionalRulesRegistry {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Load rules from both global (`~/.qwen/rules/`) and project-level
- * (`.qwen/rules/`) directories.
+ * Load rules from both global (`~/.axe/rules/`) and project-level
+ * (`.axe/rules/`) directories.
  *
  * Baseline rules (no `paths:`) are returned in `content` for immediate
  * injection into the system prompt. Conditional rules (with `paths:`) are
@@ -320,13 +320,13 @@ export async function loadRules(
 
   const allRules: RuleFile[] = [];
 
-  // 1. Global rules: <QWEN_HOME or ~/.qwen>/rules/
+  // 1. Global rules: <QWEN_HOME or ~/.axe>/rules/
   const globalRulesDir = path.join(Storage.getGlobalQwenDir(), 'rules');
   const globalRules = await loadRulesFromDir(globalRulesDir, excludes);
   allRules.push(...globalRules);
   logger.debug(`Loaded ${globalRules.length} global rule(s)`);
 
-  // 2. Project-level rules: <projectRoot>/.qwen/rules/  (trusted only)
+  // 2. Project-level rules: <projectRoot>/.axe/rules/  (trusted only)
   //    Skip if it resolves to the same directory as global rules.
   if (folderTrust) {
     const projectRulesDir = path.join(projectRoot, QWEN_DIR, 'rules');

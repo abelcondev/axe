@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { type DaemonSessionSummary } from '@qwen-code/webui/daemon-react-sdk';
+import { type DaemonSessionSummary } from '@axe/webui/daemon-react-sdk';
 import { dp } from './dialogStyles';
 import { useI18n } from '../../i18n';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';

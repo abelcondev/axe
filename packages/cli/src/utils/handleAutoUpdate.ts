@@ -16,7 +16,7 @@ import type { spawn } from 'node:child_process';
 import os from 'node:os';
 
 const UPDATE_SUCCESS_MESSAGE =
-  'Update successful! Please restart Qwen Code to use the new version. ' +
+  'Update successful! Please restart Axe to use the new version. ' +
   'Switching model providers before restarting may not work correctly.';
 const UPDATE_FAILED_MESSAGE =
   'Automatic update failed. Please try updating manually.';

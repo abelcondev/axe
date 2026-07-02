@@ -112,7 +112,7 @@ describe('syncTeamMemory', () => {
     const bob = makeWorkingClone(bare, 'bob');
     cleanup.push(path.dirname(bob));
     writeTeamMemory(bob, 'reference/grafana.md', 'oncall dashboard');
-    git(bob, 'add', '--', '.qwen/team-memory');
+    git(bob, 'add', '--', '.axe/team-memory');
     git(bob, 'commit', '-m', 'bob adds reference');
     git(bob, 'push');
 
@@ -132,7 +132,7 @@ describe('syncTeamMemory', () => {
     const bob = makeWorkingClone(bare, 'bob');
     cleanup.push(path.dirname(bob));
     writeTeamMemory(bob, 'reference/grafana.md', 'oncall dashboard');
-    git(bob, 'add', '--', '.qwen/team-memory');
+    git(bob, 'add', '--', '.axe/team-memory');
     git(bob, 'commit', '-m', 'bob adds reference');
     git(bob, 'push');
 
@@ -164,7 +164,7 @@ describe('syncTeamMemory', () => {
     const bob = makeWorkingClone(bare, 'bob');
     cleanup.push(path.dirname(bob));
     writeTeamMemory(bob, 'reference/grafana.md', 'oncall dashboard');
-    git(bob, 'add', '--', '.qwen/team-memory');
+    git(bob, 'add', '--', '.axe/team-memory');
     git(bob, 'commit', '-m', 'bob adds reference');
     git(bob, 'push');
 

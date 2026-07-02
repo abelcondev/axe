@@ -22,11 +22,11 @@ export default defineConfig(({ command }) => ({
     command === 'serve'
       ? {
           alias: {
-            '@qwen-code/sdk/daemon': resolve(
+            '@axe/sdk/daemon': resolve(
               __dirname,
               '../sdk-typescript/src/daemon/index.ts',
             ),
-            '@qwen-code/sdk': resolve(
+            '@axe/sdk': resolve(
               __dirname,
               '../sdk-typescript/src/index.ts',
             ),
@@ -53,16 +53,16 @@ export default defineConfig(({ command }) => ({
     },
     rollupOptions: {
       external: [
-        '@qwen-code/sdk',
-        '@qwen-code/sdk/daemon',
+        '@axe/sdk',
+        '@axe/sdk/daemon',
         'react',
         'react-dom',
         'react/jsx-runtime',
       ],
       output: {
         globals: {
-          '@qwen-code/sdk': 'QwenCodeSdk',
-          '@qwen-code/sdk/daemon': 'QwenCodeSdkDaemon',
+          '@axe/sdk': 'QwenCodeSdk',
+          '@axe/sdk/daemon': 'QwenCodeSdkDaemon',
           react: 'React',
           'react-dom': 'ReactDOM',
           'react/jsx-runtime': 'ReactJSXRuntime',

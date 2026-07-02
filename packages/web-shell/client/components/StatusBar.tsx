@@ -7,8 +7,8 @@ import {
   useState,
   type KeyboardEvent,
 } from 'react';
-import type { DaemonSessionTaskStatus } from '@qwen-code/sdk/daemon';
-import { useConnection } from '@qwen-code/webui/daemon-react-sdk';
+import type { DaemonSessionTaskStatus } from '@axe/sdk/daemon';
+import { useConnection } from '@axe/webui/daemon-react-sdk';
 import { useI18n } from '../i18n';
 import styles from './StatusBar.module.css';
 

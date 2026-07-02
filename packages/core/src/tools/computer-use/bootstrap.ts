@@ -202,7 +202,7 @@ function defaultDeps(): BootstrapDeps {
       process.stderr.write(
         `\n[Computer Use] First-time setup\n` +
           `  Driver: ${key}\n` +
-          `  This downloads a ~20MB signed + notarized binary into ~/.qwen/computer-use/.\n` +
+          `  This downloads a ~20MB signed + notarized binary into ~/.axe/computer-use/.\n` +
           `  Computer Use can click, type, and read your desktop apps in the background.\n` +
           `  On macOS you'll be guided through Accessibility and Screen Recording permissions next.\n` +
           `Set QWEN_COMPUTER_USE_AUTO_APPROVE=1 to skip this prompt.\n`,

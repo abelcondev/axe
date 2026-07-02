@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -266,7 +266,7 @@ async function copyFileHistoryBackups(
  * - Removing sessions
  *
  * Sessions are stored as JSONL files, one per session.
- * File location: ~/.qwen/tmp/<project_id>/chats/
+ * File location: ~/.axe/tmp/<project_id>/chats/
  */
 export class SessionService {
   private readonly storage: Storage;

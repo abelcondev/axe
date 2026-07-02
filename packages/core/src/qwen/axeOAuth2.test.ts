@@ -15,14 +15,14 @@ import {
   isDeviceTokenPending,
   isDeviceTokenSuccess,
   isErrorResponse,
-  qwenOAuth2Events,
-  QwenOAuth2Event,
-  QwenOAuth2Client,
+  axeOAuth2Events,
+  AxeOAuth2Event,
+  AxeOAuth2Client,
   type DeviceAuthorizationResponse,
   type DeviceTokenResponse,
   type ErrorData,
   type QwenCredentials,
-} from './qwenOAuth2.js';
+} from './axeOAuth2.js';
 import {
   SharedTokenManager,
   TokenManagerError,
@@ -30,7 +30,7 @@ import {
 } from './sharedTokenManager.js';
 
 interface MockSharedTokenManager {
-  getValidCredentials(qwenClient: QwenOAuth2Client): Promise<QwenCredentials>;
+  getValidCredentials(qwenClient: AxeOAuth2Client): Promise<QwenCredentials>;
   getCurrentCredentials(): QwenCredentials | null;
   clearCache(): void;
 }
@@ -50,7 +50,7 @@ vi.mock('./sharedTokenManager.js', () => ({
     }
 
     async getValidCredentials(
-      qwenClient: QwenOAuth2Client,
+      qwenClient: AxeOAuth2Client,
     ): Promise<QwenCredentials> {
       // Try to get credentials from the client first
       const clientCredentials = qwenClient.getCredentials();
@@ -293,13 +293,13 @@ describe('Type Guards', () => {
   });
 });
 
-describe('QwenOAuth2Client', () => {
-  let client: QwenOAuth2Client;
+describe('AxeOAuth2Client', () => {
+  let client: AxeOAuth2Client;
   let originalFetch: typeof global.fetch;
 
   beforeEach(() => {
     // Create client instance
-    client = new QwenOAuth2Client();
+    client = new AxeOAuth2Client();
 
     // Mock fetch
     originalFetch = global.fetch;
@@ -852,7 +852,7 @@ describe('QwenOAuth2Client', () => {
     });
 
     it('should NOT clear credentials on malformed 200 response (e.g. proxy HTML)', async () => {
-      const { CredentialsClearRequiredError } = await import('./qwenOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
 
       const mockResponse = {
         ok: true,
@@ -874,7 +874,7 @@ describe('QwenOAuth2Client', () => {
     });
 
     it('should clear credentials and throw CredentialsClearRequiredError on 401 response', async () => {
-      const { CredentialsClearRequiredError } = await import('./qwenOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
 
       const mockResponse = {
         ok: false,
@@ -915,7 +915,7 @@ describe('QwenOAuth2Client', () => {
   });
 });
 
-describe('getQwenOAuthClient', () => {
+describe('getAxeOAuthClient', () => {
   let mockConfig: Config;
   let originalFetch: typeof global.fetch;
 
@@ -950,8 +950,8 @@ describe('getQwenOAuthClient', () => {
     const originalGetInstance = SharedTokenManager.getInstance;
     SharedTokenManager.getInstance = vi.fn().mockReturnValue(mockTokenManager);
 
-    const client = await import('./qwenOAuth2.js').then((module) =>
-      module.getQwenOAuthClient(mockConfig),
+    const client = await import('./axeOAuth2.js').then((module) =>
+      module.getAxeOAuthClient(mockConfig),
     );
 
     expect(client).toBeInstanceOf(Object);
@@ -983,8 +983,8 @@ describe('getQwenOAuthClient', () => {
 
     // The function should handle the invalid cached credentials and throw the expected error
     await expect(
-      import('./qwenOAuth2.js').then((module) =>
-        module.getQwenOAuthClient(mockConfig),
+      import('./axeOAuth2.js').then((module) =>
+        module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Device authorization flow failed');
 
@@ -1006,13 +1006,13 @@ describe('getQwenOAuthClient', () => {
     vi.mocked(global.fetch).mockResolvedValue({ ok: true } as Response);
 
     await expect(
-      import('./qwenOAuth2.js').then((module) =>
-        module.getQwenOAuthClient(mockConfig, {
+      import('./axeOAuth2.js').then((module) =>
+        module.getAxeOAuthClient(mockConfig, {
           requireCachedCredentials: true,
         }),
       ),
     ).rejects.toThrow(
-      'Qwen OAuth credentials expired. Please use /auth to re-authenticate with qwen-oauth.',
+      'Qwen OAuth credentials expired. Please use /auth to re-authenticate with axe-oauth.',
     );
 
     expect(global.fetch).not.toHaveBeenCalled();
@@ -1042,12 +1042,12 @@ describe('getQwenOAuthClient', () => {
 
     vi.mocked(global.fetch).mockRejectedValue(fetchError);
 
-    const emitSpy = vi.spyOn(qwenOAuth2Events, 'emit');
+    const emitSpy = vi.spyOn(axeOAuth2Events, 'emit');
 
     let thrownError: unknown;
     try {
-      const { getQwenOAuthClient } = await import('./qwenOAuth2.js');
-      await getQwenOAuthClient(mockConfig);
+      const { getAxeOAuthClient } = await import('./axeOAuth2.js');
+      await getAxeOAuthClient(mockConfig);
     } catch (error: unknown) {
       thrownError = error;
     }
@@ -1063,7 +1063,7 @@ describe('getQwenOAuthClient', () => {
     expect((thrownError as Error).message).toContain('--proxy');
 
     expect(emitSpy).toHaveBeenCalledWith(
-      QwenOAuth2Event.AuthProgress,
+      AxeOAuth2Event.AuthProgress,
       'error',
       expect.stringContaining('NODE_EXTRA_CA_CERTS'),
     );
@@ -1075,7 +1075,7 @@ describe('getQwenOAuthClient', () => {
 
 describe('CredentialsClearRequiredError', () => {
   it('should create error with correct name and message', async () => {
-    const { CredentialsClearRequiredError } = await import('./qwenOAuth2.js');
+    const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
 
     const message = 'Test error message';
     const originalError = { status: 400, response: 'Bad Request' };
@@ -1088,7 +1088,7 @@ describe('CredentialsClearRequiredError', () => {
   });
 
   it('should work without originalError', async () => {
-    const { CredentialsClearRequiredError } = await import('./qwenOAuth2.js');
+    const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
 
     const message = 'Test error message';
     const error = new CredentialsClearRequiredError(message);
@@ -1102,7 +1102,7 @@ describe('CredentialsClearRequiredError', () => {
 describe('clearQwenCredentials', () => {
   it('should successfully clear credentials file', async () => {
     const { promises: fs } = await import('node:fs');
-    const { clearQwenCredentials } = await import('./qwenOAuth2.js');
+    const { clearQwenCredentials } = await import('./axeOAuth2.js');
 
     vi.mocked(fs.unlink).mockResolvedValue(undefined);
 
@@ -1112,7 +1112,7 @@ describe('clearQwenCredentials', () => {
 
   it('should handle file not found error gracefully', async () => {
     const { promises: fs } = await import('node:fs');
-    const { clearQwenCredentials } = await import('./qwenOAuth2.js');
+    const { clearQwenCredentials } = await import('./axeOAuth2.js');
 
     const notFoundError = new Error('File not found');
     (notFoundError as Error & { code: string }).code = 'ENOENT';
@@ -1123,7 +1123,7 @@ describe('clearQwenCredentials', () => {
 
   it('should handle other file system errors gracefully', async () => {
     const { promises: fs } = await import('node:fs');
-    const { clearQwenCredentials } = await import('./qwenOAuth2.js');
+    const { clearQwenCredentials } = await import('./axeOAuth2.js');
 
     const permissionError = new Error('Permission denied');
     vi.mocked(fs.unlink).mockRejectedValue(permissionError);
@@ -1133,12 +1133,12 @@ describe('clearQwenCredentials', () => {
   });
 });
 
-describe('QwenOAuth2Client - Additional Error Scenarios', () => {
-  let client: QwenOAuth2Client;
+describe('AxeOAuth2Client - Additional Error Scenarios', () => {
+  let client: AxeOAuth2Client;
   let originalFetch: typeof global.fetch;
 
   beforeEach(() => {
-    client = new QwenOAuth2Client();
+    client = new AxeOAuth2Client();
     originalFetch = global.fetch;
     global.fetch = vi.fn();
   });
@@ -1172,7 +1172,7 @@ describe('QwenOAuth2Client - Additional Error Scenarios', () => {
   });
 });
 
-describe('getQwenOAuthClient - Enhanced Error Scenarios', () => {
+describe('getAxeOAuthClient - Enhanced Error Scenarios', () => {
   let mockConfig: Config;
   let originalFetch: typeof global.fetch;
 
@@ -1223,8 +1223,8 @@ describe('getQwenOAuthClient - Enhanced Error Scenarios', () => {
     vi.mocked(global.fetch).mockResolvedValue(mockAuthResponse as Response);
 
     await expect(
-      import('./qwenOAuth2.js').then((module) =>
-        module.getQwenOAuthClient(mockConfig),
+      import('./axeOAuth2.js').then((module) =>
+        module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Device authorization flow failed');
 
@@ -1272,8 +1272,8 @@ describe('getQwenOAuthClient - Enhanced Error Scenarios', () => {
       .mockResolvedValue(mockPendingResponse as Response);
 
     await expect(
-      import('./qwenOAuth2.js').then((module) =>
-        module.getQwenOAuthClient(mockConfig),
+      import('./axeOAuth2.js').then((module) =>
+        module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Authorization timeout, please restart the process.');
 
@@ -1321,8 +1321,8 @@ describe('getQwenOAuthClient - Enhanced Error Scenarios', () => {
       .mockResolvedValue(mockRateLimitResponse as Response);
 
     await expect(
-      import('./qwenOAuth2.js').then((module) =>
-        module.getQwenOAuthClient(mockConfig),
+      import('./axeOAuth2.js').then((module) =>
+        module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow(
       'Too many requests. The server is rate limiting our requests. Please select a different authentication method or try again later.',
@@ -1359,8 +1359,8 @@ describe('getQwenOAuthClient - Enhanced Error Scenarios', () => {
     global.fetch = vi.fn().mockResolvedValue(mockAuthResponse as Response);
 
     await expect(
-      import('./qwenOAuth2.js').then((module) =>
-        module.getQwenOAuthClient(mockConfig),
+      import('./axeOAuth2.js').then((module) =>
+        module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Device authorization flow failed');
 
@@ -1418,8 +1418,8 @@ describe('authWithQwenDeviceFlow - Comprehensive Testing', () => {
     global.fetch = vi.fn().mockResolvedValue(mockAuthResponse as Response);
 
     await expect(
-      import('./qwenOAuth2.js').then((module) =>
-        module.getQwenOAuthClient(mockConfig),
+      import('./axeOAuth2.js').then((module) =>
+        module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Device authorization flow failed');
 
@@ -1458,8 +1458,8 @@ describe('authWithQwenDeviceFlow - Comprehensive Testing', () => {
       .mockResolvedValueOnce(mockAuthResponse as Response)
       .mockResolvedValue(mockTokenResponse as Response);
 
-    const client = await import('./qwenOAuth2.js').then((module) =>
-      module.getQwenOAuthClient(mockConfig),
+    const client = await import('./axeOAuth2.js').then((module) =>
+      module.getAxeOAuthClient(mockConfig),
     );
 
     expect(client).toBeInstanceOf(Object);
@@ -1505,8 +1505,8 @@ describe('authWithQwenDeviceFlow - Comprehensive Testing', () => {
       .mockResolvedValue(mock401Response as Response);
 
     await expect(
-      import('./qwenOAuth2.js').then((module) =>
-        module.getQwenOAuthClient(mockConfig),
+      import('./axeOAuth2.js').then((module) =>
+        module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow(
       'Device code expired or invalid, please restart the authorization process.',
@@ -1561,8 +1561,8 @@ describe('authWithQwenDeviceFlow - Comprehensive Testing', () => {
       .mockResolvedValueOnce(mockAuthResponse as Response)
       .mockResolvedValue(mockTokenResponse as Response);
 
-    const client = await import('./qwenOAuth2.js').then((module) =>
-      module.getQwenOAuthClient(mockConfig),
+    const client = await import('./axeOAuth2.js').then((module) =>
+      module.getAxeOAuthClient(mockConfig),
     );
 
     expect(client).toBeInstanceOf(Object);
@@ -1636,8 +1636,8 @@ describe('Browser Launch and Error Handling', () => {
       .mockResolvedValueOnce(mockAuthResponse as Response)
       .mockResolvedValue(mockTokenResponse as Response);
 
-    const client = await import('./qwenOAuth2.js').then((module) =>
-      module.getQwenOAuthClient(mockConfig),
+    const client = await import('./axeOAuth2.js').then((module) =>
+      module.getAxeOAuthClient(mockConfig),
     );
 
     expect(client).toBeInstanceOf(Object);
@@ -1688,8 +1688,8 @@ describe('Browser Launch and Error Handling', () => {
       .mockResolvedValueOnce(mockAuthResponse as Response)
       .mockResolvedValue(mockTokenResponse as Response);
 
-    const client = await import('./qwenOAuth2.js').then((module) =>
-      module.getQwenOAuthClient(mockConfig),
+    const client = await import('./axeOAuth2.js').then((module) =>
+      module.getAxeOAuthClient(mockConfig),
     );
 
     expect(client).toBeInstanceOf(Object);
@@ -1702,16 +1702,16 @@ describe('Browser Launch and Error Handling', () => {
 });
 
 describe('Event Emitter Integration', () => {
-  it('should export qwenOAuth2Events as EventEmitter', async () => {
-    const { qwenOAuth2Events } = await import('./qwenOAuth2.js');
-    expect(qwenOAuth2Events).toBeInstanceOf(EventEmitter);
+  it('should export axeOAuth2Events as EventEmitter', async () => {
+    const { axeOAuth2Events } = await import('./axeOAuth2.js');
+    expect(axeOAuth2Events).toBeInstanceOf(EventEmitter);
   });
 
   it('should define correct event enum values', async () => {
-    const { QwenOAuth2Event } = await import('./qwenOAuth2.js');
-    expect(QwenOAuth2Event.AuthUri).toBe('auth-uri');
-    expect(QwenOAuth2Event.AuthProgress).toBe('auth-progress');
-    expect(QwenOAuth2Event.AuthCancel).toBe('auth-cancel');
+    const { AxeOAuth2Event } = await import('./axeOAuth2.js');
+    expect(AxeOAuth2Event.AuthUri).toBe('auth-uri');
+    expect(AxeOAuth2Event.AuthProgress).toBe('auth-progress');
+    expect(AxeOAuth2Event.AuthCancel).toBe('auth-cancel');
   });
 });
 
@@ -1783,11 +1783,11 @@ describe('Utility Functions', () => {
       const os = await import('os');
       const path = await import('path');
 
-      const expectedPath = path.join(os.homedir(), '.qwen', 'oauth_creds.json');
+      const expectedPath = path.join(os.homedir(), '.axe', 'oauth_creds.json');
 
       // Since this is a private function, we test it indirectly through clearQwenCredentials
       const { promises: fs } = await import('node:fs');
-      const { clearQwenCredentials } = await import('./qwenOAuth2.js');
+      const { clearQwenCredentials } = await import('./axeOAuth2.js');
 
       vi.mocked(fs.unlink).mockResolvedValue(undefined);
 
@@ -1802,7 +1802,7 @@ describe('Credential Caching Functions', () => {
   describe('cacheQwenCredentials', () => {
     it('should create directory and write credentials to file', async () => {
       // Mock the internal cacheQwenCredentials function by creating client and calling refresh
-      const client = new QwenOAuth2Client();
+      const client = new AxeOAuth2Client();
       client.setCredentials({
         refresh_token: 'test-refresh',
       });
@@ -1835,11 +1835,11 @@ describe('Credential Caching Functions', () => {
 });
 
 describe('Enhanced Error Handling and Edge Cases', () => {
-  let client: QwenOAuth2Client;
+  let client: AxeOAuth2Client;
   let originalFetch: typeof global.fetch;
 
   beforeEach(() => {
-    client = new QwenOAuth2Client();
+    client = new AxeOAuth2Client();
     originalFetch = global.fetch;
     global.fetch = vi.fn();
   });
@@ -1849,7 +1849,7 @@ describe('Enhanced Error Handling and Edge Cases', () => {
     vi.clearAllMocks();
   });
 
-  describe('QwenOAuth2Client getAccessToken enhanced scenarios', () => {
+  describe('AxeOAuth2Client getAccessToken enhanced scenarios', () => {
     it('should return undefined when SharedTokenManager fails (no fallback)', async () => {
       // Set up client with valid credentials (but we don't use fallback anymore)
       client.setCredentials({
@@ -2116,7 +2116,7 @@ describe('Enhanced Error Handling and Edge Cases', () => {
     });
 
     it('should throw CredentialsClearRequiredError on 400 error', async () => {
-      const { CredentialsClearRequiredError } = await import('./qwenOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
 
       client.setCredentials({
         refresh_token: 'expired-refresh',
@@ -2215,11 +2215,11 @@ describe('Enhanced Error Handling and Edge Cases', () => {
   });
 });
 
-describe('SharedTokenManager Integration in QwenOAuth2Client', () => {
-  let client: QwenOAuth2Client;
+describe('SharedTokenManager Integration in AxeOAuth2Client', () => {
+  let client: AxeOAuth2Client;
 
   beforeEach(() => {
-    client = new QwenOAuth2Client();
+    client = new AxeOAuth2Client();
   });
 
   it('should use SharedTokenManager instance in constructor', () => {
@@ -2229,7 +2229,7 @@ describe('SharedTokenManager Integration in QwenOAuth2Client', () => {
     expect(sharedManager).toBeDefined();
   });
 
-  it('should handle TokenManagerError types correctly in getQwenOAuthClient', async () => {
+  it('should handle TokenManagerError types correctly in getAxeOAuthClient', async () => {
     const mockConfig = {
       isBrowserLaunchSuppressed: vi.fn().mockReturnValue(true),
       isInteractive: vi.fn().mockReturnValue(true),
@@ -2289,8 +2289,8 @@ describe('SharedTokenManager Integration in QwenOAuth2Client', () => {
         .mockResolvedValue(mockTokenResponse as Response);
 
       try {
-        await import('./qwenOAuth2.js').then((module) =>
-          module.getQwenOAuthClient(mockConfig),
+        await import('./axeOAuth2.js').then((module) =>
+          module.getAxeOAuthClient(mockConfig),
         );
       } catch {
         // Expected to fail in test environment
@@ -2305,7 +2305,7 @@ describe('SharedTokenManager Integration in QwenOAuth2Client', () => {
 describe('Constants and Configuration', () => {
   it('should have correct OAuth endpoints', async () => {
     // Test that the constants are properly defined by checking they're used in requests
-    const client = new QwenOAuth2Client();
+    const client = new AxeOAuth2Client();
 
     const mockResponse = {
       ok: true,
@@ -2331,7 +2331,7 @@ describe('Constants and Configuration', () => {
   });
 
   it('should use correct client ID in requests', async () => {
-    const client = new QwenOAuth2Client();
+    const client = new AxeOAuth2Client();
 
     const mockResponse = {
       ok: true,
@@ -2360,7 +2360,7 @@ describe('Constants and Configuration', () => {
 
   it('should use correct default scope', async () => {
     // Test the default scope constant by checking it's used in device flow
-    const client = new QwenOAuth2Client();
+    const client = new AxeOAuth2Client();
 
     const mockResponse = {
       ok: true,

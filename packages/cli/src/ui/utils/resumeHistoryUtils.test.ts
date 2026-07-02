@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen Code
+ * Copyright 2025 Axe
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -17,7 +17,7 @@ import type {
   Config,
   ConversationRecord,
   ResumedSessionData,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { Part } from '@google/genai';
 import type { HistoryItem } from '../types.js';
 

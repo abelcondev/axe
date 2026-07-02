@@ -724,7 +724,7 @@ describe('CronScheduler', () => {
   // race a file creation inside the runtime dir → ENOTEMPTY. Settle the
   // chains first; keep rm retries for writes launched outside them (e.g. a
   // probe takeover's lock write). Reset the runtime base only after the
-  // chains settle, so a late write can't escape to the real ~/.qwen.
+  // chains settle, so a late write can't escape to the real ~/.axe.
   async function removeTmpDir(tmpDir: string): Promise<void> {
     scheduler.destroy();
     const internals = scheduler as unknown as {

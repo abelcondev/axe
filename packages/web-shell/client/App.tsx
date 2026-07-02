@@ -23,12 +23,12 @@ import {
   useWorkspaceEventSignals,
   type DaemonSessionNotice,
   type DaemonStreamingState,
-} from '@qwen-code/webui/daemon-react-sdk';
-import { isDaemonTurnError } from '@qwen-code/sdk/daemon';
+} from '@axe/webui/daemon-react-sdk';
+import { isDaemonTurnError } from '@axe/sdk/daemon';
 import type {
   DaemonTranscriptBlock,
   DaemonSessionTaskStatus,
-} from '@qwen-code/sdk/daemon';
+} from '@axe/sdk/daemon';
 import { extractPendingPermission } from './adapters/transcriptAdapter';
 import { MessageList, type MessageListHandle } from './components/MessageList';
 import { extractVoiceModels, type VoiceModelOption } from './voice/voiceModels';
@@ -216,7 +216,7 @@ const MODES_CYCLE = DAEMON_APPROVAL_MODES;
 const MAX_TOASTS = 4;
 const COMPACT_MODE_SETTING_KEY = 'ui.compactMode';
 const HIDE_TIPS_SETTING_KEY = 'ui.hideTips';
-const HIDDEN_COMPOSER_MODEL_IDS = new Set(['coder-model(qwen-oauth)']);
+const HIDDEN_COMPOSER_MODEL_IDS = new Set(['coder-model(axe-oauth)']);
 
 function isVisibleComposerModel(model: { id: string }): boolean {
   return !HIDDEN_COMPOSER_MODEL_IDS.has(model.id);
@@ -2891,7 +2891,7 @@ export function App({
               if (authSource) {
                 if (
                   authSource.startsWith('oauth') ||
-                  authSource === 'qwen-oauth'
+                  authSource === 'axe-oauth'
                 ) {
                   formattedAuth = 'Qwen OAuth';
                 } else {

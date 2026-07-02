@@ -29,7 +29,7 @@ vi.mock('../hooks/useKeypress.js', () => ({
 const baseProps = {
   slug: 'test-feature',
   branch: 'worktree-test-feature',
-  worktreePath: '/tmp/repo/.qwen/worktrees/test-feature',
+  worktreePath: '/tmp/repo/.axe/worktrees/test-feature',
   originalHeadCommit: 'a'.repeat(40),
   onKeep: vi.fn(),
   onRemove: vi.fn(),

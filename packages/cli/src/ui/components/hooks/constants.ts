@@ -8,7 +8,7 @@ import {
   HooksConfigSource,
   HookEventName,
   hookEventSupportsMatcher,
-} from '@qwen-code/qwen-code-core';
+} from '@axe/core';
 import type { HookExitCode, HookEventDisplayInfo } from './types.js';
 import { t } from '../../../i18n/index.js';
 
@@ -171,7 +171,7 @@ export function getHookShortDescription(eventName: string): string {
       'When a slash command expands into a prompt',
     ),
     [HookEventName.SessionStart]: t('When a new session is started'),
-    [HookEventName.Stop]: t('Right before Qwen Code concludes its response'),
+    [HookEventName.Stop]: t('Right before Axe concludes its response'),
     [HookEventName.SubagentStart]: t(
       'When a subagent (Agent tool call) is started',
     ),

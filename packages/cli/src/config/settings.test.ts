@@ -71,7 +71,7 @@ import {
   ENV_WAS_RECOVERED,
 } from './settings.js';
 import { needsMigration } from './migration/index.js';
-import { QWEN_DIR } from '@qwen-code/qwen-code-core';
+import { QWEN_DIR } from '@axe/core';
 
 const mockDebugLogger = vi.hoisted(() => ({
   debug: vi.fn(),
@@ -80,9 +80,9 @@ const mockDebugLogger = vi.hoisted(() => ({
   info: vi.fn(),
 }));
 
-vi.mock('@qwen-code/qwen-code-core', async (importOriginal) => {
+vi.mock('@axe/core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@qwen-code/qwen-code-core')>();
+    await importOriginal<typeof import('@axe/core')>();
   return {
     ...actual,
     createDebugLogger: () => mockDebugLogger,
@@ -2608,7 +2608,7 @@ describe('Settings Loading and Merging', () => {
       delete process.env['HOME_ENV_TOKEN'];
     });
 
-    it('should prefer ~/.qwen/.env over ~/.env for the same key (first-write-wins) (#4466)', () => {
+    it('should prefer ~/.axe/.env over ~/.env for the same key (first-write-wins) (#4466)', () => {
       const qwenEnvPath = path.join(path.dirname(USER_SETTINGS_PATH), '.env');
       const homeEnvPath = path.join(
         path.dirname(path.dirname(USER_SETTINGS_PATH)),
@@ -3728,7 +3728,7 @@ describe('Settings Loading and Merging', () => {
       cwdSpy.mockRestore();
     });
 
-    it('uses user .qwen/.env as fallback when the project .env lacks an API key', () => {
+    it('uses user .axe/.env as fallback when the project .env lacks an API key', () => {
       delete process.env['OPENCODE_GO_API_KEY'];
       delete process.env['PROJECT_ONLY_VAR'];
       const cwdSpy = vi
@@ -3764,7 +3764,7 @@ describe('Settings Loading and Merging', () => {
       cwdSpy.mockRestore();
     });
 
-    it('lets the project .env win over user .qwen/.env when both define the API key', () => {
+    it('lets the project .env win over user .axe/.env when both define the API key', () => {
       delete process.env['OPENCODE_GO_API_KEY'];
       const cwdSpy = vi
         .spyOn(process, 'cwd')
@@ -3799,7 +3799,7 @@ describe('Settings Loading and Merging', () => {
       cwdSpy.mockRestore();
     });
 
-    it('still loads user .qwen/.env fallback when the workspace is untrusted', () => {
+    it('still loads user .axe/.env fallback when the workspace is untrusted', () => {
       delete process.env['OPENCODE_GO_API_KEY'];
       delete process.env['PROJECT_ENV_VAR'];
       const cwdSpy = vi
@@ -4335,7 +4335,7 @@ describe('Settings Loading and Merging', () => {
         );
       });
 
-      it('still honors QWEN_HOME from a user-level .env (~/.qwen/.env)', () => {
+      it('still honors QWEN_HOME from a user-level .env (~/.axe/.env)', () => {
         delete process.env['QWEN_HOME'];
 
         const cwdSpy = vi
@@ -4364,7 +4364,7 @@ describe('Settings Loading and Merging', () => {
         cwdSpy.mockRestore();
       });
 
-      it('does not exclude DEBUG/DEBUG_MODE from a workspace .qwen/.env', () => {
+      it('does not exclude DEBUG/DEBUG_MODE from a workspace .axe/.env', () => {
         const cwdSpy = vi
           .spyOn(process, 'cwd')
           .mockReturnValue(MOCK_WORKSPACE_DIR);
@@ -4392,7 +4392,7 @@ describe('Settings Loading and Merging', () => {
 
         loadEnvironment(loadSettings(MOCK_WORKSPACE_DIR).merged);
 
-        // Per docs, `.qwen/.env` files are never filtered by excludedEnvVars,
+        // Per docs, `.axe/.env` files are never filtered by excludedEnvVars,
         // even when nested inside a workspace.
         expect(process.env['DEBUG']).toEqual('true');
         expect(process.env['DEBUG_MODE']).toEqual('1');
@@ -4400,7 +4400,7 @@ describe('Settings Loading and Merging', () => {
         cwdSpy.mockRestore();
       });
 
-      it('still blocks QWEN_HOME from a workspace .qwen/.env', () => {
+      it('still blocks QWEN_HOME from a workspace .axe/.env', () => {
         delete process.env['QWEN_HOME'];
         delete process.env['QWEN_RUNTIME_DIR'];
 
@@ -4435,7 +4435,7 @@ describe('Settings Loading and Merging', () => {
 
         loadEnvironment(loadSettings(MOCK_WORKSPACE_DIR).merged);
 
-        // A workspace `.qwen/.env` is exempt from `excludedEnvVars` but must
+        // A workspace `.axe/.env` is exempt from `excludedEnvVars` but must
         // still be blocked from redirecting global state.
         expect(process.env['QWEN_HOME']).toBeUndefined();
         expect(process.env['QWEN_RUNTIME_DIR']).toBeUndefined();
@@ -4445,7 +4445,7 @@ describe('Settings Loading and Merging', () => {
         cwdSpy.mockRestore();
       });
 
-      it('redirects user settings path when QWEN_HOME is set in ~/.qwen/.env', () => {
+      it('redirects user settings path when QWEN_HOME is set in ~/.axe/.env', () => {
         delete process.env['QWEN_HOME'];
 
         const cwdSpy = vi
@@ -4474,7 +4474,7 @@ describe('Settings Loading and Merging', () => {
 
         const loaded = loadSettings(MOCK_WORKSPACE_DIR);
 
-        // The pre-pass propagates QWEN_HOME from ~/.qwen/.env into
+        // The pre-pass propagates QWEN_HOME from ~/.axe/.env into
         // process.env so subsequent path getters (which now read it lazily)
         // route to /tmp/from-user-env consistently.
         expect(process.env['QWEN_HOME']).toEqual('/tmp/from-user-env');
@@ -4596,8 +4596,8 @@ describe('Settings Loading and Merging', () => {
         expect(process.env['QWEN_HOME_TEST_VAR']).toEqual('fromQwenHome');
       });
 
-      it('falls back to legacy ~/.qwen/.env for non-routing keys when <QWEN_HOME>/.env is absent', () => {
-        // User keeps OPENAI_API_KEY in ~/.qwen/.env and adds QWEN_HOME to the
+      it('falls back to legacy ~/.axe/.env for non-routing keys when <QWEN_HOME>/.env is absent', () => {
+        // User keeps OPENAI_API_KEY in ~/.axe/.env and adds QWEN_HOME to the
         // same file. Adding the redirect must not silently drop credentials
         // sitting in that file when the new dir hasn't been populated yet.
         delete process.env['QWEN_HOME'];
@@ -4614,7 +4614,7 @@ describe('Settings Loading and Merging', () => {
           isTrusted: true,
           source: 'file',
         });
-        // Only the legacy ~/.qwen/.env exists; <QWEN_HOME>/.env, the active
+        // Only the legacy ~/.axe/.env exists; <QWEN_HOME>/.env, the active
         // settings.json under <QWEN_HOME>, and ~/.env all do not.
         (mockFsExistsSync as Mock).mockImplementation((p: fs.PathLike) =>
           [USER_SETTINGS_PATH, customSettingsPath, userQwenEnvPath].includes(
@@ -4650,7 +4650,7 @@ describe('Settings Loading and Merging', () => {
       p: fs.PathLike | fs.PathOrFileDescriptor,
     ): string => path.normalize(p.toString());
 
-    it('uses user .qwen/.env as fallback when the project .env lacks an API key', () => {
+    it('uses user .axe/.env as fallback when the project .env lacks an API key', () => {
       delete process.env['OPENCODE_GO_API_KEY'];
       delete process.env['PROJECT_ONLY_VAR'];
       const projectEnvPath = path.resolve(MOCK_WORKSPACE_DIR, '.env');
@@ -4688,7 +4688,7 @@ describe('Settings Loading and Merging', () => {
       expect(result.removedKeys).toEqual([]);
     });
 
-    it('keeps the project .env value during reload when user .qwen/.env also defines it', () => {
+    it('keeps the project .env value during reload when user .axe/.env also defines it', () => {
       delete process.env['OPENCODE_GO_API_KEY'];
       const projectEnvPath = path.resolve(MOCK_WORKSPACE_DIR, '.env');
       const userQwenEnvPath = path.normalize(

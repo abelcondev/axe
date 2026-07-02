@@ -35,7 +35,7 @@ describe('validateSymlinkTarget', () => {
   it('accepts a target that resolves outside the skills directory', async () => {
     // Cross-directory symlinks are the supported user workflow: a
     // separate skills repo on disk, with subsets symlinked into
-    // `~/.qwen/skills/`. The helper must not reject these.
+    // `~/.axe/skills/`. The helper must not reject these.
     vi.mocked(fs.realpath).mockResolvedValue(
       '/Users/me/projects/skills-repo/skills/auto-pr',
     );
@@ -44,7 +44,7 @@ describe('validateSymlinkTarget', () => {
     } as Awaited<ReturnType<typeof fs.stat>>);
 
     const result = await validateSymlinkTarget(
-      '/Users/me/.qwen/skills/auto-pr',
+      '/Users/me/.axe/skills/auto-pr',
     );
     expect(result.ok).toBe(true);
   });
