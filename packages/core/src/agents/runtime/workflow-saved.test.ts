@@ -20,7 +20,7 @@ import {
 
 /**
  * Build a Config whose `.storage` points at `projectDir`, and point the
- * user scope (`~/.axe`) at `userHome` via the QWEN_HOME env override so
+ * user scope (`~/.axe`) at `userHome` via the AXE_HOME env override so
  * tests never touch the real home directory.
  */
 function fakeConfig(projectDir: string): Config {
@@ -44,15 +44,15 @@ describe('workflow-saved', () => {
   beforeEach(async () => {
     projectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wf-proj-'));
     userHome = await fs.mkdtemp(path.join(os.tmpdir(), 'wf-user-'));
-    prevQwenHome = process.env['QWEN_HOME'];
-    // Storage.getGlobalQwenDir() reads QWEN_HOME, else ~/.axe. Point it at
+    prevQwenHome = process.env['AXE_HOME'];
+    // Storage.getGlobalQwenDir() reads AXE_HOME, else ~/.axe. Point it at
     // `<userHome>/.qwen` so the user scope is sandboxed.
-    process.env['QWEN_HOME'] = path.join(userHome, '.axe');
+    process.env['AXE_HOME'] = path.join(userHome, '.axe');
   });
 
   afterEach(async () => {
-    if (prevQwenHome === undefined) delete process.env['QWEN_HOME'];
-    else process.env['QWEN_HOME'] = prevQwenHome;
+    if (prevQwenHome === undefined) delete process.env['AXE_HOME'];
+    else process.env['AXE_HOME'] = prevQwenHome;
     await fs.rm(projectDir, { recursive: true, force: true });
     await fs.rm(userHome, { recursive: true, force: true });
   });
@@ -263,7 +263,7 @@ describe('workflow-saved', () => {
       expect(list.map((e) => e.name)).toContain('my-flow');
     });
 
-    it('writes a user-scope workflow under the sandboxed QWEN_HOME', async () => {
+    it('writes a user-scope workflow under the sandboxed AXE_HOME', async () => {
       const config = fakeConfig(projectDir);
       const result = await saveWorkflowScript(config, {
         name: 'user-flow',

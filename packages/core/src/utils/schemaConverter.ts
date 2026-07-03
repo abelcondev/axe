@@ -13,6 +13,30 @@
 export type SchemaComplianceMode = 'auto' | 'openapi_30';
 
 /**
+ * Ensures a tool `parameters` schema declares an explicit object root `type`.
+ *
+ * Strict OpenAI-compatible gateways (Moonshot/Kimi, and some Qwen proxies)
+ * reject a `parameters` object whose root has no `type` — e.g. a root of
+ * `oneOf`/`anyOf` (as produced by zod `discriminatedUnion`) — with
+ * `tools.function.parameters.type is required and must be "object"`.
+ *
+ * If the root already declares a string `type`, the schema is returned
+ * unchanged. Otherwise `type: "object"` is prepended. Non-mutating: returns a
+ * new object when it prepends.
+ *
+ * NOTE: OpenAI-family wires only. Anthropic does not require a root `type` and
+ * must not call this (see anthropicContentGenerator/converter.ts).
+ */
+export function ensureObjectRootParameters(
+  parameters: Record<string, unknown>,
+): Record<string, unknown> {
+  if (typeof parameters['type'] === 'string') {
+    return parameters;
+  }
+  return { type: 'object', ...parameters };
+}
+
+/**
  * Converts a JSON Schema to be compatible with the specified compliance mode.
  */
 export function convertSchema(

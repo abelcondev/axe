@@ -192,9 +192,9 @@ describe('isAutoModeProtectedWritePath', () => {
     const protectedPaths = [
       '/repo/qwen.md',
       '/repo/agents.md',
-      '/repo/.QWEN/SETTINGS.JSON',
-      '/repo/.QWEN/QWEN.LOCAL.MD',
-      '/repo/.QWEN/RULES/backend.md',
+      '/repo/.AXE/SETTINGS.JSON',
+      '/repo/.AXE/QWEN.LOCAL.MD',
+      '/repo/.AXE/RULES/backend.md',
       '/repo/.MCP.JSON',
       '/repo/GNUmakefile',
       '/repo/Taskfile.yaml',
@@ -223,9 +223,9 @@ describe('isAutoModeProtectedWritePath', () => {
     }
   });
 
-  it('matches self-modification surfaces in custom QWEN_HOME', () => {
-    const originalQwenHome = process.env['QWEN_HOME'];
-    process.env['QWEN_HOME'] = '/tmp/custom-qwen-home';
+  it('matches self-modification surfaces in custom AXE_HOME', () => {
+    const originalQwenHome = process.env['AXE_HOME'];
+    process.env['AXE_HOME'] = '/tmp/custom-qwen-home';
 
     try {
       const protectedPaths = [
@@ -245,15 +245,15 @@ describe('isAutoModeProtectedWritePath', () => {
       }
     } finally {
       if (originalQwenHome === undefined) {
-        delete process.env['QWEN_HOME'];
+        delete process.env['AXE_HOME'];
       } else {
-        process.env['QWEN_HOME'] = originalQwenHome;
+        process.env['AXE_HOME'] = originalQwenHome;
       }
     }
   });
 
-  it('matches real paths under a symlinked custom QWEN_HOME', () => {
-    const originalQwenHome = process.env['QWEN_HOME'];
+  it('matches real paths under a symlinked custom AXE_HOME', () => {
+    const originalQwenHome = process.env['AXE_HOME'];
     const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'qwen-home-'));
 
     try {
@@ -261,7 +261,7 @@ describe('isAutoModeProtectedWritePath', () => {
       const linkedHome = path.join(tmpRoot, 'linked-home');
       fs.mkdirSync(realHome, { recursive: true });
       fs.symlinkSync(realHome, linkedHome);
-      process.env['QWEN_HOME'] = linkedHome;
+      process.env['AXE_HOME'] = linkedHome;
 
       const settingsPath = path.join(realHome, 'settings.json');
       fs.writeFileSync(settingsPath, '{}');
@@ -269,9 +269,9 @@ describe('isAutoModeProtectedWritePath', () => {
       expect(isAutoModeProtectedWritePath(settingsPath)).toBe(true);
     } finally {
       if (originalQwenHome === undefined) {
-        delete process.env['QWEN_HOME'];
+        delete process.env['AXE_HOME'];
       } else {
-        process.env['QWEN_HOME'] = originalQwenHome;
+        process.env['AXE_HOME'] = originalQwenHome;
       }
       fs.rmSync(tmpRoot, { recursive: true, force: true });
     }
@@ -297,15 +297,15 @@ describe('isAutoModeProtectedWritePath', () => {
     }
   });
 
-  it('caches normalized QWEN_HOME prefixes per configured home', () => {
-    const originalQwenHome = process.env['QWEN_HOME'];
+  it('caches normalized AXE_HOME prefixes per configured home', () => {
+    const originalQwenHome = process.env['AXE_HOME'];
     const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'qwen-home-cache-'));
     const realpathSpy = vi.spyOn(fs.realpathSync, 'native');
 
     try {
       const settingsPath = path.join(tmpRoot, 'settings.json');
       fs.writeFileSync(settingsPath, '{}');
-      process.env['QWEN_HOME'] = tmpRoot;
+      process.env['AXE_HOME'] = tmpRoot;
 
       expect(isAutoModeProtectedWritePath(settingsPath)).toBe(true);
       expect(isAutoModeProtectedWritePath(settingsPath)).toBe(true);
@@ -315,9 +315,9 @@ describe('isAutoModeProtectedWritePath', () => {
     } finally {
       realpathSpy.mockRestore();
       if (originalQwenHome === undefined) {
-        delete process.env['QWEN_HOME'];
+        delete process.env['AXE_HOME'];
       } else {
-        process.env['QWEN_HOME'] = originalQwenHome;
+        process.env['AXE_HOME'] = originalQwenHome;
       }
       fs.rmSync(tmpRoot, { recursive: true, force: true });
     }
@@ -573,7 +573,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: "cd .qwen && bash -lc 'echo {} > settings.json'",
+          command: "cd .axe && bash -lc 'echo {} > settings.json'",
           cwd: '/repo',
         }),
       ),
@@ -583,12 +583,12 @@ describe('shouldForceAutoModeReviewForAllow', () => {
   it('returns true for relative writes after an unresolved dynamic `cd`', () => {
     // If cwd is dynamic, the apparent resolved path is only a guess. Route
     // back to the classifier so an allow rule cannot hide writes like
-    // `cd "$QWEN_HOME" && echo > settings.json`.
+    // `cd "$AXE_HOME" && echo > settings.json`.
     expect(
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'cd "$QWEN_HOME" && echo "{}" > settings.json',
+          command: 'cd "$AXE_HOME" && echo "{}" > settings.json',
           cwd: '/repo',
         }),
       ),
@@ -616,7 +616,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'cd .qwen && echo "{}" > settings.json',
+          command: 'cd .axe && echo "{}" > settings.json',
           cwd: '/repo',
         }),
       ),
@@ -626,7 +626,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.MONITOR,
-          command: 'bash -lc \'cd .qwen && echo "{}" > settings.json\'',
+          command: 'bash -lc \'cd .axe && echo "{}" > settings.json\'',
           cwd: '/repo',
         }),
       ),
@@ -650,7 +650,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'cd .qwen\ncp /tmp/malicious settings.json',
+          command: 'cd .axe\ncp /tmp/malicious settings.json',
           cwd: '/repo',
         }),
       ),
@@ -662,7 +662,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: "{ cd .qwen && echo '{}' > settings.json; }",
+          command: "{ cd .axe && echo '{}' > settings.json; }",
           cwd: '/repo',
         }),
       ),
@@ -862,7 +862,7 @@ describe('shouldForceAutoModeReviewForAllow', () => {
       shouldForceAutoModeReviewForAllow(
         ctx({
           toolName: ToolNames.SHELL,
-          command: 'cp -t .qwen /tmp/settings.json',
+          command: 'cp -t .axe /tmp/settings.json',
           cwd: '/repo',
         }),
       ),

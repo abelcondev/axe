@@ -107,7 +107,7 @@ type QwenSpawnInternals = {
   ) => { command: string; args: string[] };
 };
 
-const originalRuntimeDir = process.env.QWEN_RUNTIME_DIR;
+const originalRuntimeDir = process.env.AXE_RUNTIME_DIR;
 
 function createAgent(
   cwd: string,
@@ -186,9 +186,9 @@ describe('QwenAgent slash command history', () => {
 
   afterEach(() => {
     if (originalRuntimeDir === undefined) {
-      delete process.env.QWEN_RUNTIME_DIR;
+      delete process.env.AXE_RUNTIME_DIR;
     } else {
-      process.env.QWEN_RUNTIME_DIR = originalRuntimeDir;
+      process.env.AXE_RUNTIME_DIR = originalRuntimeDir;
     }
     for (const root of tempRoots.splice(0)) {
       rmSync(root, { recursive: true, force: true });
@@ -649,7 +649,7 @@ describe('QwenAgent slash command history', () => {
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     tempRoots.push(runtimeRoot, cwd);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'b1e2b1a0-8ea5-4af5-85ba-dff6232c9c02';
     const insightInvocation = '2026-03-25T07:36:47.100Z';
@@ -821,7 +821,7 @@ describe('QwenAgent slash command history', () => {
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     tempRoots.push(runtimeRoot, cwd);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'session-with-slash-metadata';
     writeQwenTranscript(runtimeRoot, cwd, sessionId, [
@@ -868,7 +868,7 @@ describe('QwenAgent slash command history', () => {
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     tempRoots.push(runtimeRoot, cwd);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'session-with-skill-metadata';
     writeQwenTranscript(runtimeRoot, cwd, sessionId, [
@@ -915,7 +915,7 @@ describe('QwenAgent slash command history', () => {
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     tempRoots.push(runtimeRoot, cwd);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'session-with-persisted-text-elements';
     writeQwenTranscript(runtimeRoot, cwd, sessionId, [
@@ -972,7 +972,7 @@ describe('QwenAgent slash command history', () => {
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     tempRoots.push(runtimeRoot, cwd);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'a72a15d5-5096-4a15-b256-e7553763d94c';
     writeQwenTranscript(runtimeRoot, cwd, sessionId, [
@@ -1055,7 +1055,7 @@ describe('QwenAgent slash command history', () => {
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     tempRoots.push(runtimeRoot, cwd);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'a72a15d5-5096-4a15-b256-e7553763d94d';
     writeQwenTranscript(runtimeRoot, cwd, sessionId, [
@@ -1566,7 +1566,7 @@ describe('QwenAgent slash command history', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     tempRoots.push(cwd, runtimeRoot);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'qwen-session';
     writeQwenTranscript(runtimeRoot, cwd, sessionId, [
@@ -1617,7 +1617,7 @@ describe('QwenAgent slash command history', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     tempRoots.push(cwd, runtimeRoot);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'qwen-session';
     const commandArgs = {
@@ -1745,7 +1745,7 @@ describe('QwenAgent slash command history', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     tempRoots.push(cwd, runtimeRoot);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'qwen-session';
     const commandArgs = {
@@ -1829,7 +1829,7 @@ describe('QwenAgent slash command history', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'qwen-cwd-'));
     const runtimeRoot = mkdtempSync(join(tmpdir(), 'qwen-runtime-'));
     tempRoots.push(cwd, runtimeRoot);
-    process.env.QWEN_RUNTIME_DIR = runtimeRoot;
+    process.env.AXE_RUNTIME_DIR = runtimeRoot;
 
     const sessionId = 'qwen-session';
     const parentToolUseId = 'call-agent-1';

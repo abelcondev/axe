@@ -9,6 +9,7 @@ import {
   getCoreSystemPrompt,
   getCustomSystemPrompt,
   getPlanModeSystemReminder,
+  getSddHarness,
   resolvePathFromEnv,
   getCompressionPrompt,
 } from './prompts.js';
@@ -713,5 +714,37 @@ describe('getCompressionPrompt', () => {
     expect(prompt).not.toMatch(
       /resume.*directly|continue the conversation from where it left off/i,
     );
+  });
+});
+
+describe('SDD harness', () => {
+  it('always includes the 8-step workflow and hard rules', () => {
+    const harness = getSddHarness();
+    expect(harness).toContain('Spec-Driven Development');
+    expect(harness).toContain('Discovery');
+    expect(harness).toContain('Proposal');
+    expect(harness).toContain('Verify');
+    expect(harness).toContain('explicit approval before writing production');
+    expect(harness).toContain('English');
+  });
+
+  it('shows the /sdd-setup hint when there is no knowledge base', () => {
+    const harness = getSddHarness();
+    expect(harness).toContain('/sdd-setup');
+    expect(harness).not.toContain('Current project knowledge');
+  });
+
+  it('injects the knowledge summary when one is provided', () => {
+    const summary = '### Decisions\n- **Use PostgreSQL** · `decisions/001-x.md`';
+    const harness = getSddHarness(summary);
+    expect(harness).toContain('Current project knowledge');
+    expect(harness).toContain('Use PostgreSQL');
+    expect(harness).not.toContain('/sdd-setup');
+  });
+
+  it('is appended to the core system prompt when a summary is passed', () => {
+    const prompt = getCoreSystemPrompt(undefined, undefined, undefined, 'X-KB');
+    expect(prompt).toContain('Spec-Driven Development');
+    expect(prompt).toContain('X-KB');
   });
 });

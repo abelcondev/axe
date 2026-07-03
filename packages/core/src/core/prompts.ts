@@ -111,6 +111,8 @@ export function getCoreSystemPrompt(
   userMemory?: string,
   model?: string,
   appendInstruction?: string,
+  knowledgeSummary?: string,
+  referencesSummary?: string,
 ): string {
   // if QWEN_SYSTEM_MD is set (and not 0|false), override system prompt from file
   // default path is .axe/system.md (project-level), can be overridden via QWEN_SYSTEM_MD
@@ -318,6 +320,8 @@ ${(function () {
 
 ${getToolCallExamples(model || '')}
 
+${getSddHarness(knowledgeSummary)}
+${getReferencesBlock(referencesSummary)}
 # Final Reminder
 Your core function is efficient and safe assistance. Balance extreme conciseness with the crucial need for clarity, especially regarding safety and potential system modifications. Always prioritize user control and project conventions. Never make assumptions about the contents of files; instead use '${ToolNames.READ_FILE}' to ensure you aren't making broad assumptions. Finally, you are an agent - please keep going until the user's query is completely resolved.
 `.trim();
@@ -345,6 +349,60 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
   const appendSuffix = buildSystemPromptSuffix(appendInstruction);
 
   return `${basePrompt}${memorySuffix}${appendSuffix}`;
+}
+
+/**
+ * Renders the Spec-Driven Development (SDD) harness appended to the system
+ * prompt. The 8-step workflow is always present; the knowledge index is only
+ * rendered when the project has an `sdd/` bundle with parsed concepts (passed
+ * in as {@link knowledgeSummary}). When there is no bundle, the agent is told
+ * how to bootstrap one.
+ */
+export function getSddHarness(knowledgeSummary?: string): string {
+  const summary = knowledgeSummary?.trim();
+  const knowledgeBlock = summary
+    ? `## Current project knowledge (from \`sdd/\`)
+
+${summary}
+
+Before proposing architecture or starting a task, use the '${ToolNames.KNOWLEDGE}' tool to search this knowledge base for prior decisions and their rationale. Prefer recorded decisions over re-deriving them.`
+    : `This project has no \`sdd/\` knowledge base yet. When the user wants to build a feature and would benefit from a durable record of decisions, offer to run \`/sdd-setup\` to scaffold one, then follow the workflow below.`;
+
+  return `# Spec-Driven Development (SDD)
+
+When the user wants to build or substantially change something, follow this conversational workflow. It produces a durable, client-facing record under \`sdd/\` in the Open Knowledge Format (OKF).
+
+1. **Discovery** — Ask one focused question at a time to understand the goal, constraints, and scope. Do not interrogate; converge quickly.
+2. **Stack & architecture** — Research libraries, versions, and compatibility grounded in the project's real lockfiles. Do not guess APIs.
+3. **Proposal** — Write \`sdd/proposal.md\` (\`type: Proposal\`) describing the approach. Keep it concrete.
+4. **Archive the decision** — On explicit approval: move the proposal to \`sdd/decisions/NNN-name.md\` (\`type: Decision\`, next zero-padded number), append a line to \`sdd/log.md\`, update \`sdd/index.md\`, and clear \`sdd/proposal.md\`.
+5. **Create tasks** — Break the work into \`sdd/tasks/*.md\` files (\`type: Task\`) with Gherkin (Given/When/Then) acceptance criteria and explicit dependencies.
+6. **Agree on the first step** — Confirm the first task with the user before writing production code.
+7. **Implement (TDD)** — Write tests first, then the implementation. Keep changes scoped to the agreed task.
+8. **Verify** — Run the tests and the app; confirm the acceptance criteria are met before moving on.
+
+**Hard rules:**
+- **Wait for explicit approval before writing production code.** Discovery, proposals, and tasks come first.
+- **Everything written under \`sdd/\` is in English** — frontmatter, prose, headings, and Gherkin — regardless of the conversation language. This keeps the record portable and client-facing.
+
+**OKF format** — every concept is a markdown file with YAML frontmatter:
+- \`Proposal\`: \`title, description, status(draft|in review|approved|archived), timestamp\` — transient, cleared on approval.
+- \`Decision\`: \`title, description, resource, tags, status, timestamp, supersedes[]\` + \`# Decision\` / \`# Context\` / \`# Citations\` sections — numbered, historical.
+- \`Task\`: \`title, description, tags, status(pending|in-progress|done), timestamp\` + \`# Acceptance criteria\` (Gherkin) / \`# Dependencies\`.
+\`sdd/index.md\` and \`sdd/log.md\` have no frontmatter.
+
+${knowledgeBlock}`;
+}
+
+/**
+ * Renders the dependency source-reference block ({@link ReferenceService}'s
+ * summary) for the system prompt. The summary already carries its own heading;
+ * this just gates it behind a non-empty check so the prompt has no dangling
+ * section when nothing is indexed yet.
+ */
+export function getReferencesBlock(referencesSummary?: string): string {
+  const summary = referencesSummary?.trim();
+  return summary ? `\n${summary}\n` : '';
 }
 
 function buildSystemPromptSuffix(text?: string): string {

@@ -2294,12 +2294,12 @@ describe('createServeApp', () => {
     });
 
     it('advertises workspace voice transcription when a batch ASR model is configured', async () => {
-      const previousQwenHome = process.env['QWEN_HOME'];
+      const previousQwenHome = process.env['AXE_HOME'];
       const tempHome = await fsp.mkdtemp(
         path.join(os.tmpdir(), 'qwen-voice-capability-'),
       );
       try {
-        process.env['QWEN_HOME'] = tempHome;
+        process.env['AXE_HOME'] = tempHome;
         resetHomeEnvBootstrapForTesting();
         await fsp.writeFile(
           path.join(tempHome, 'settings.json'),
@@ -2329,7 +2329,7 @@ describe('createServeApp', () => {
         expect(res.body.features).toContain('workspace_voice_transcription');
       } finally {
         await fsp.rm(tempHome, { recursive: true, force: true });
-        restoreEnv('QWEN_HOME', previousQwenHome);
+        restoreEnv('AXE_HOME', previousQwenHome);
         resetHomeEnvBootstrapForTesting();
       }
     });
@@ -2650,8 +2650,8 @@ describe('createServeApp', () => {
       const tempHome = await fsp.mkdtemp(
         path.join(os.tmpdir(), 'qwen-serve-providers-'),
       );
-      const previousQwenHome = process.env['QWEN_HOME'];
-      const previousRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+      const previousQwenHome = process.env['AXE_HOME'];
+      const previousRuntimeDir = process.env['AXE_RUNTIME_DIR'];
       const previousSystemSettings =
         process.env['QWEN_CODE_SYSTEM_SETTINGS_PATH'];
       const previousSystemDefaults =
@@ -2672,8 +2672,8 @@ describe('createServeApp', () => {
         ],
       };
       try {
-        process.env['QWEN_HOME'] = path.join(tempHome, 'home');
-        process.env['QWEN_RUNTIME_DIR'] = path.join(tempHome, 'runtime');
+        process.env['AXE_HOME'] = path.join(tempHome, 'home');
+        process.env['AXE_RUNTIME_DIR'] = path.join(tempHome, 'runtime');
         process.env['QWEN_CODE_SYSTEM_SETTINGS_PATH'] = path.join(
           tempHome,
           'system-settings.json',
@@ -2713,8 +2713,8 @@ describe('createServeApp', () => {
         expect(bridge.workspaceSkillsCalls).toBe(1);
         expect(bridge.workspaceProvidersCalls).toBe(0);
       } finally {
-        restoreEnv('QWEN_HOME', previousQwenHome);
-        restoreEnv('QWEN_RUNTIME_DIR', previousRuntimeDir);
+        restoreEnv('AXE_HOME', previousQwenHome);
+        restoreEnv('AXE_RUNTIME_DIR', previousRuntimeDir);
         restoreEnv('QWEN_CODE_SYSTEM_SETTINGS_PATH', previousSystemSettings);
         restoreEnv('QWEN_CODE_SYSTEM_DEFAULTS_PATH', previousSystemDefaults);
         resetHomeEnvBootstrapForTesting();
@@ -3076,7 +3076,7 @@ describe('createServeApp', () => {
     });
 
     it('does not treat unknown workspace trust as trusted for extension install', async () => {
-      const previousQwenHome = process.env['QWEN_HOME'];
+      const previousQwenHome = process.env['AXE_HOME'];
       const previousTrustedFoldersPath =
         process.env['QWEN_CODE_TRUSTED_FOLDERS_PATH'];
       const tempHome = await fsp.mkdtemp(
@@ -3092,7 +3092,7 @@ describe('createServeApp', () => {
         },
       });
       try {
-        process.env['QWEN_HOME'] = tempHome;
+        process.env['AXE_HOME'] = tempHome;
         process.env['QWEN_CODE_TRUSTED_FOLDERS_PATH'] = path.join(
           tempHome,
           TRUSTED_FOLDERS_FILENAME,
@@ -3127,7 +3127,7 @@ describe('createServeApp', () => {
       } finally {
         restore();
         await fsp.rm(tempHome, { recursive: true, force: true });
-        restoreEnv('QWEN_HOME', previousQwenHome);
+        restoreEnv('AXE_HOME', previousQwenHome);
         restoreEnv(
           'QWEN_CODE_TRUSTED_FOLDERS_PATH',
           previousTrustedFoldersPath,
@@ -6168,18 +6168,18 @@ describe('createServeApp', () => {
     let runtimeDir: string;
 
     beforeEach(async () => {
-      previousRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+      previousRuntimeDir = process.env['AXE_RUNTIME_DIR'];
       runtimeDir = await fsp.mkdtemp(
         path.join(os.tmpdir(), 'qwen-serve-sessions-'),
       );
-      process.env['QWEN_RUNTIME_DIR'] = runtimeDir;
+      process.env['AXE_RUNTIME_DIR'] = runtimeDir;
     });
 
     afterEach(async () => {
       if (previousRuntimeDir === undefined) {
-        delete process.env['QWEN_RUNTIME_DIR'];
+        delete process.env['AXE_RUNTIME_DIR'];
       } else {
-        process.env['QWEN_RUNTIME_DIR'] = previousRuntimeDir;
+        process.env['AXE_RUNTIME_DIR'] = previousRuntimeDir;
       }
       await fsp.rm(runtimeDir, { recursive: true, force: true });
     });
@@ -7848,7 +7848,7 @@ describe('createServeApp', () => {
     });
 
     it('passes validated client identity and refreshes cached serve features', async () => {
-      const previousQwenHome = process.env['QWEN_HOME'];
+      const previousQwenHome = process.env['AXE_HOME'];
       const tempHome = await fsp.mkdtemp(
         path.join(os.tmpdir(), 'qwen-reload-capabilities-'),
       );
@@ -7882,7 +7882,7 @@ describe('createServeApp', () => {
         };
       });
       try {
-        process.env['QWEN_HOME'] = tempHome;
+        process.env['AXE_HOME'] = tempHome;
         resetHomeEnvBootstrapForTesting();
         const bridge = fakeBridge({ knownClientIds: ['client-1'] });
         const app = createServeApp(tokenOpts, undefined, {
@@ -7916,7 +7916,7 @@ describe('createServeApp', () => {
         expect(after.body.features).toContain('workspace_voice_transcription');
       } finally {
         await fsp.rm(tempHome, { recursive: true, force: true });
-        restoreEnv('QWEN_HOME', previousQwenHome);
+        restoreEnv('AXE_HOME', previousQwenHome);
         resetHomeEnvBootstrapForTesting();
       }
     });
@@ -9184,19 +9184,19 @@ describe('createServeApp', () => {
     let wsDir: string;
 
     beforeEach(async () => {
-      previousRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+      previousRuntimeDir = process.env['AXE_RUNTIME_DIR'];
       runtimeDir = await fsp.mkdtemp(
         path.join(os.tmpdir(), 'qwen-serve-batch-delete-'),
       );
-      process.env['QWEN_RUNTIME_DIR'] = runtimeDir;
+      process.env['AXE_RUNTIME_DIR'] = runtimeDir;
       wsDir = realpathSync(runtimeDir);
     });
 
     afterEach(async () => {
       if (previousRuntimeDir === undefined) {
-        delete process.env['QWEN_RUNTIME_DIR'];
+        delete process.env['AXE_RUNTIME_DIR'];
       } else {
-        process.env['QWEN_RUNTIME_DIR'] = previousRuntimeDir;
+        process.env['AXE_RUNTIME_DIR'] = previousRuntimeDir;
       }
       await fsp.rm(runtimeDir, { recursive: true, force: true });
     });
@@ -9708,19 +9708,19 @@ describe('createServeApp', () => {
     let wsDir: string;
 
     beforeEach(async () => {
-      previousRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+      previousRuntimeDir = process.env['AXE_RUNTIME_DIR'];
       runtimeDir = await fsp.mkdtemp(
         path.join(os.tmpdir(), 'qwen-serve-session-archive-'),
       );
-      process.env['QWEN_RUNTIME_DIR'] = runtimeDir;
+      process.env['AXE_RUNTIME_DIR'] = runtimeDir;
       wsDir = realpathSync(runtimeDir);
     });
 
     afterEach(async () => {
       if (previousRuntimeDir === undefined) {
-        delete process.env['QWEN_RUNTIME_DIR'];
+        delete process.env['AXE_RUNTIME_DIR'];
       } else {
-        process.env['QWEN_RUNTIME_DIR'] = previousRuntimeDir;
+        process.env['AXE_RUNTIME_DIR'] = previousRuntimeDir;
       }
       await fsp.rm(runtimeDir, { recursive: true, force: true });
     });

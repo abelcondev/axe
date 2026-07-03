@@ -78,14 +78,14 @@ export function preResolveServeFastPathHomeEnvOverrides(): void {
     return;
   }
 
-  const initialQwenHome = process.env['QWEN_HOME'];
+  const initialQwenHome = process.env['AXE_HOME'];
   const initialQwenDir = getGlobalQwenDirLite();
   readHomeEnvIntoFastPath(path.join(initialQwenDir, '.env'));
   if (!initialQwenHome) {
     readHomeEnvIntoFastPath(path.join(path.dirname(initialQwenDir), '.env'));
   }
 
-  const discoveredQwenHome = process.env['QWEN_HOME'];
+  const discoveredQwenHome = process.env['AXE_HOME'];
   if (discoveredQwenHome && discoveredQwenHome !== initialQwenHome) {
     const discoveredDir = getGlobalQwenDirLite();
     if (discoveredDir !== initialQwenDir) {
@@ -118,7 +118,7 @@ export function resetServeFastPathHomeEnvBootstrapForTesting(): void {
 function getHomeEnvFallbackVarsFastPath(): Record<string, string> {
   const globalQwenDir = getGlobalQwenDirLite();
   const candidates = [path.join(globalQwenDir, '.env')];
-  if (!process.env['QWEN_HOME']) {
+  if (!process.env['AXE_HOME']) {
     candidates.push(path.join(path.dirname(globalQwenDir), '.env'));
   }
 

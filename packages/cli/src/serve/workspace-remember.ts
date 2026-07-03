@@ -12,6 +12,7 @@ import type {
   BridgeWorkspaceMemoryRememberContextMode,
   BridgeWorkspaceMemoryRememberResult,
 } from './acp-session-bridge.js';
+import { routeParam } from './server/request-helpers.js';
 import { extractRememberErrorCode } from './workspace-remember-errors.js';
 import { MAX_REMEMBER_CONTENT_BYTES } from './workspace-memory-remember-constants.js';
 
@@ -327,7 +328,10 @@ export function mountWorkspaceMemoryRememberRoutes(
     (req, res) => {
       const requesterClientId = validateOriginatorClientId(deps, req, res);
       if (requesterClientId === null) return;
-      const task = deps.lane.get(req.params['taskId'], requesterClientId);
+      const task = deps.lane.get(
+        routeParam(req.params['taskId']),
+        requesterClientId,
+      );
       if (!task) {
         res.status(404).json({
           error: 'Workspace memory remember task not found',

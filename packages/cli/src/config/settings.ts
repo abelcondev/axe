@@ -90,7 +90,7 @@ function getMergeStrategyForPath(path: string[]): MergeStrategy | undefined {
 
 export type { Settings, MemoryImportFormat };
 
-// Lazy getters: must NOT be top-level consts. `QWEN_HOME` may be resolved
+// Lazy getters: must NOT be top-level consts. `AXE_HOME` may be resolved
 // from `~/.env` or `~/.axe/.env` by `preResolveHomeEnvOverrides()` in
 // `loadSettings()`, which runs after this module is imported. A const
 // captured here would freeze the pre-bootstrap value and split state across
@@ -611,7 +611,7 @@ export function createMinimalSettings(): LoadedSettings {
 }
 
 /**
- * Surfaces a one-shot warning when QWEN_HOME has been redirected but the
+ * Surfaces a one-shot warning when AXE_HOME has been redirected but the
  * user hasn't migrated their existing global state. Auto-copying OAuth
  * tokens / settings / memory is intentionally skipped, but silently starting
  * fresh is a footgun. Returns null when there's nothing to warn about.
@@ -619,20 +619,20 @@ export function createMinimalSettings(): LoadedSettings {
 function detectQwenHomeRedirectWithoutMigration(
   activeUserSettingsPath: string,
 ): string | null {
-  if (!process.env['QWEN_HOME']) {
+  if (!process.env['AXE_HOME']) {
     return null;
   }
-  // Compute the legacy path by briefly unsetting QWEN_HOME so Storage uses
+  // Compute the legacy path by briefly unsetting AXE_HOME so Storage uses
   // its homedir-based default — same homedir resolution as the rest of the
   // storage layer. try/finally restores the env on any throw.
   const activeQwenDir = Storage.getGlobalQwenDir();
-  const savedQwenHome = process.env['QWEN_HOME'];
-  delete process.env['QWEN_HOME'];
+  const savedQwenHome = process.env['AXE_HOME'];
+  delete process.env['AXE_HOME'];
   let legacyQwenDir: string;
   try {
     legacyQwenDir = Storage.getGlobalQwenDir();
   } finally {
-    process.env['QWEN_HOME'] = savedQwenHome;
+    process.env['AXE_HOME'] = savedQwenHome;
   }
   if (path.resolve(activeQwenDir) === path.resolve(legacyQwenDir)) {
     return null;
@@ -645,7 +645,7 @@ function detectQwenHomeRedirectWithoutMigration(
     return null;
   }
   return (
-    `QWEN_HOME points to "${activeQwenDir}" but no settings.json was found there. ` +
+    `AXE_HOME points to "${activeQwenDir}" but no settings.json was found there. ` +
     `Existing config remains at "${legacyQwenDir}" — OAuth tokens, settings, memory, ` +
     `extensions, and skills are not auto-migrated. Copy them manually if you want them ` +
     `to apply at the new location.`
@@ -671,7 +671,7 @@ export function loadSettings(
     typeof consumeCorruptionEnvVars === 'object'
       ? consumeCorruptionEnvVars
       : { consumeCorruptionEnvVars };
-  // Apply any QWEN_HOME / QWEN_RUNTIME_DIR set in user-level `.env` files
+  // Apply any AXE_HOME / AXE_RUNTIME_DIR set in user-level `.env` files
   // BEFORE any code reads a path derived from them. After this call, the
   // lazy `getUserSettingsPath()` / `Storage.getGlobalQwenDir()` getters
   // return the post-bootstrap value.

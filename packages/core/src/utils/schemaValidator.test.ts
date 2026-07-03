@@ -369,7 +369,30 @@ describe('SchemaValidator', () => {
       expect(SchemaValidator.validate(schema, params)).not.toBeNull();
     });
 
-    it('should not coerce strings that do not look like JSON', () => {
+    it('does not parse a non-JSON string as JSON (fixStringifiedJsonValues)', () => {
+      // A non-JSON string is never JSON.parse'd. Here the target accepts only
+      // object|null (not array), so wrapBareStringToArray also does not fire —
+      // the string stays put and validation fails.
+      const schema = {
+        type: 'object',
+        properties: {
+          config: {
+            anyOf: [
+              { type: 'object', properties: { k: { type: 'string' } } },
+              { type: 'null' },
+            ],
+          },
+        },
+        required: ['config'],
+      };
+      const params = { config: 'hello world' };
+      expect(SchemaValidator.validate(schema, params)).not.toBeNull();
+      expect(params.config).toBe('hello world');
+    });
+
+    it('wraps a non-JSON string into an array (wrapBareStringToArray)', () => {
+      // A bare string where array|null is expected is repaired to a
+      // single-element array by the structural wrap pass, not parsed as JSON.
       const schema = {
         type: 'object',
         properties: {
@@ -382,8 +405,9 @@ describe('SchemaValidator', () => {
         },
         required: ['urls'],
       };
-      const params = { urls: 'hello world' };
-      expect(SchemaValidator.validate(schema, params)).not.toBeNull();
+      const params: Record<string, unknown> = { urls: 'hello world' };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect(params['urls']).toEqual(['hello world']);
     });
 
     it('should handle stringified array with plain type (no anyOf)', () => {
@@ -2312,6 +2336,182 @@ describe('SchemaValidator', () => {
       // flaking on slow CI (the fixed path does linear work in both Ajv and
       // the coercion passes).
       expect(elapsed).toBeLessThan(1000);
+    });
+  });
+
+  describe('stripNullOptionals', () => {
+    it('deletes null on an optional field that rejects null', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          note: { type: 'string' },
+        },
+        required: ['name'],
+      };
+      const params: Record<string, unknown> = { name: 'x', note: null };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect('note' in params).toBe(false);
+      expect(params['name']).toBe('x');
+    });
+
+    it('keeps null on a required field so it still errors', () => {
+      const schema = {
+        type: 'object',
+        properties: { name: { type: 'string' } },
+        required: ['name'],
+      };
+      const params = { name: null };
+      expect(SchemaValidator.validate(schema, params)).not.toBeNull();
+      expect('name' in params).toBe(true);
+    });
+
+    it('keeps null on an explicitly nullable field', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          note: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+        },
+      };
+      const params = { note: null };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect(params.note).toBeNull();
+    });
+
+    it('strips null in nested objects', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          opts: {
+            type: 'object',
+            properties: {
+              a: { type: 'string' },
+              b: { type: 'string' },
+            },
+            required: ['a'],
+          },
+        },
+      };
+      const params: { opts: Record<string, unknown> } = {
+        opts: { a: 'ok', b: null },
+      };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect('b' in params.opts).toBe(false);
+    });
+  });
+
+  describe('wrapBareStringToArray', () => {
+    it('wraps a bare string where an array of strings is expected', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          tags: { type: 'array', items: { type: 'string' } },
+        },
+      };
+      const params: Record<string, unknown> = { tags: 'urgent' };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect(params['tags']).toEqual(['urgent']);
+    });
+
+    it('does not wrap when the schema also accepts string', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          val: {
+            anyOf: [
+              { type: 'string' },
+              { type: 'array', items: { type: 'string' } },
+            ],
+          },
+        },
+      };
+      const params = { val: 'plain' };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect(params.val).toBe('plain');
+    });
+
+    it('leaves a JSON-looking string for the stringified-JSON pass', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          tags: { type: 'array', items: { type: 'string' } },
+        },
+      };
+      const params: Record<string, unknown> = { tags: '["a","b"]' };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      // Parsed by fixStringifiedJsonValues, not wrapped into ['["a","b"]'].
+      expect(params['tags']).toEqual(['a', 'b']);
+    });
+  });
+
+  describe('unwrapObjectToArray', () => {
+    it('converts an index-keyed object into an array', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          items: { type: 'array', items: { type: 'string' } },
+        },
+      };
+      const params: Record<string, unknown> = {
+        items: { '0': 'a', '1': 'b', '2': 'c' },
+      };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect(params['items']).toEqual(['a', 'b', 'c']);
+    });
+
+    it('converts an empty object into an empty array', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          items: { type: 'array', items: { type: 'string' } },
+        },
+      };
+      const params: Record<string, unknown> = { items: {} };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect(params['items']).toEqual([]);
+    });
+
+    it('preserves order regardless of key insertion order', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          items: { type: 'array', items: { type: 'string' } },
+        },
+      };
+      const params: Record<string, unknown> = {
+        items: { '2': 'c', '0': 'a', '1': 'b' },
+      };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect(params['items']).toEqual(['a', 'b', 'c']);
+    });
+
+    it('does not convert a non-contiguous index map', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          items: { type: 'array', items: { type: 'string' } },
+        },
+      };
+      const params = { items: { '0': 'a', '2': 'c' } };
+      // Gap at index 1 — left as-is, so validation fails.
+      expect(SchemaValidator.validate(schema, params)).not.toBeNull();
+    });
+
+    it('does not convert when the schema also accepts object', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          val: {
+            anyOf: [
+              { type: 'object', additionalProperties: { type: 'string' } },
+              { type: 'array', items: { type: 'string' } },
+            ],
+          },
+        },
+      };
+      const params = { val: { '0': 'a' } };
+      expect(SchemaValidator.validate(schema, params)).toBeNull();
+      expect(params.val).toEqual({ '0': 'a' });
     });
   });
 });

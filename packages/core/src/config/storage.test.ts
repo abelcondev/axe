@@ -79,21 +79,21 @@ describe('Storage – additional helpers', () => {
 });
 
 describe('Storage – getRuntimeBaseDir / setRuntimeBaseDir', () => {
-  const originalEnv = process.env['QWEN_RUNTIME_DIR'];
+  const originalEnv = process.env['AXE_RUNTIME_DIR'];
 
   beforeEach(() => {
     // Reset state before each test
     Storage.setRuntimeBaseDir(null);
-    delete process.env['QWEN_RUNTIME_DIR'];
+    delete process.env['AXE_RUNTIME_DIR'];
   });
 
   afterEach(() => {
     // Restore original env
     Storage.setRuntimeBaseDir(null);
     if (originalEnv !== undefined) {
-      process.env['QWEN_RUNTIME_DIR'] = originalEnv;
+      process.env['AXE_RUNTIME_DIR'] = originalEnv;
     } else {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
     }
   });
 
@@ -107,11 +107,11 @@ describe('Storage – getRuntimeBaseDir / setRuntimeBaseDir', () => {
     expect(Storage.getRuntimeBaseDir()).toBe(runtimeDir);
   });
 
-  it('env var QWEN_RUNTIME_DIR takes priority over setRuntimeBaseDir', () => {
+  it('env var AXE_RUNTIME_DIR takes priority over setRuntimeBaseDir', () => {
     const settingsDir = path.resolve('from-settings');
     const envDir = path.resolve('from-env');
     Storage.setRuntimeBaseDir(settingsDir);
-    process.env['QWEN_RUNTIME_DIR'] = envDir;
+    process.env['AXE_RUNTIME_DIR'] = envDir;
     expect(Storage.getRuntimeBaseDir()).toBe(envDir);
   });
 
@@ -127,8 +127,8 @@ describe('Storage – getRuntimeBaseDir / setRuntimeBaseDir', () => {
     expect(Storage.getRuntimeBaseDir()).toBe(expected);
   });
 
-  it('expands tilde (~) in QWEN_RUNTIME_DIR env var', () => {
-    process.env['QWEN_RUNTIME_DIR'] = '~/env-runtime';
+  it('expands tilde (~) in AXE_RUNTIME_DIR env var', () => {
+    process.env['AXE_RUNTIME_DIR'] = '~/env-runtime';
     const expected = path.join(os.homedir(), 'env-runtime');
     expect(Storage.getRuntimeBaseDir()).toBe(expected);
   });
@@ -161,8 +161,8 @@ describe('Storage – getRuntimeBaseDir / setRuntimeBaseDir', () => {
     expect(Storage.getRuntimeBaseDir()).toBe(expected);
   });
 
-  it('resolves relative paths in QWEN_RUNTIME_DIR env var', () => {
-    process.env['QWEN_RUNTIME_DIR'] = 'relative/env-path';
+  it('resolves relative paths in AXE_RUNTIME_DIR env var', () => {
+    process.env['AXE_RUNTIME_DIR'] = 'relative/env-path';
     const expected = path.resolve('relative/env-path');
     expect(Storage.getRuntimeBaseDir()).toBe(expected);
   });
@@ -347,19 +347,19 @@ describe('Storage – getPlansDir', () => {
 });
 
 describe('Storage – runtime path methods use getRuntimeBaseDir', () => {
-  const originalEnv = process.env['QWEN_RUNTIME_DIR'];
+  const originalEnv = process.env['AXE_RUNTIME_DIR'];
 
   beforeEach(() => {
     Storage.setRuntimeBaseDir(null);
-    delete process.env['QWEN_RUNTIME_DIR'];
+    delete process.env['AXE_RUNTIME_DIR'];
   });
 
   afterEach(() => {
     Storage.setRuntimeBaseDir(null);
     if (originalEnv !== undefined) {
-      process.env['QWEN_RUNTIME_DIR'] = originalEnv;
+      process.env['AXE_RUNTIME_DIR'] = originalEnv;
     } else {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
     }
   });
 
@@ -428,20 +428,20 @@ describe('Storage – runtime path methods use getRuntimeBaseDir', () => {
 });
 
 describe('Storage – config paths remain at ~/.axe regardless of runtime dir', () => {
-  const originalEnv = process.env['QWEN_RUNTIME_DIR'];
+  const originalEnv = process.env['AXE_RUNTIME_DIR'];
   const globalQwenDir = Storage.getGlobalQwenDir();
 
   beforeEach(() => {
     Storage.setRuntimeBaseDir(path.resolve('custom-runtime'));
-    process.env['QWEN_RUNTIME_DIR'] = path.resolve('env-runtime');
+    process.env['AXE_RUNTIME_DIR'] = path.resolve('env-runtime');
   });
 
   afterEach(() => {
     Storage.setRuntimeBaseDir(null);
     if (originalEnv !== undefined) {
-      process.env['QWEN_RUNTIME_DIR'] = originalEnv;
+      process.env['AXE_RUNTIME_DIR'] = originalEnv;
     } else {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
     }
   });
 
@@ -500,38 +500,38 @@ describe('Storage – config paths remain at ~/.axe regardless of runtime dir', 
   });
 });
 
-describe('Storage – QWEN_HOME env var', () => {
-  const originalEnv = process.env['QWEN_HOME'];
+describe('Storage – AXE_HOME env var', () => {
+  const originalEnv = process.env['AXE_HOME'];
 
   afterEach(() => {
     if (originalEnv !== undefined) {
-      process.env['QWEN_HOME'] = originalEnv;
+      process.env['AXE_HOME'] = originalEnv;
     } else {
-      delete process.env['QWEN_HOME'];
+      delete process.env['AXE_HOME'];
     }
   });
 
-  it('defaults to ~/.axe when QWEN_HOME is not set', () => {
-    delete process.env['QWEN_HOME'];
+  it('defaults to ~/.axe when AXE_HOME is not set', () => {
+    delete process.env['AXE_HOME'];
     const expected = path.join(os.homedir(), '.axe');
     expect(Storage.getGlobalQwenDir()).toBe(expected);
   });
 
-  it('uses QWEN_HOME when set to absolute path', () => {
+  it('uses AXE_HOME when set to absolute path', () => {
     const configDir = path.resolve('/tmp/custom-qwen');
-    process.env['QWEN_HOME'] = configDir;
+    process.env['AXE_HOME'] = configDir;
     expect(Storage.getGlobalQwenDir()).toBe(configDir);
   });
 
-  it('resolves relative QWEN_HOME to absolute path', () => {
-    process.env['QWEN_HOME'] = 'relative/config';
+  it('resolves relative AXE_HOME to absolute path', () => {
+    process.env['AXE_HOME'] = 'relative/config';
     const expected = path.resolve('relative/config');
     expect(Storage.getGlobalQwenDir()).toBe(expected);
   });
 
-  it('config paths follow QWEN_HOME', () => {
+  it('config paths follow AXE_HOME', () => {
     const configDir = path.resolve('/tmp/custom-qwen');
-    process.env['QWEN_HOME'] = configDir;
+    process.env['AXE_HOME'] = configDir;
     expect(Storage.getGlobalSettingsPath()).toBe(
       path.join(configDir, 'settings.json'),
     );
@@ -551,10 +551,10 @@ describe('Storage – QWEN_HOME env var', () => {
     );
   });
 
-  it('project-level paths are NOT affected by QWEN_HOME', () => {
+  it('project-level paths are NOT affected by AXE_HOME', () => {
     const configDir = path.resolve('/tmp/custom-qwen');
     const projectDir = path.resolve('/tmp/project');
-    process.env['QWEN_HOME'] = configDir;
+    process.env['AXE_HOME'] = configDir;
     const storage = new Storage(projectDir);
     expect(storage.getWorkspaceSettingsPath()).toBe(
       path.join(projectDir, '.axe', 'settings.json'),
@@ -564,28 +564,28 @@ describe('Storage – QWEN_HOME env var', () => {
     );
   });
 
-  it('expands tilde (~) in QWEN_HOME', () => {
-    process.env['QWEN_HOME'] = '~/custom-qwen';
+  it('expands tilde (~) in AXE_HOME', () => {
+    process.env['AXE_HOME'] = '~/custom-qwen';
     const expected = path.join(os.homedir(), 'custom-qwen');
     expect(Storage.getGlobalQwenDir()).toBe(expected);
   });
 
-  it('expands Windows-style tilde in QWEN_HOME', () => {
-    process.env['QWEN_HOME'] = '~\\custom-qwen';
+  it('expands Windows-style tilde in AXE_HOME', () => {
+    process.env['AXE_HOME'] = '~\\custom-qwen';
     const expected = path.join(os.homedir(), 'custom-qwen');
     expect(Storage.getGlobalQwenDir()).toBe(expected);
   });
 
-  it('handles bare tilde (~) as home directory in QWEN_HOME', () => {
-    process.env['QWEN_HOME'] = '~';
+  it('handles bare tilde (~) as home directory in AXE_HOME', () => {
+    process.env['AXE_HOME'] = '~';
     expect(Storage.getGlobalQwenDir()).toBe(path.normalize(os.homedir()));
   });
 
-  it('QWEN_HOME and QWEN_RUNTIME_DIR are independent', () => {
+  it('AXE_HOME and AXE_RUNTIME_DIR are independent', () => {
     const configDir = path.resolve('/tmp/config');
     const runtimeDir = path.resolve('/tmp/runtime');
-    process.env['QWEN_HOME'] = configDir;
-    process.env['QWEN_RUNTIME_DIR'] = runtimeDir;
+    process.env['AXE_HOME'] = configDir;
+    process.env['AXE_RUNTIME_DIR'] = runtimeDir;
     expect(Storage.getGlobalQwenDir()).toBe(configDir);
     expect(Storage.getRuntimeBaseDir()).toBe(runtimeDir);
     expect(Storage.getGlobalSettingsPath()).toBe(
@@ -593,24 +593,24 @@ describe('Storage – QWEN_HOME env var', () => {
     );
     expect(Storage.getGlobalTempDir()).toBe(path.join(runtimeDir, 'tmp'));
     expect(Storage.getGlobalDebugDir()).toBe(path.join(runtimeDir, 'debug'));
-    delete process.env['QWEN_RUNTIME_DIR'];
+    delete process.env['AXE_RUNTIME_DIR'];
   });
 });
 
 describe('Storage – runtime base dir async context isolation', () => {
-  const originalEnv = process.env['QWEN_RUNTIME_DIR'];
+  const originalEnv = process.env['AXE_RUNTIME_DIR'];
 
   beforeEach(() => {
     Storage.setRuntimeBaseDir(null);
-    delete process.env['QWEN_RUNTIME_DIR'];
+    delete process.env['AXE_RUNTIME_DIR'];
   });
 
   afterEach(() => {
     Storage.setRuntimeBaseDir(null);
     if (originalEnv !== undefined) {
-      process.env['QWEN_RUNTIME_DIR'] = originalEnv;
+      process.env['AXE_RUNTIME_DIR'] = originalEnv;
     } else {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
     }
   });
 

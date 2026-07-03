@@ -722,7 +722,7 @@ export class ExtensionManager {
         )
       ).filter((extension): extension is Extension => extension !== null);
     } else {
-      // Default: load all extensions from QWEN_HOME-aware user extensions dir.
+      // Default: load all extensions from AXE_HOME-aware user extensions dir.
       extensions = await this.loadExtensionsFromExtensionsDir(
         ExtensionStorage.getUserExtensionsDir(),
         this.workspaceDir,

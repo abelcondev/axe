@@ -30,13 +30,13 @@ export function resolvePath(dir: string): string {
 /**
  * Returns the global Qwen home directory (config, credentials, etc.).
  *
- * Priority: QWEN_HOME env var > ~/.qwen
+ * Priority: AXE_HOME env var > ~/.qwen
  *
  * This mirrors packages/core Storage.getGlobalQwenDir() without importing
  * from core to avoid cross-package dependencies.
  */
 export function getGlobalQwenDir(): string {
-  const envDir = process.env['QWEN_HOME'];
+  const envDir = process.env['AXE_HOME'];
   if (envDir) {
     return resolvePath(envDir);
   }

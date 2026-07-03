@@ -35,10 +35,10 @@ describe('tokenUsageService', () => {
   beforeEach(async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-05-25T10:00:00.000Z'));
-    originalRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+    originalRuntimeDir = process.env['AXE_RUNTIME_DIR'];
     originalDebugLogFileEnv = process.env['QWEN_DEBUG_LOG_FILE'];
     tempDir = await mkdtemp(path.join(tmpdir(), 'qwen-token-usage-'));
-    process.env['QWEN_RUNTIME_DIR'] = tempDir;
+    process.env['AXE_RUNTIME_DIR'] = tempDir;
   });
 
   afterEach(async () => {
@@ -46,9 +46,9 @@ describe('tokenUsageService', () => {
     setDebugLogSession(null);
     resetTokenUsageFailureLogging();
     if (originalRuntimeDir === undefined) {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
     } else {
-      process.env['QWEN_RUNTIME_DIR'] = originalRuntimeDir;
+      process.env['AXE_RUNTIME_DIR'] = originalRuntimeDir;
     }
     if (originalDebugLogFileEnv === undefined) {
       delete process.env['QWEN_DEBUG_LOG_FILE'];

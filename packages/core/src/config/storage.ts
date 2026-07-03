@@ -163,6 +163,14 @@ export class Storage {
     return path.join(homeDir, QWEN_DIR);
   }
 
+  /**
+   * Global cache for indexed dependency source references
+   * (`~/.axe/references/`). Respects `AXE_HOME` via {@link getGlobalQwenDir}.
+   */
+  static getGlobalReferencesDir(): string {
+    return path.join(Storage.getGlobalQwenDir(), 'references');
+  }
+
   static getMcpOAuthTokensPath(): string {
     return path.join(Storage.getGlobalQwenDir(), 'mcp-oauth-tokens.json');
   }

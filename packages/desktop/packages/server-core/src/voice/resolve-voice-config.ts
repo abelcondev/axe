@@ -70,14 +70,14 @@ export function normalizeBaseUrl(raw: string): string {
 /**
  * Resolve the global qwen config dir, mirroring core's
  * `Storage.getGlobalQwenDir()` so desktop voice reads the SAME `~/.qwen`
- * credentials the qwen CLI writes. QWEN_HOME is normalized exactly as core does:
+ * credentials the qwen CLI writes. AXE_HOME is normalized exactly as core does:
  * a leading `~`/`~/` expands to homedir() and a relative value resolves to an
  * absolute path; an unset/empty value falls back to `~/.qwen`. Reading the raw
  * env value would point voice at a different dir than the rest of Qwen.
  * Exported for tests.
  */
 export function getQwenConfigDir(): string {
-  const envDir = process.env.QWEN_HOME;
+  const envDir = process.env.AXE_HOME;
   if (envDir) {
     let resolved = envDir;
     if (

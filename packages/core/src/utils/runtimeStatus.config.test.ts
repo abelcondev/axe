@@ -26,15 +26,15 @@ let prevRuntimeEnv: string | undefined;
 beforeEach(async () => {
   tmpDir = await mkdtemp(path.join(os.tmpdir(), 'qwen-rt-cfg-'));
   runtimeDir = path.join(tmpDir, 'runtime');
-  prevRuntimeEnv = process.env['QWEN_RUNTIME_DIR'];
-  process.env['QWEN_RUNTIME_DIR'] = runtimeDir;
+  prevRuntimeEnv = process.env['AXE_RUNTIME_DIR'];
+  process.env['AXE_RUNTIME_DIR'] = runtimeDir;
 });
 
 afterEach(async () => {
   if (prevRuntimeEnv === undefined) {
-    delete process.env['QWEN_RUNTIME_DIR'];
+    delete process.env['AXE_RUNTIME_DIR'];
   } else {
-    process.env['QWEN_RUNTIME_DIR'] = prevRuntimeEnv;
+    process.env['AXE_RUNTIME_DIR'] = prevRuntimeEnv;
   }
   await rm(tmpDir, { recursive: true, force: true });
 });

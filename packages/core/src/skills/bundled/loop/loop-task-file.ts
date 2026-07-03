@@ -34,15 +34,15 @@ export interface ReadLoopTaskFileOptions {
   /**
    * Confinement root for the home candidate's resolved (symlink-followed)
    * target — a target escaping this dir (e.g. `-> /etc/passwd`) is refused while
-   * an in-root dotfile symlink is followed. Pass `$QWEN_HOME` when set, else
+   * an in-root dotfile symlink is followed. Pass `$AXE_HOME` when set, else
    * `$HOME` (see `homeQwenDir`).
    */
   homeDir: string;
   /**
    * Directory holding the home/global `loop.md` candidate (`<homeQwenDir>/loop.md`).
-   * Pass the QWEN_HOME-aware global dir (`Storage.getGlobalQwenDir()`) so a
+   * Pass the AXE_HOME-aware global dir (`Storage.getGlobalQwenDir()`) so a
    * relocated config home is honored instead of always reading the real OS home.
-   * Defaults to `<homeDir>/.qwen` so a direct barrel caller keeps the `~/.axe`
+   * Defaults to `<homeDir>/.axe` so a direct barrel caller keeps the `~/.axe`
    * layout.
    */
   homeQwenDir?: string;
@@ -173,15 +173,15 @@ async function readBoundedTaskFile(filePath: string): Promise<Buffer | null> {
  * model. A FIFO/socket/device/dir is refused too, so a named pipe can never
  * wedge the tick (a blocking `open` on a FIFO waits for a writer) or be read as
  * a task list. The canonical path is still confined to the workspace root to
- * catch an *ancestor* symlink like a checked-in `.qwen -> /outside` that a
+ * catch an *ancestor* symlink like a checked-in `.axe -> /outside` that a
  * final-component `lstat` cannot see. When `allowProjectFile` is false (untrusted
  * folder) the candidate is dropped entirely.
  *
- * Home candidate: `<homeQwenDir>/loop.md` (the QWEN_HOME-aware global dir, not
+ * Home candidate: `<homeQwenDir>/loop.md` (the AXE_HOME-aware global dir, not
  * always the real `~/.axe`). It is the user's own dotfile, so a symlink IS
  * followed (a common, legitimate setup — e.g. into a synced dotfiles repo), but
  * the resolved target must be a regular file AND stay within the home
- * confinement root (`homeDir`: `$QWEN_HOME` or `$HOME`) so a FIFO/device/dir
+ * confinement root (`homeDir`: `$AXE_HOME` or `$HOME`) so a FIFO/device/dir
  * can't hang the tick and an escaping symlink (e.g. `-> /etc/passwd`) can't be
  * exfiltrated.
  */
@@ -243,7 +243,7 @@ export async function readLoopTaskFile({
           continue;
         }
         // A final-component lstat can't see an ANCESTOR symlink (e.g. a
-        // checked-in `.qwen -> /outside`); realpath resolves it, so confine the
+        // checked-in `.axe -> /outside`); realpath resolves it, so confine the
         // canonical path to the workspace root before reading.
         const realRoot = await resolveRealDir(projectRoot, realDirCache);
         const real = await fs.realpath(filePath);
@@ -294,7 +294,7 @@ export async function readLoopTaskFile({
       const code = (error as NodeJS.ErrnoException).code;
       // None of these name a readable loop.md, so try the next candidate:
       // absent (ENOENT), a directory (EISDIR), a non-directory path component
-      // (ENOTDIR, e.g. a stray file where `.qwen` should be), a symlink loop
+      // (ENOTDIR, e.g. a stray file where `.axe` should be), a symlink loop
       // (ELOOP, e.g. a self-referential `~/.axe/loop.md`), or an over-long path
       // (ENAMETOOLONG). Anything else (EACCES permissions, real I/O) surfaces
       // rather than being silently swallowed.

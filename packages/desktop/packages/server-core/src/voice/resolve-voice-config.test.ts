@@ -138,37 +138,37 @@ describe('resolveDesktopVoiceConfig', () => {
 })
 
 describe('getQwenConfigDir', () => {
-  const original = process.env.QWEN_HOME
+  const original = process.env.AXE_HOME
 
   afterEach(() => {
-    if (original === undefined) delete process.env.QWEN_HOME
-    else process.env.QWEN_HOME = original
+    if (original === undefined) delete process.env.AXE_HOME
+    else process.env.AXE_HOME = original
   })
 
-  // QWEN_HOME must be normalized the same way core's Storage.getGlobalQwenDir
+  // AXE_HOME must be normalized the same way core's Storage.getGlobalQwenDir
   // does, so desktop voice reads the same dir the qwen CLI writes to.
   it('expands a leading ~ to the home directory', () => {
-    process.env.QWEN_HOME = '~/custom-qwen'
+    process.env.AXE_HOME = '~/custom-qwen'
     expect(getQwenConfigDir()).toBe(join(homedir(), 'custom-qwen'))
   })
 
   it('resolves a relative value to an absolute path', () => {
-    process.env.QWEN_HOME = 'relative/config'
+    process.env.AXE_HOME = 'relative/config'
     expect(getQwenConfigDir()).toBe(resolve('relative/config'))
   })
 
-  it('falls back to ~/.qwen when QWEN_HOME is empty', () => {
-    process.env.QWEN_HOME = ''
+  it('falls back to ~/.qwen when AXE_HOME is empty', () => {
+    process.env.AXE_HOME = ''
     expect(getQwenConfigDir()).toBe(join(homedir(), '.qwen'))
   })
 
-  it('falls back to ~/.qwen when QWEN_HOME is unset', () => {
-    delete process.env.QWEN_HOME
+  it('falls back to ~/.qwen when AXE_HOME is unset', () => {
+    delete process.env.AXE_HOME
     expect(getQwenConfigDir()).toBe(join(homedir(), '.qwen'))
   })
 
-  it('passes an absolute QWEN_HOME through unchanged', () => {
-    process.env.QWEN_HOME = '/opt/qwen-home'
+  it('passes an absolute AXE_HOME through unchanged', () => {
+    process.env.AXE_HOME = '/opt/qwen-home'
     expect(getQwenConfigDir()).toBe('/opt/qwen-home')
   })
 })

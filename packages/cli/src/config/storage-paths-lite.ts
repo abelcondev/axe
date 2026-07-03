@@ -34,7 +34,7 @@ export function resolveConfigPathLite(dir: string, cwd?: string): string {
 }
 
 export function getGlobalQwenDirLite(): string {
-  const envDir = process.env['QWEN_HOME'];
+  const envDir = process.env['AXE_HOME'];
   if (envDir) {
     return resolveConfigPathLite(envDir);
   }

@@ -319,8 +319,8 @@ describe('runQwenServe daemon logger wiring', () => {
     } as unknown as HttpAcpBridge;
 
     // Point daemon logger at our temp debug dir
-    const origEnv = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const origEnv = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
 
     try {
       const handle = await runQwenServe(
@@ -365,9 +365,9 @@ describe('runQwenServe daemon logger wiring', () => {
       );
       expect(finalContent).toContain('daemon started');
     } finally {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
       if (origEnv !== undefined) {
-        process.env['QWEN_RUNTIME_DIR'] = origEnv;
+        process.env['AXE_RUNTIME_DIR'] = origEnv;
       }
     }
   });
@@ -432,8 +432,8 @@ describe('runQwenServe permissionResponseTimeoutMs validation', () => {
 
     // Keep the daemon logger inside the temp dir so the boot path before
     // the validation throw doesn't write into the real ~/.qwen.
-    const origEnv = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const origEnv = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     try {
       await expect(
         runQwenServe(
@@ -449,9 +449,9 @@ describe('runQwenServe permissionResponseTimeoutMs validation', () => {
         ),
       ).rejects.toThrow(/permissionResponseTimeoutMs/);
     } finally {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
       if (origEnv !== undefined) {
-        process.env['QWEN_RUNTIME_DIR'] = origEnv;
+        process.env['AXE_RUNTIME_DIR'] = origEnv;
       }
     }
   });
@@ -588,8 +588,8 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
     tmpDir = fs.realpathSync(
       fs.mkdtempSync(path.join(os.tmpdir(), 'qws-tls-')),
     );
-    const origEnv = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const origEnv = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     try {
       await expect(
         runQwenServe(
@@ -605,9 +605,9 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
         ),
       ).rejects.toThrow(/--tls-cert and --tls-key must be provided together/);
     } finally {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
       if (origEnv !== undefined) {
-        process.env['QWEN_RUNTIME_DIR'] = origEnv;
+        process.env['AXE_RUNTIME_DIR'] = origEnv;
       }
     }
   });
@@ -616,8 +616,8 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
     tmpDir = fs.realpathSync(
       fs.mkdtempSync(path.join(os.tmpdir(), 'qws-tls-')),
     );
-    const origEnv = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const origEnv = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     try {
       await expect(
         runQwenServe(
@@ -634,9 +634,9 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
         ),
       ).rejects.toThrow(/Failed to read --tls-cert/);
     } finally {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
       if (origEnv !== undefined) {
-        process.env['QWEN_RUNTIME_DIR'] = origEnv;
+        process.env['AXE_RUNTIME_DIR'] = origEnv;
       }
     }
   });
@@ -650,8 +650,8 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
     );
     const certPath = path.join(tmpDir, 'cert.pem');
     fs.writeFileSync(certPath, TEST_TLS_CERT);
-    const origEnv = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const origEnv = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     try {
       await expect(
         runQwenServe(
@@ -668,9 +668,9 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
         ),
       ).rejects.toThrow(/Failed to read --tls-key/);
     } finally {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
       if (origEnv !== undefined) {
-        process.env['QWEN_RUNTIME_DIR'] = origEnv;
+        process.env['AXE_RUNTIME_DIR'] = origEnv;
       }
     }
   });
@@ -685,8 +685,8 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
     const keyPath = path.join(tmpDir, 'key.pem');
     fs.writeFileSync(certPath, TEST_TLS_CERT_EXPIRED);
     fs.writeFileSync(keyPath, TEST_TLS_KEY_EXPIRED);
-    const origEnv = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const origEnv = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     try {
       await expect(
         runQwenServe(
@@ -703,9 +703,9 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
         ),
       ).rejects.toThrow(/expired on/);
     } finally {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
       if (origEnv !== undefined) {
-        process.env['QWEN_RUNTIME_DIR'] = origEnv;
+        process.env['AXE_RUNTIME_DIR'] = origEnv;
       }
     }
   });
@@ -721,8 +721,8 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
     const keyPath = path.join(tmpDir, 'key.pem');
     fs.writeFileSync(certPath, 'not a real certificate');
     fs.writeFileSync(keyPath, TEST_TLS_KEY);
-    const origEnv = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const origEnv = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     try {
       await expect(
         runQwenServe(
@@ -739,9 +739,9 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
         ),
       ).rejects.toThrow(/is not a valid certificate/);
     } finally {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
       if (origEnv !== undefined) {
-        process.env['QWEN_RUNTIME_DIR'] = origEnv;
+        process.env['AXE_RUNTIME_DIR'] = origEnv;
       }
     }
   });
@@ -758,8 +758,8 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
     const keyPath = path.join(tmpDir, 'key.pem');
     fs.writeFileSync(certPath, TEST_TLS_CERT);
     fs.writeFileSync(keyPath, TEST_TLS_KEY_EXPIRED);
-    const origEnv = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const origEnv = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     try {
       await expect(
         runQwenServe(
@@ -776,9 +776,9 @@ describe('runQwenServe TLS (--tls-cert / --tls-key)', () => {
         ),
       ).rejects.toThrow(/could not be loaded/);
     } finally {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
       if (origEnv !== undefined) {
-        process.env['QWEN_RUNTIME_DIR'] = origEnv;
+        process.env['AXE_RUNTIME_DIR'] = origEnv;
       }
     }
   });
@@ -960,8 +960,8 @@ describe('runQwenServe session reaper timeout validation', () => {
     value: number,
   ) {
     tmpDir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'qws-rt-')));
-    const origEnv = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const origEnv = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     try {
       return await runQwenServe(
         {
@@ -975,9 +975,9 @@ describe('runQwenServe session reaper timeout validation', () => {
         { bridge: makeFakeBridge() },
       );
     } finally {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
       if (origEnv !== undefined) {
-        process.env['QWEN_RUNTIME_DIR'] = origEnv;
+        process.env['AXE_RUNTIME_DIR'] = origEnv;
       }
     }
   }
@@ -2005,8 +2005,8 @@ describe('runQwenServe runtime startup failures', () => {
     tmpDir = fs.realpathSync(
       fs.mkdtempSync(path.join(os.tmpdir(), 'qws-runtime-fail-log-')),
     );
-    const originalRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const originalRuntimeDir = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     vi.spyOn(acpBridge, 'createAcpSessionBridge').mockImplementation(() => {
       throw new Error('runtime boom');
     });
@@ -2042,9 +2042,9 @@ describe('runQwenServe runtime startup failures', () => {
         await handle.close();
       }
       if (originalRuntimeDir === undefined) {
-        delete process.env['QWEN_RUNTIME_DIR'];
+        delete process.env['AXE_RUNTIME_DIR'];
       } else {
-        process.env['QWEN_RUNTIME_DIR'] = originalRuntimeDir;
+        process.env['AXE_RUNTIME_DIR'] = originalRuntimeDir;
       }
     }
   });
@@ -2873,8 +2873,8 @@ describe('runQwenServe channel worker supervisor', () => {
     tmpDir = fs.realpathSync(
       fs.mkdtempSync(path.join(os.tmpdir(), 'qws-channel-worker-log-')),
     );
-    const originalRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
-    process.env['QWEN_RUNTIME_DIR'] = tmpDir;
+    const originalRuntimeDir = process.env['AXE_RUNTIME_DIR'];
+    process.env['AXE_RUNTIME_DIR'] = tmpDir;
     const worker = makeWorker({
       enabled: true,
       state: 'running',
@@ -2939,9 +2939,9 @@ describe('runQwenServe channel worker supervisor', () => {
       expect(logContent).not.toContain('secret-token');
     } finally {
       if (originalRuntimeDir === undefined) {
-        delete process.env['QWEN_RUNTIME_DIR'];
+        delete process.env['AXE_RUNTIME_DIR'];
       } else {
-        process.env['QWEN_RUNTIME_DIR'] = originalRuntimeDir;
+        process.env['AXE_RUNTIME_DIR'] = originalRuntimeDir;
       }
     }
   });
@@ -3543,8 +3543,8 @@ describe('runQwenServe startup observability', () => {
   });
 
   it('uses boot runtimeOutputDir for daemon logs', async () => {
-    const originalRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
-    delete process.env['QWEN_RUNTIME_DIR'];
+    const originalRuntimeDir = process.env['AXE_RUNTIME_DIR'];
+    delete process.env['AXE_RUNTIME_DIR'];
     tmpDir = fs.realpathSync(
       fs.mkdtempSync(path.join(os.tmpdir(), 'qws-startup-runtime-dir-')),
     );
@@ -3586,9 +3586,9 @@ describe('runQwenServe startup observability', () => {
     } finally {
       await handle?.close();
       if (originalRuntimeDir === undefined) {
-        delete process.env['QWEN_RUNTIME_DIR'];
+        delete process.env['AXE_RUNTIME_DIR'];
       } else {
-        process.env['QWEN_RUNTIME_DIR'] = originalRuntimeDir;
+        process.env['AXE_RUNTIME_DIR'] = originalRuntimeDir;
       }
     }
   });
@@ -3631,8 +3631,8 @@ describe('runQwenServe startup observability', () => {
   });
 
   it('preserves Storage runtime base dir for default exported callers', async () => {
-    const originalRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
-    delete process.env['QWEN_RUNTIME_DIR'];
+    const originalRuntimeDir = process.env['AXE_RUNTIME_DIR'];
+    delete process.env['AXE_RUNTIME_DIR'];
     qwenCore.Storage.setRuntimeBaseDir(null);
     tmpDir = fs.realpathSync(
       fs.mkdtempSync(path.join(os.tmpdir(), 'qws-startup-storage-dir-')),
@@ -3674,9 +3674,9 @@ describe('runQwenServe startup observability', () => {
       await handle?.close();
       qwenCore.Storage.setRuntimeBaseDir(null);
       if (originalRuntimeDir === undefined) {
-        delete process.env['QWEN_RUNTIME_DIR'];
+        delete process.env['AXE_RUNTIME_DIR'];
       } else {
-        process.env['QWEN_RUNTIME_DIR'] = originalRuntimeDir;
+        process.env['AXE_RUNTIME_DIR'] = originalRuntimeDir;
       }
     }
   });

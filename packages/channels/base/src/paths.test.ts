@@ -4,44 +4,44 @@ import * as os from 'node:os';
 import { getGlobalQwenDir, resolvePath } from './paths.js';
 
 describe('channels/base paths – getGlobalQwenDir', () => {
-  const originalEnv = process.env['QWEN_HOME'];
+  const originalEnv = process.env['AXE_HOME'];
 
   afterEach(() => {
     if (originalEnv !== undefined) {
-      process.env['QWEN_HOME'] = originalEnv;
+      process.env['AXE_HOME'] = originalEnv;
     } else {
-      delete process.env['QWEN_HOME'];
+      delete process.env['AXE_HOME'];
     }
   });
 
-  it('defaults to ~/.qwen when QWEN_HOME is not set', () => {
-    delete process.env['QWEN_HOME'];
+  it('defaults to ~/.qwen when AXE_HOME is not set', () => {
+    delete process.env['AXE_HOME'];
     expect(getGlobalQwenDir()).toBe(path.join(os.homedir(), '.qwen'));
   });
 
-  it('uses QWEN_HOME when set to absolute path', () => {
+  it('uses AXE_HOME when set to absolute path', () => {
     const configDir = path.resolve('/tmp/custom-qwen');
-    process.env['QWEN_HOME'] = configDir;
+    process.env['AXE_HOME'] = configDir;
     expect(getGlobalQwenDir()).toBe(configDir);
   });
 
-  it('resolves relative QWEN_HOME against process.cwd', () => {
-    process.env['QWEN_HOME'] = 'relative/config';
+  it('resolves relative AXE_HOME against process.cwd', () => {
+    process.env['AXE_HOME'] = 'relative/config';
     expect(getGlobalQwenDir()).toBe(path.resolve('relative/config'));
   });
 
-  it('expands tilde (~/x) in QWEN_HOME', () => {
-    process.env['QWEN_HOME'] = '~/custom-qwen';
+  it('expands tilde (~/x) in AXE_HOME', () => {
+    process.env['AXE_HOME'] = '~/custom-qwen';
     expect(getGlobalQwenDir()).toBe(path.join(os.homedir(), 'custom-qwen'));
   });
 
-  it('expands Windows-style tilde (~\\x) in QWEN_HOME', () => {
-    process.env['QWEN_HOME'] = '~\\custom-qwen';
+  it('expands Windows-style tilde (~\\x) in AXE_HOME', () => {
+    process.env['AXE_HOME'] = '~\\custom-qwen';
     expect(getGlobalQwenDir()).toBe(path.join(os.homedir(), 'custom-qwen'));
   });
 
   it('treats bare tilde (~) as home directory', () => {
-    process.env['QWEN_HOME'] = '~';
+    process.env['AXE_HOME'] = '~';
     expect(getGlobalQwenDir()).toBe(path.normalize(os.homedir()));
   });
 });

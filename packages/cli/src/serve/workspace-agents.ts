@@ -22,7 +22,7 @@ import {
   InvalidClientIdError,
   type AcpSessionBridge,
 } from './acp-session-bridge.js';
-import { safeLogValue } from './server/request-helpers.js';
+import { routeParam, safeLogValue } from './server/request-helpers.js';
 
 /**
  * Pattern for the route-layer `:agentType` URL parameter. Matches the
@@ -686,7 +686,7 @@ export function mountWorkspaceAgentsRoutes(
  * sending its own 400 — caller must short-circuit on `null`.
  */
 function validateAgentType(req: Request, res: Response): string | null {
-  const raw = req.params['agentType'];
+  const raw = routeParam(req.params['agentType']);
   if (!raw || raw.length === 0) {
     res.status(400).json({
       error: '`agentType` path parameter is required',

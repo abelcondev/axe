@@ -326,17 +326,17 @@ Use hooks.`,
       );
     });
 
-    it('reads global rules from QWEN_HOME when set', async () => {
+    it('reads global rules from AXE_HOME when set', async () => {
       const customQwenHome = path.join(testRootDir, 'custom-qwen-home');
-      const originalQwenHome = process.env['QWEN_HOME'];
-      process.env['QWEN_HOME'] = customQwenHome;
+      const originalQwenHome = process.env['AXE_HOME'];
+      process.env['AXE_HOME'] = customQwenHome;
       try {
         await createTestFile(
           path.join(customQwenHome, 'rules', 'fromCustomHome.md'),
           'CustomHome rule.',
         );
         // A stale rule in the legacy ~/.axe/rules location should NOT be
-        // loaded once QWEN_HOME points elsewhere.
+        // loaded once AXE_HOME points elsewhere.
         await createTestFile(
           path.join(homedir, QWEN_DIR, 'rules', 'fromLegacyHome.md'),
           'LegacyHome rule.',
@@ -348,9 +348,9 @@ Use hooks.`,
         expect(result.content).not.toContain('LegacyHome rule.');
       } finally {
         if (originalQwenHome === undefined) {
-          delete process.env['QWEN_HOME'];
+          delete process.env['AXE_HOME'];
         } else {
-          process.env['QWEN_HOME'] = originalQwenHome;
+          process.env['AXE_HOME'] = originalQwenHome;
         }
       }
     });

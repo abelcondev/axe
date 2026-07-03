@@ -196,11 +196,29 @@ export class SchemaValidator {
       //    non-strings), so pass 3 can safely parse without re-stringifying.
       //
       // 4. fixNumericValues  — "3"/"5.0" → 3/5.0
-      //    Runs last. Only fires when the schema accepts integer/number and
-      //    NOT string, which makes it mutually exclusive with pass 2 (pass 2
-      //    requires string to be accepted). So it cannot round-trip pass 2's
-      //    output, and it never sees pass 3's output (already an array/object,
-      //    not a string).
+      //    Runs last of the type-coercion passes. Only fires when the schema
+      //    accepts integer/number and NOT string, which makes it mutually
+      //    exclusive with pass 2 (pass 2 requires string to be accepted). So
+      //    it cannot round-trip pass 2's output, and it never sees pass 3's
+      //    output (already an array/object, not a string).
+      //
+      // Passes 5–7 are STRUCTURAL repairs (ported from Spectre's
+      // args-repair layer). They fix shape mismatches rather than scalar
+      // type mismatches, and run after 1–4 so JSON-looking strings are
+      // already parsed before we consider wrapping/unwrapping:
+      //
+      // 5. stripNullOptionals — delete `null` on an OPTIONAL field whose
+      //    schema rejects null. Passes 1–4 never produce null and a deleted
+      //    key can't be revisited, so this cannot undo earlier work.
+      //
+      // 6. wrapBareStringToArray — `"x"` → `["x"]` where an array (not a
+      //    string) is expected. Fires only when string is NOT accepted, which
+      //    is mutually exclusive with pass 2 (needs string accepted). Skips
+      //    JSON-looking strings (`[`/`{`) already handled by pass 3.
+      //
+      // 7. unwrapObjectToArray — `{"0":"a","1":"b"}` / `{}` → array where an
+      //    array (not an object) is expected. Fires only when object is NOT
+      //    accepted; touches objects only, disjoint from passes 1–6.
       //
       // Invariant: passes 2–4 only coerce when the current type is NOT already
       // accepted. Pass 1 (boolean) coerces unconditionally when boolean is
@@ -208,9 +226,9 @@ export class SchemaValidator {
       // boolean is a valid type. The round-trip is prevented by pass 2 checking
       // typeIsAccepted before coercing.
       //
-      // Adding a fifth pass or reordering requires verifying that the new pass
-      // does not undo the work of earlier passes. See Finding #5 for a past
-      // round-trip bug caused by violating this invariant.
+      // Adding a further pass or reordering requires verifying that the new
+      // pass does not undo the work of earlier passes. See Finding #5 for a
+      // past round-trip bug caused by violating this invariant.
       //
       // Coerce string boolean values ("true"/"false") to actual booleans
       fixBooleanValues(
@@ -239,6 +257,28 @@ export class SchemaValidator {
       // strings which strict MCP servers (e.g. Playwright) reject.
       fixNumericValues(
         data as Record<string, unknown>,
+        anySchema as Record<string, unknown>,
+      );
+
+      // --- Structural repairs (ported from Spectre args-repair) ---
+      // Delete `null` assigned to optional fields whose schema rejects null.
+      // Open models (DeepSeek, Qwen, GLM) often emit `null` for every declared
+      // parameter, including optionals they mean to omit.
+      stripNullOptionals(
+        data as Record<string, unknown>,
+        anySchema as Record<string, unknown>,
+        anySchema as Record<string, unknown>,
+      );
+      // Wrap a bare string in a single-element array where an array is expected.
+      wrapBareStringToArray(
+        data as Record<string, unknown>,
+        anySchema as Record<string, unknown>,
+        anySchema as Record<string, unknown>,
+      );
+      // Convert index-keyed / empty objects to arrays where an array is expected.
+      unwrapObjectToArray(
+        data as Record<string, unknown>,
+        anySchema as Record<string, unknown>,
         anySchema as Record<string, unknown>,
       );
 
@@ -1300,4 +1340,225 @@ function fixStringValues(
       }
     }
   }
+}
+
+/**
+ * Removes `null` values assigned to OPTIONAL fields whose schema does not
+ * accept `null`. Some open models (DeepSeek, Qwen, GLM) emit `null` for every
+ * declared parameter — including optionals they intend to omit — which turns
+ * a valid partial call into a spurious `must be string` / `must be array`
+ * failure. Deleting the key lets validation pass.
+ *
+ * Only strips when: the value is `null`, a property schema exists, the field
+ * is NOT listed in `required`, and the schema does not accept `null`. Required
+ * fields are left so their absence surfaces as a real error; explicitly
+ * nullable fields (and fields with no type info) are preserved. Recurses into
+ * nested objects.
+ */
+function stripNullOptionals(
+  data: Record<string, unknown>,
+  schema: Record<string, unknown>,
+  rootSchema?: Record<string, unknown>,
+  depth = 0,
+) {
+  if (depth > 64) return;
+  const root = rootSchema ?? schema;
+  const properties = getEffectiveProperties(schema, root);
+  if (!properties && !schema['additionalProperties']) return;
+  const required = Array.isArray(schema['required'])
+    ? (schema['required'] as string[])
+    : [];
+
+  for (const key of Object.keys(data)) {
+    const value = data[key];
+    const additionalProps = schema['additionalProperties'];
+    const propSchema =
+      properties?.[key] ??
+      (typeof additionalProps === 'object' && additionalProps !== null
+        ? (additionalProps as Record<string, unknown>)
+        : undefined);
+    if (!propSchema) continue;
+
+    const resolved = resolvePropSchema(
+      propSchema as Record<string, unknown>,
+      root,
+    );
+    if (!resolved) continue;
+
+    if (value === null) {
+      if (required.includes(key)) continue;
+      const accepted = getAcceptedTypes(resolved, root);
+      // Keep when the schema explicitly allows null, or when there is no type
+      // info to justify deletion (enum-only, const-only, empty schemas).
+      if (!accepted || accepted.has('null')) continue;
+      debugLogger.debug(`repair: delete null optional param '${key}'`);
+      delete data[key];
+      continue;
+    }
+
+    // Recurse into nested objects.
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      if (schemaHasObjectShape(resolved, root)) {
+        stripNullOptionals(
+          value as Record<string, unknown>,
+          resolved,
+          root,
+          depth + 1,
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Wraps a bare string in a single-element array when the schema expects an
+ * array (and not a string). Models sometimes emit `"foo"` where `["foo"]` is
+ * required.
+ *
+ * Only fires when the schema accepts `array` but NOT `string` (mutually
+ * exclusive with the string-coercion pass). JSON-looking strings (starting
+ * with `[` or `{`) are skipped — those are handled earlier by
+ * {@link fixStringifiedJsonValues}, so a malformed JSON array is left to fail
+ * rather than being wrapped into `['[broken']`. Recurses into nested objects.
+ */
+function wrapBareStringToArray(
+  data: Record<string, unknown>,
+  schema: Record<string, unknown>,
+  rootSchema?: Record<string, unknown>,
+  depth = 0,
+) {
+  if (depth > 64) return;
+  const root = rootSchema ?? schema;
+  const properties = getEffectiveProperties(schema, root);
+  if (!properties && !schema['additionalProperties']) return;
+
+  for (const key of Object.keys(data)) {
+    const value = data[key];
+    const additionalProps = schema['additionalProperties'];
+    const propSchema =
+      properties?.[key] ??
+      (typeof additionalProps === 'object' && additionalProps !== null
+        ? (additionalProps as Record<string, unknown>)
+        : undefined);
+    if (!propSchema) continue;
+
+    const resolved = resolvePropSchema(
+      propSchema as Record<string, unknown>,
+      root,
+    );
+    if (!resolved) continue;
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      // JSON-looking strings are the domain of fixStringifiedJsonValues.
+      if (trimmed.startsWith('[') || trimmed.startsWith('{')) continue;
+      const accepted = getAcceptedTypes(resolved, root);
+      if (accepted?.has('array') && !accepted.has('string')) {
+        debugLogger.debug(
+          `repair: wrap ${key} = ${JSON.stringify(value)} → [${JSON.stringify(value)}] (accepted: ${[...accepted].join('|')})`,
+        );
+        data[key] = [value];
+      }
+      continue;
+    }
+
+    // Recurse into nested objects.
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      if (schemaHasObjectShape(resolved, root)) {
+        wrapBareStringToArray(
+          value as Record<string, unknown>,
+          resolved,
+          root,
+          depth + 1,
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Converts an index-keyed object (`{"0":"a","1":"b"}`) or an empty object
+ * (`{}`) into an array when the schema expects an array (and not an object).
+ * Some models serialize arrays as objects with stringified numeric keys.
+ *
+ * Only fires when the schema accepts `array` but NOT `object`, and only when
+ * the object's own keys form a contiguous zero-based index set (or it is
+ * empty) — genuine objects are left untouched. Recurses into nested objects.
+ */
+function unwrapObjectToArray(
+  data: Record<string, unknown>,
+  schema: Record<string, unknown>,
+  rootSchema?: Record<string, unknown>,
+  depth = 0,
+) {
+  if (depth > 64) return;
+  const root = rootSchema ?? schema;
+  const properties = getEffectiveProperties(schema, root);
+  if (!properties && !schema['additionalProperties']) return;
+
+  for (const key of Object.keys(data)) {
+    const value = data[key];
+    const additionalProps = schema['additionalProperties'];
+    const propSchema =
+      properties?.[key] ??
+      (typeof additionalProps === 'object' && additionalProps !== null
+        ? (additionalProps as Record<string, unknown>)
+        : undefined);
+    if (!propSchema) continue;
+
+    const resolved = resolvePropSchema(
+      propSchema as Record<string, unknown>,
+      root,
+    );
+    if (!resolved) continue;
+
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      const accepted = getAcceptedTypes(resolved, root);
+      if (accepted?.has('array') && !accepted.has('object')) {
+        const arr = indexKeyedObjectToArray(value as Record<string, unknown>);
+        if (arr) {
+          debugLogger.debug(
+            `repair: unwrap ${key} object → array[${arr.length}] (accepted: ${[...accepted].join('|')})`,
+          );
+          data[key] = arr;
+          continue;
+        }
+      }
+      // Recurse into genuine nested objects.
+      if (schemaHasObjectShape(resolved, root)) {
+        unwrapObjectToArray(
+          value as Record<string, unknown>,
+          resolved,
+          root,
+          depth + 1,
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Converts an object whose own keys are exactly the contiguous, zero-based
+ * numeric indices `0..n-1` into an array ordered by index. Returns `[]` for an
+ * empty object, and `null` for any object that is not a clean index map (so
+ * the caller leaves it untouched).
+ */
+function indexKeyedObjectToArray(
+  obj: Record<string, unknown>,
+): unknown[] | null {
+  const keys = Object.keys(obj);
+  if (keys.length === 0) return [];
+  const seen = new Set<number>();
+  for (const k of keys) {
+    if (!/^\d+$/.test(k)) return null;
+    seen.add(Number(k));
+  }
+  // Must be exactly {0, 1, …, n-1}: contiguous, zero-based, no duplicates.
+  if (seen.size !== keys.length) return null;
+  for (let i = 0; i < keys.length; i++) {
+    if (!seen.has(i)) return null;
+  }
+  const arr = new Array<unknown>(keys.length);
+  for (const k of keys) arr[Number(k)] = obj[k];
+  return arr;
 }

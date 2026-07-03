@@ -1199,7 +1199,7 @@ function resolveQwenRuntimeDir(dir: string): string {
 }
 
 function getQwenRuntimeDir(): string {
-  const envDir = process.env.QWEN_RUNTIME_DIR;
+  const envDir = process.env.AXE_RUNTIME_DIR;
   if (envDir) return resolveQwenRuntimeDir(envDir);
 
   const homeDir = homedir();

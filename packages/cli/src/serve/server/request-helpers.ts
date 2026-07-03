@@ -125,8 +125,24 @@ export function parseOptionalWorkspaceCwd(
   return cwd;
 }
 
+/**
+ * Express 5 types `req.params[key]` as `string | string[]` (its
+ * `ParamsDictionary` string index signature). Named route params are always a
+ * single string at runtime, so normalize to the first value for the string
+ * sinks that consume them.
+ */
+export function routeParam(value: string | string[]): string;
+export function routeParam(
+  value: string | string[] | undefined,
+): string | undefined;
+export function routeParam(
+  value: string | string[] | undefined,
+): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export function requireSessionId(req: Request, res: Response): string | null {
-  const sessionId = req.params['id'];
+  const sessionId = routeParam(req.params['id']);
   if (!sessionId) {
     res.status(400).json({ error: '`sessionId` route parameter is required' });
     return null;

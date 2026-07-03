@@ -419,8 +419,8 @@ describe('readLoopTaskFile', () => {
     });
   });
 
-  it('reads the home loop.md from a relocated homeQwenDir (QWEN_HOME)', async () => {
-    // The home candidate lives in the QWEN_HOME-aware global dir, not always
+  it('reads the home loop.md from a relocated homeQwenDir (AXE_HOME)', async () => {
+    // The home candidate lives in the AXE_HOME-aware global dir, not always
     // <homeDir>/.qwen — write loop.md into a relocated global dir and confirm it
     // is read as the `home` source from <homeQwenDir>/loop.md.
     const relocated = path.join(tempDir, 'relocated-qwen');
@@ -430,7 +430,7 @@ describe('readLoopTaskFile', () => {
     const result = await readLoopTaskFile({
       projectRoot,
       // Caller passes the global dir as both candidate dir and confinement root
-      // when QWEN_HOME is set (see Session.#getLoopTickResolver).
+      // when AXE_HOME is set (see Session.#getLoopTickResolver).
       homeDir: relocated,
       homeQwenDir: relocated,
       allowProjectFile: true,

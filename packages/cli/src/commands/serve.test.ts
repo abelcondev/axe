@@ -330,8 +330,8 @@ describe('serve startup import boundary', () => {
       ...process.env,
       QWEN_CODE_NO_RELAUNCH: '1',
       QWEN_CODE_SUPPRESS_YOLO_WARNING: '1',
-      QWEN_HOME: qwenHome,
-      QWEN_RUNTIME_DIR: workspace,
+      AXE_HOME: qwenHome,
+      AXE_RUNTIME_DIR: workspace,
       QWEN_SERVE_RATE_LIMIT: '0',
     };
     delete childEnv['VITEST_WORKER_ID'];

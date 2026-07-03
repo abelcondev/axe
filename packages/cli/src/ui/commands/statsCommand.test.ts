@@ -73,9 +73,9 @@ describe('statsCommand', () => {
     fsPromisesMock.open.mockImplementation(actualFs.open);
     fsPromisesMock.rename.mockReset();
     fsPromisesMock.rename.mockImplementation(actualFs.rename);
-    originalRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+    originalRuntimeDir = process.env['AXE_RUNTIME_DIR'];
     tempDir = await mkdtemp(path.join(tmpdir(), 'qwen-stats-command-'));
-    process.env['QWEN_RUNTIME_DIR'] = tempDir;
+    process.env['AXE_RUNTIME_DIR'] = tempDir;
 
     // 1. Create the mock context with all default values
     mockContext = createMockCommandContext();
@@ -88,9 +88,9 @@ describe('statsCommand', () => {
     vi.useRealTimers();
     await setLanguageAsync('en');
     if (originalRuntimeDir === undefined) {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
     } else {
-      process.env['QWEN_RUNTIME_DIR'] = originalRuntimeDir;
+      process.env['AXE_RUNTIME_DIR'] = originalRuntimeDir;
     }
     Storage.setRuntimeBaseDir(null);
     await rm(tempDir, { recursive: true, force: true });

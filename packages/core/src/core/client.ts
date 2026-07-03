@@ -776,10 +776,14 @@ export class GeminiClient {
       return gitStatus ? base + '\n\n' + gitStatus : base;
     }
 
+    const knowledgeSummary = this.config.getKnowledgeService()?.getSummary();
+    const referencesSummary = this.config.getReferenceService()?.getSummary();
     const base = getCoreSystemPrompt(
       userMemory,
       this.config.getModel(),
       appendSystemPrompt,
+      knowledgeSummary,
+      referencesSummary,
     );
     return gitStatus ? base + '\n\n' + gitStatus : base;
   }

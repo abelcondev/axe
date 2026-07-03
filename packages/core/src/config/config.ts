@@ -87,6 +87,8 @@ import { InputFormat, OutputFormat } from '../output/types.js';
 import { PromptRegistry } from '../prompts/prompt-registry.js';
 import { ResourceRegistry } from '../resources/resource-registry.js';
 import { SkillManager } from '../skills/skill-manager.js';
+import { KnowledgeService } from '../services/knowledge/index.js';
+import { ReferenceService } from '../services/reference/index.js';
 import { PermissionManager } from '../permissions/permission-manager.js';
 import {
   type AutoModeDenialState,
@@ -1334,6 +1336,8 @@ export class Config {
   private fileReadCache: FileReadCache = new FileReadCache();
   private extensionManager!: ExtensionManager;
   private skillManager: SkillManager | null = null;
+  private knowledgeService: KnowledgeService | null = null;
+  private referenceService: ReferenceService | null = null;
   private permissionManager: PermissionManager | null = null;
   private modelInvocableCommandsProvider:
     (() => ReadonlyArray<{ name: string; description: string }>) | null = null;
@@ -2130,6 +2134,37 @@ export class Config {
 
     await this.refreshHierarchicalMemory('session_start');
     this.debugLogger.debug('Hierarchical memory loaded');
+
+    // Index the SDD knowledge base (sdd/) before the tool registry and the
+    // Gemini client boot, so the Knowledge tool can reach it and the summary is
+    // available when the system prompt is first assembled in startChat().
+    this.knowledgeService = new KnowledgeService();
+    await this.knowledgeService.initialize(this.getWorkingDir());
+    this.debugLogger.debug(
+      this.knowledgeService.hasKnowledge()
+        ? `SDD knowledge base indexed at ${this.knowledgeService.getSddRoot()}`
+        : 'No SDD knowledge base found',
+    );
+
+    // Resolve the active dependency set (fast, no network) and kick off
+    // background source indexing into ~/.axe/references. The system prompt
+    // summary reads whatever is ready; the Reference tool indexes on demand.
+    this.referenceService = new ReferenceService();
+    await this.referenceService.initialize(this.getWorkingDir());
+    this.debugLogger.debug(
+      `Reference service: ${
+        this.referenceService.getActivePackages().length
+      } active package(s)`,
+    );
+    // Fire-and-forget: never block startup on network fetches. Skipped under
+    // the test harness so unit tests that build a Config don't spawn real
+    // `git clone` / `npm` subprocesses (which cascade into resource
+    // exhaustion). Same guard style as utils/projectRoot.ts.
+    const inTest =
+      process.env['VITEST'] || process.env['NODE_ENV'] === 'test';
+    if (!this.getBareMode() && !this.isSafeMode() && !inTest) {
+      void this.referenceService.warmup();
+    }
 
     // Progressive MCP availability: skip MCP discovery in the synchronous
     // tool-registry construction path and kick it off in the background
@@ -5697,6 +5732,14 @@ export class Config {
     return this.skillManager;
   }
 
+  getKnowledgeService(): KnowledgeService | null {
+    return this.knowledgeService;
+  }
+
+  getReferenceService(): ReferenceService | null {
+    return this.referenceService;
+  }
+
   /**
    * Registers a provider that returns model-invocable commands (e.g., bundled
    * skills, user/project file commands, MCP prompts). Called by the CLI's
@@ -5903,6 +5946,14 @@ export class Config {
     await registerLazy(ToolNames.SKILL, async () => {
       const { SkillTool } = await import('../tools/skill.js');
       return new SkillTool(this);
+    });
+    await registerLazy(ToolNames.KNOWLEDGE, async () => {
+      const { KnowledgeTool } = await import('../tools/knowledge.js');
+      return new KnowledgeTool(this);
+    });
+    await registerLazy(ToolNames.REFERENCE, async () => {
+      const { ReferenceTool } = await import('../tools/reference.js');
+      return new ReferenceTool(this);
     });
     await registerLazy(ToolNames.LS, async () => {
       const { LSTool } = await import('../tools/ls.js');

@@ -70,7 +70,11 @@ const mockLogExtensionInstallEvent = vi.hoisted(() => vi.fn());
 const mockLogExtensionUninstall = vi.hoisted(() => vi.fn());
 const mockLogExtensionDisable = vi.hoisted(() => vi.fn());
 const mockLogExtensionUpdateEvent = vi.hoisted(() => vi.fn());
-vi.mock('../telemetry/loggers.js', () => ({
+vi.mock('../telemetry/loggers.js', async (importOriginal) => ({
+  // Preserve real exports (e.g. logStartSession, re-exported via
+  // telemetry/index.ts) so the full mock doesn't drop symbols the code under
+  // test reaches. Override only the loggers this suite asserts on.
+  ...(await importOriginal<typeof import('../telemetry/loggers.js')>()),
   logExtensionEnable: mockLogExtensionEnable,
   logExtensionUpdateEvent: mockLogExtensionUpdateEvent,
 }));

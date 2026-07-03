@@ -26,6 +26,7 @@ import type { SendBridgeError } from '../server/error-response.js';
 import {
   createBuildWorkspaceCtx,
   parseAndValidateWorkspaceClientId,
+  routeParam,
   type safeBody as safeBodyType,
 } from '../server/request-helpers.js';
 import {
@@ -789,7 +790,7 @@ export function registerWorkspaceExtensionRoutes(
         ) {
           return;
         }
-        const name = req.params['name'];
+        const name = routeParam(req.params['name']);
         if (!name) {
           res.status(400).json({ error: 'Missing extension name' });
           return;
@@ -835,7 +836,7 @@ export function registerWorkspaceExtensionRoutes(
         ) {
           return;
         }
-        const name = req.params['name'];
+        const name = routeParam(req.params['name']);
         if (!name) {
           res.status(400).json({ error: 'Missing extension name' });
           return;
@@ -881,7 +882,7 @@ export function registerWorkspaceExtensionRoutes(
         ) {
           return;
         }
-        const name = req.params['name'];
+        const name = routeParam(req.params['name']);
         if (!name) {
           res.status(400).json({ error: 'Missing extension name' });
           return;
@@ -958,7 +959,7 @@ export function registerWorkspaceExtensionRoutes(
         ) {
           return;
         }
-        const name = req.params['name'];
+        const name = routeParam(req.params['name']);
         if (!name) {
           res.status(400).json({ error: 'Missing extension name' });
           return;

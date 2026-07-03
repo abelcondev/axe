@@ -145,14 +145,14 @@ const PERSISTENCE_PATH_PATTERNS: readonly RegExp[] = Object.freeze([
 ]);
 
 const SELF_MODIFICATION_PATH_PATTERNS: readonly RegExp[] = Object.freeze([
-  /(^|\/)\.qwen\/settings(?:\.[^/]*)?\.json$/,
+  /(^|\/)\.axe\/settings(?:\.[^/]*)?\.json$/,
   /(^|\/)(qwen|agents)\.md$/,
-  /(^|\/)\.qwen\/qwen\.local\.md$/,
-  /(^|\/)\.qwen\/rules(?:\/|$)/,
-  /(^|\/)\.qwen\/commands(?:\/|$)/,
-  /(^|\/)\.qwen\/agents(?:\/|$)/,
-  /(^|\/)\.qwen\/skills(?:\/|$)/,
-  /(^|\/)\.qwen\/hooks(?:\/|$)/,
+  /(^|\/)\.axe\/qwen\.local\.md$/,
+  /(^|\/)\.axe\/rules(?:\/|$)/,
+  /(^|\/)\.axe\/commands(?:\/|$)/,
+  /(^|\/)\.axe\/agents(?:\/|$)/,
+  /(^|\/)\.axe\/skills(?:\/|$)/,
+  /(^|\/)\.axe\/hooks(?:\/|$)/,
   /(^|\/)\.mcp\.json$/,
 ]);
 
@@ -187,7 +187,7 @@ let qwenHomePrefixesCacheKey: string | undefined;
 let qwenHomePrefixesCache: string[] | undefined;
 
 function getNormalizedQwenHomePrefixes(): string[] {
-  const qwenHome = process.env['QWEN_HOME'];
+  const qwenHome = process.env['AXE_HOME'];
   if (!qwenHome) return [];
   if (
     qwenHomePrefixesCacheKey === qwenHome &&
@@ -203,7 +203,7 @@ function getNormalizedQwenHomePrefixes(): string[] {
   try {
     candidates.add(fs.realpathSync.native(qwenHome));
   } catch {
-    // QWEN_HOME may not exist yet; the configured path still matters.
+    // AXE_HOME may not exist yet; the configured path still matters.
   }
 
   const prefixes = [...candidates].map((candidate) =>

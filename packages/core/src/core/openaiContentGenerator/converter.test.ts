@@ -4596,6 +4596,62 @@ describe('OpenAIContentConverter', () => {
       expect(result[0].function.parameters).toBeUndefined();
     });
 
+    it('prepends root type "object" for an MCP schema with a oneOf root', async () => {
+      // Strict OpenAI-compatible gateways reject tool parameters whose root
+      // has no `type` (e.g. a zod discriminatedUnion → oneOf root).
+      const mcpTools = [
+        {
+          functionDeclarations: [
+            {
+              name: 'union_tool',
+              description: 'A tool with a discriminated-union root schema',
+              parametersJsonSchema: {
+                oneOf: [
+                  {
+                    properties: { kind: { const: 'a' }, a: { type: 'string' } },
+                  },
+                  {
+                    properties: { kind: { const: 'b' }, b: { type: 'number' } },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      ] as Tool[];
+
+      const result = await converter.convertGeminiToolsToOpenAI(mcpTools);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].function.parameters?.['type']).toBe('object');
+      // The original union is preserved alongside the injected root type.
+      expect(result[0].function.parameters?.['oneOf']).toBeDefined();
+    });
+
+    it('does not add a duplicate root type when one already exists', async () => {
+      const mcpTools = [
+        {
+          functionDeclarations: [
+            {
+              name: 'read_file',
+              description: 'Read a file',
+              parametersJsonSchema: {
+                type: 'object',
+                properties: { path: { type: 'string' } },
+              },
+            },
+          ],
+        },
+      ] as Tool[];
+
+      const result = await converter.convertGeminiToolsToOpenAI(mcpTools);
+
+      expect(result[0].function.parameters).toEqual({
+        type: 'object',
+        properties: { path: { type: 'string' } },
+      });
+    });
+
     it('should not mutate original parametersJsonSchema', async () => {
       const originalSchema = {
         type: 'object',

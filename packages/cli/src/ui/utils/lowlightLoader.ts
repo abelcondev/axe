@@ -11,7 +11,7 @@
  * that priming the cache from `test-setup.ts` does not transitively pull
  * `themeManager`, settings, or `@axe/core` into every test
  * file's module graph. That cascade was observed to alter theme/config test
- * outcomes (e.g. theme-manager auto-detection and QWEN_HOME env tests).
+ * outcomes (e.g. theme-manager auto-detection and AXE_HOME env tests).
  */
 
 import type { Root } from 'hast';

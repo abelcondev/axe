@@ -20,24 +20,24 @@ import {
 } from './channel-memory.js';
 
 describe('channel memory', () => {
-  const originalQwenHome = process.env['QWEN_HOME'];
+  const originalQwenHome = process.env['AXE_HOME'];
   let qwenHome: string;
 
   beforeEach(() => {
     qwenHome = fs.mkdtempSync(path.join(os.tmpdir(), 'qwen-channel-memory-'));
-    process.env['QWEN_HOME'] = qwenHome;
+    process.env['AXE_HOME'] = qwenHome;
   });
 
   afterEach(() => {
     if (originalQwenHome === undefined) {
-      delete process.env['QWEN_HOME'];
+      delete process.env['AXE_HOME'];
     } else {
-      process.env['QWEN_HOME'] = originalQwenHome;
+      process.env['AXE_HOME'] = originalQwenHome;
     }
     fs.rmSync(qwenHome, { recursive: true, force: true });
   });
 
-  it('returns a path under QWEN_HOME ending with CHANNEL.md', () => {
+  it('returns a path under AXE_HOME ending with CHANNEL.md', () => {
     const filePath = getChannelMemoryFilePath({
       channelName: 'prod',
       chatId: 'chat-1',

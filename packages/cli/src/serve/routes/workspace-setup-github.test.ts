@@ -73,7 +73,7 @@ const baseOpts: ServeOptions = {
   mode: 'http-bridge',
 };
 
-const originalQwenHome = process.env['QWEN_HOME'];
+const originalQwenHome = process.env['AXE_HOME'];
 const originalTrustedFoldersPath =
   process.env['QWEN_CODE_TRUSTED_FOLDERS_PATH'];
 
@@ -101,7 +101,7 @@ async function makeHarness(
   const home = path.join(scratch, 'home');
   await fsp.mkdir(home, { recursive: true });
   await fsp.mkdir(wsDir);
-  process.env['QWEN_HOME'] = home;
+  process.env['AXE_HOME'] = home;
   process.env['QWEN_CODE_TRUSTED_FOLDERS_PATH'] = path.join(
     home,
     TRUSTED_FOLDERS_FILENAME,
@@ -133,9 +133,9 @@ async function makeHarness(
 async function teardown(h: Harness): Promise<void> {
   await fsp.rm(h.scratch, { recursive: true, force: true });
   if (originalQwenHome === undefined) {
-    delete process.env['QWEN_HOME'];
+    delete process.env['AXE_HOME'];
   } else {
-    process.env['QWEN_HOME'] = originalQwenHome;
+    process.env['AXE_HOME'] = originalQwenHome;
   }
   if (originalTrustedFoldersPath === undefined) {
     delete process.env['QWEN_CODE_TRUSTED_FOLDERS_PATH'];

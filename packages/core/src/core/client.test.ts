@@ -273,7 +273,12 @@ vi.mock('../ide/ideContext.js');
 vi.mock('../telemetry/uiTelemetry.js', () => ({
   uiTelemetryService: mockUiTelemetryService,
 }));
-vi.mock('../telemetry/loggers.js', () => ({
+vi.mock('../telemetry/loggers.js', async (importOriginal) => ({
+  // Keep the real exports (e.g. logStartSession re-exported through
+  // telemetry/index.ts, logApiRetry imported directly by client.ts) so the
+  // full mock doesn't drop symbols the code under test reaches. Override only
+  // the loggers individual assertions spy on.
+  ...(await importOriginal<typeof import('../telemetry/loggers.js')>()),
   logChatCompression: vi.fn(),
   logNextSpeakerCheck: vi.fn(),
   logApiRequest: vi.fn(),
@@ -532,6 +537,8 @@ describe('Gemini Client (client.ts)', () => {
       hasHooksForEvent: vi.fn().mockReturnValue(false),
       getHookSystem: vi.fn().mockReturnValue(undefined),
       getSkillManager: vi.fn().mockReturnValue(undefined),
+      getKnowledgeService: vi.fn().mockReturnValue(undefined),
+      getReferenceService: vi.fn().mockReturnValue(undefined),
       consumeInlineAnnouncedSkillKeys: vi
         .fn()
         .mockReturnValue(new Set<string>()),
@@ -7618,6 +7625,8 @@ Other open files:
         '',
         'test-model',
         'Be extra concise.',
+        undefined,
+        undefined,
       );
     });
 

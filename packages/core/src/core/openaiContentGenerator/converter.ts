@@ -25,6 +25,7 @@ import type { RequestContext, StreamingTextDeltaState } from './types.js';
 import { parseTaggedThinkingText } from './taggedThinkingParser.js';
 import {
   convertSchema,
+  ensureObjectRootParameters,
   type SchemaComplianceMode,
 } from '../../utils/schemaConverter.js';
 
@@ -352,6 +353,9 @@ export async function convertGeminiToolsToOpenAI(
 
           if (parameters) {
             parameters = convertSchema(parameters, schemaCompliance);
+            // Strict OpenAI-compatible gateways (Kimi, some Qwen proxies)
+            // reject tool parameters without a root `type: "object"`.
+            parameters = ensureObjectRootParameters(parameters);
           }
 
           openAITools.push({

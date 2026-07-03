@@ -5939,8 +5939,8 @@ describe('Session', () => {
         });
       });
 
-      it('keeps the home confinement root non-empty when os.homedir() is empty (no QWEN_HOME)', () => {
-        // Minimal containers with no HOME make os.homedir() === ''. With QWEN_HOME
+      it('keeps the home confinement root non-empty when os.homedir() is empty (no AXE_HOME)', () => {
+        // Minimal containers with no HOME make os.homedir() === ''. With AXE_HOME
         // unset the home confinement root must NOT collapse to '': isWithin('',
         // anyPath) is trivially true, so an empty root lets a home
         // `~/.axe/loop.md` symlink resolve anywhere and bypass the confinement.
@@ -5963,7 +5963,7 @@ describe('Session', () => {
         expect(roots.homeQwenDir).toBe(homeQwenDir);
       });
 
-      it('confines the home loop resolver within QWEN_HOME when set', () => {
+      it('confines the home loop resolver within AXE_HOME when set', () => {
         const homeQwenDir = path.join(os.tmpdir(), '.qwen-home');
 
         const roots = resolveHomeLoopResolverRoots({
@@ -5976,9 +5976,9 @@ describe('Session', () => {
         expect(roots.homeQwenDir).toBe(homeQwenDir);
       });
 
-      it('reads the home loop.md from QWEN_HOME, not the real ~/.qwen', async () => {
-        // The home/global candidate must honor QWEN_HOME (the relocated global
-        // dir) instead of always reading the real OS home. Point QWEN_HOME at a
+      it('reads the home loop.md from AXE_HOME, not the real ~/.qwen', async () => {
+        // The home/global candidate must honor AXE_HOME (the relocated global
+        // dir) instead of always reading the real OS home. Point AXE_HOME at a
         // dir holding loop.md, leave the project dir and fake $HOME empty, and
         // confirm the relocated file's block reaches the model.
         const tmpDir = await fs.mkdtemp(
@@ -5996,8 +5996,8 @@ describe('Session', () => {
         );
         mockConfig.getWorkingDir = vi.fn().mockReturnValue(tmpDir);
         const restoreHome = setFakeHome(fakeHome);
-        const prevQwenHome = process.env['QWEN_HOME'];
-        process.env['QWEN_HOME'] = qwenHome;
+        const prevQwenHome = process.env['AXE_HOME'];
+        process.env['AXE_HOME'] = qwenHome;
 
         const scheduler = {
           size: 1,
@@ -6025,7 +6025,7 @@ describe('Session', () => {
           });
 
           // Echo names the home source (sourceLabel='home loop.md'), proving the
-          // home candidate resolved from QWEN_HOME rather than the empty $HOME.
+          // home candidate resolved from AXE_HOME rather than the empty $HOME.
           await vi.waitFor(() => {
             expect(mockClient.sessionUpdate).toHaveBeenCalledWith({
               sessionId: 'test-session-id',
@@ -6054,8 +6054,8 @@ describe('Session', () => {
           });
         } finally {
           restoreHome();
-          if (prevQwenHome === undefined) delete process.env['QWEN_HOME'];
-          else process.env['QWEN_HOME'] = prevQwenHome;
+          if (prevQwenHome === undefined) delete process.env['AXE_HOME'];
+          else process.env['AXE_HOME'] = prevQwenHome;
           await fs.rm(tmpDir, { recursive: true, force: true });
           await fs.rm(fakeHome, { recursive: true, force: true });
           await fs.rm(qwenHome, { recursive: true, force: true });
@@ -6175,11 +6175,11 @@ describe('Session', () => {
         }
       });
 
-      it('names the QWEN_HOME-aware home path in the sanitized resolve error, not a hardcoded ~/.qwen', async () => {
+      it('names the AXE_HOME-aware home path in the sanitized resolve error, not a hardcoded ~/.qwen', async () => {
         // Regression: the sanitized resolve-error hardcoded `~/.axe/loop.md
-        // (home)`, but the resolver's home candidate is QWEN_HOME-aware. With
-        // QWEN_HOME relocated OUTSIDE $HOME, the error reuses homeLoopLabel(),
-        // which names it via the literal `$QWEN_HOME/loop.md` — leak-safe (never
+        // (home)`, but the resolver's home candidate is AXE_HOME-aware. With
+        // AXE_HOME relocated OUTSIDE $HOME, the error reuses homeLoopLabel(),
+        // which names it via the literal `$AXE_HOME/loop.md` — leak-safe (never
         // the resolved absolute global dir, nor the absolute project path).
         debugLoggerWarnSpy.mockClear();
         const tmpDir = await fs.mkdtemp(
@@ -6193,12 +6193,12 @@ describe('Session', () => {
         );
         mockConfig.getWorkingDir = vi.fn().mockReturnValue(tmpDir);
         const restoreHome = setFakeHome(fakeHome);
-        const prevQwenHome = process.env['QWEN_HOME'];
-        process.env['QWEN_HOME'] = qwenHome;
+        const prevQwenHome = process.env['AXE_HOME'];
+        process.env['AXE_HOME'] = qwenHome;
         // qwenHome is under os.tmpdir() (not the OS home), so tildeifyPath is a
         // no-op there. The label is MODEL/client-facing, so it must read as the
-        // literal `$QWEN_HOME/loop.md`, never the resolved absolute path.
-        const expectedHomeLabel = `$QWEN_HOME/loop.md (home)`;
+        // literal `$AXE_HOME/loop.md`, never the resolved absolute path.
+        const expectedHomeLabel = `$AXE_HOME/loop.md (home)`;
 
         const eacces = Object.assign(
           new Error(
@@ -6258,21 +6258,21 @@ describe('Session', () => {
             expect(cronErrorTexts().length).toBeGreaterThan(0),
           );
           for (const text of cronErrorTexts()) {
-            // The QWEN_HOME-aware home path is named...
+            // The AXE_HOME-aware home path is named...
             expect(text).toContain(expectedHomeLabel);
             expect(text).toContain('.axe/loop.md (project)');
             // ...and the old hardcoded label is gone.
             expect(text).not.toContain('~/.axe/loop.md');
             // Still leak-safe: neither the absolute project path nor the
-            // resolved $QWEN_HOME global dir reaches the client/API.
+            // resolved $AXE_HOME global dir reaches the client/API.
             expect(text).not.toContain(path.join(tmpDir, '.axe', 'loop.md'));
             expect(text).not.toContain(path.join(qwenHome, 'loop.md'));
           }
         } finally {
           resolveSpy.mockRestore();
           restoreHome();
-          if (prevQwenHome === undefined) delete process.env['QWEN_HOME'];
-          else process.env['QWEN_HOME'] = prevQwenHome;
+          if (prevQwenHome === undefined) delete process.env['AXE_HOME'];
+          else process.env['AXE_HOME'] = prevQwenHome;
           await fs.rm(tmpDir, { recursive: true, force: true });
           await fs.rm(fakeHome, { recursive: true, force: true });
           await fs.rm(qwenHome, { recursive: true, force: true });
@@ -6283,7 +6283,7 @@ describe('Session', () => {
         // An untrusted folder never reads `.axe/loop.md` (the resolver gets
         // allowProjectFile=false), so the sanitized error must NOT claim the
         // project candidate was checked — it would be a lie. It still names the
-        // QWEN_HOME-aware home candidate (the only one actually probed) and the
+        // AXE_HOME-aware home candidate (the only one actually probed) and the
         // errno code, and stays leak-safe. Mutation guard: hardcoding
         // `.axe/loop.md (project)` back into the throw re-introduces the false
         // claim and fails this test.

@@ -21,7 +21,11 @@ import {
   parseAuthProviderInstallRequest,
 } from '../server/auth-provider-helpers.js';
 import type { SendBridgeError } from '../server/error-response.js';
-import { parseClientIdHeader, safeBody } from '../server/request-helpers.js';
+import {
+  parseClientIdHeader,
+  routeParam,
+  safeBody,
+} from '../server/request-helpers.js';
 import type {
   ServeAuthProviderInstallRequest,
   ServeAuthProviderInstallResult,
@@ -213,7 +217,7 @@ export function registerWorkspaceAuthRoutes(
     '/workspace/auth/device-flow/:id',
     mutate({ strict: true }),
     async (req, res) => {
-      const id = req.params['id'];
+      const id = routeParam(req.params['id']);
       if (!id) {
         res.status(404).json({
           error: 'Device-flow id required',
@@ -246,7 +250,7 @@ export function registerWorkspaceAuthRoutes(
     '/workspace/auth/device-flow/:id',
     mutate({ strict: true }),
     (req, res) => {
-      const id = req.params['id'];
+      const id = routeParam(req.params['id']);
       if (!id) {
         res.status(404).json({
           error: 'Device-flow id required',

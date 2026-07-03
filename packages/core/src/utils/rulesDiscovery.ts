@@ -320,7 +320,7 @@ export async function loadRules(
 
   const allRules: RuleFile[] = [];
 
-  // 1. Global rules: <QWEN_HOME or ~/.axe>/rules/
+  // 1. Global rules: <AXE_HOME or ~/.axe>/rules/
   const globalRulesDir = path.join(Storage.getGlobalQwenDir(), 'rules');
   const globalRules = await loadRulesFromDir(globalRulesDir, excludes);
   allRules.push(...globalRules);

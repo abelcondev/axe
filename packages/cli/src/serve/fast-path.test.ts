@@ -53,10 +53,10 @@ let tempLaunchCwd: string | undefined;
 let tempQwenHome: string | undefined;
 let tempSymlink: string | undefined;
 const originalToken = process.env['QWEN_SERVER_TOKEN'];
-const originalQwenHome = process.env['QWEN_HOME'];
+const originalQwenHome = process.env['AXE_HOME'];
 const originalHome = process.env['HOME'];
 const originalUserProfile = process.env['USERPROFILE'];
-const originalQwenRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+const originalQwenRuntimeDir = process.env['AXE_RUNTIME_DIR'];
 const originalMcpApprovalsPath = process.env['QWEN_CODE_MCP_APPROVALS_PATH'];
 const originalSystemSettingsPath =
   process.env['QWEN_CODE_SYSTEM_SETTINGS_PATH'];
@@ -188,7 +188,7 @@ function useTempQwenHome(): string {
   tempQwenHome = realpathSync(
     mkdtempSync(join(os.tmpdir(), 'qws-fast-path-home-')),
   );
-  process.env['QWEN_HOME'] = tempQwenHome;
+  process.env['AXE_HOME'] = tempQwenHome;
   process.env['QWEN_CODE_SYSTEM_SETTINGS_PATH'] = join(
     tempQwenHome,
     'system-settings.json',
@@ -277,9 +277,9 @@ afterEach(() => {
     process.env['QWEN_SERVER_TOKEN'] = originalToken;
   }
   if (originalQwenHome === undefined) {
-    delete process.env['QWEN_HOME'];
+    delete process.env['AXE_HOME'];
   } else {
-    process.env['QWEN_HOME'] = originalQwenHome;
+    process.env['AXE_HOME'] = originalQwenHome;
   }
   if (originalHome === undefined) {
     delete process.env['HOME'];
@@ -332,9 +332,9 @@ afterEach(() => {
     process.env['GOOGLE_CLOUD_PROJECT'] = originalGoogleCloudProject;
   }
   if (originalQwenRuntimeDir === undefined) {
-    delete process.env['QWEN_RUNTIME_DIR'];
+    delete process.env['AXE_RUNTIME_DIR'];
   } else {
-    process.env['QWEN_RUNTIME_DIR'] = originalQwenRuntimeDir;
+    process.env['AXE_RUNTIME_DIR'] = originalQwenRuntimeDir;
   }
   if (originalMcpApprovalsPath === undefined) {
     delete process.env['QWEN_CODE_MCP_APPROVALS_PATH'];
@@ -812,9 +812,9 @@ describe('serve fast path environment bootstrap', () => {
       'relative-qwen-home',
     ]) {
       if (qwenHome === undefined) {
-        delete process.env['QWEN_HOME'];
+        delete process.env['AXE_HOME'];
       } else {
-        process.env['QWEN_HOME'] = qwenHome;
+        process.env['AXE_HOME'] = qwenHome;
       }
 
       expect(getGlobalQwenDirLite()).toBe(Storage.getGlobalQwenDir());
@@ -1170,8 +1170,8 @@ describe('serve fast path environment bootstrap', () => {
   });
 
   it('pre-resolves home env overrides in the same order as the full loader', () => {
-    delete process.env['QWEN_HOME'];
-    delete process.env['QWEN_RUNTIME_DIR'];
+    delete process.env['AXE_HOME'];
+    delete process.env['AXE_RUNTIME_DIR'];
     delete process.env['QWEN_CODE_MCP_APPROVALS_PATH'];
     delete process.env['QWEN_CODE_TRUSTED_FOLDERS_PATH'];
     tempLaunchCwd = realpathSync(
@@ -1185,11 +1185,11 @@ describe('serve fast path environment bootstrap', () => {
     mkdirSync(join(tempLaunchCwd, '.axe'), { recursive: true });
     writeFileSync(
       join(tempLaunchCwd, '.axe', '.env'),
-      `QWEN_HOME=${tempQwenHome}\n`,
+      `AXE_HOME=${tempQwenHome}\n`,
     );
     writeFileSync(
       join(tempLaunchCwd, '.env'),
-      'QWEN_RUNTIME_DIR=from-home-env\n',
+      'AXE_RUNTIME_DIR=from-home-env\n',
     );
     writeFileSync(
       join(tempQwenHome, '.env'),
@@ -1201,8 +1201,8 @@ describe('serve fast path environment bootstrap', () => {
 
     preResolveServeFastPathHomeEnvOverrides();
 
-    expect(process.env['QWEN_HOME']).toBe(tempQwenHome);
-    expect(process.env['QWEN_RUNTIME_DIR']).toBe('from-home-env');
+    expect(process.env['AXE_HOME']).toBe(tempQwenHome);
+    expect(process.env['AXE_RUNTIME_DIR']).toBe('from-home-env');
     expect(process.env['QWEN_CODE_MCP_APPROVALS_PATH']).toBe(
       'from-discovered-home',
     );
@@ -1211,10 +1211,10 @@ describe('serve fast path environment bootstrap', () => {
     );
   });
 
-  it('still pre-resolves missing home-scoped keys when QWEN_HOME and runtime are already set', () => {
+  it('still pre-resolves missing home-scoped keys when AXE_HOME and runtime are already set', () => {
     delete process.env['QWEN_CODE_TRUSTED_FOLDERS_PATH'];
     const qwenHome = useTempQwenHome();
-    process.env['QWEN_RUNTIME_DIR'] = join(qwenHome, 'runtime');
+    process.env['AXE_RUNTIME_DIR'] = join(qwenHome, 'runtime');
     writeFileSync(
       join(qwenHome, '.env'),
       'QWEN_CODE_TRUSTED_FOLDERS_PATH=from-existing-home\n',
@@ -1390,7 +1390,7 @@ describe('serve fast path environment bootstrap', () => {
 
   it('uses trusted-folders path from home .env before loading workspace env', async () => {
     delete process.env['QWEN_SERVER_TOKEN'];
-    delete process.env['QWEN_RUNTIME_DIR'];
+    delete process.env['AXE_RUNTIME_DIR'];
     delete process.env['QWEN_CODE_TRUSTED_FOLDERS_PATH'];
     const qwenHome = useTempQwenHome();
     const customTrustedFoldersPath = join(qwenHome, 'custom-trusted.json');

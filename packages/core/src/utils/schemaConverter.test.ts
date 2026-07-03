@@ -5,7 +5,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { convertSchema } from './schemaConverter.js';
+import {
+  convertSchema,
+  ensureObjectRootParameters,
+} from './schemaConverter.js';
 
 describe('convertSchema', () => {
   describe('mode: auto (default)', () => {
@@ -114,5 +117,55 @@ describe('convertSchema', () => {
       const expected = { type: 'string' };
       expect(convertSchema(input, 'openapi_30')).toEqual(expected);
     });
+  });
+});
+
+describe('ensureObjectRootParameters', () => {
+  it('returns the schema unchanged when it already declares an object root type', () => {
+    const input = {
+      type: 'object',
+      properties: { foo: { type: 'string' } },
+    };
+    const result = ensureObjectRootParameters(input);
+    expect(result).toBe(input); // same reference, no copy
+  });
+
+  it('returns the schema unchanged for any string root type', () => {
+    const input = { type: 'string' };
+    expect(ensureObjectRootParameters(input)).toBe(input);
+  });
+
+  it('prepends type "object" when the root has no type (oneOf root)', () => {
+    const input = {
+      oneOf: [
+        { properties: { a: { type: 'string' } } },
+        { properties: { b: { type: 'number' } } },
+      ],
+    };
+    const result = ensureObjectRootParameters(input);
+    expect(result).toEqual({ type: 'object', ...input });
+    expect(result['type']).toBe('object');
+    // Non-mutating: original is untouched.
+    expect('type' in input).toBe(false);
+  });
+
+  it('prepends type "object" for an anyOf root (zod discriminatedUnion shape)', () => {
+    const input = {
+      anyOf: [{ required: ['a'] }, { required: ['b'] }],
+    };
+    expect(ensureObjectRootParameters(input)).toEqual({
+      type: 'object',
+      ...input,
+    });
+  });
+
+  it('leaves a non-string type array as-is (spread overrides the prepend)', () => {
+    // The guard only fires for a string `type`. For a type array the object
+    // spread re-applies the original `type`, so the array is preserved. A
+    // type-array root on tool parameters is not a real-world case (params are
+    // always an object), so this matches the upstream (Spectre) behavior.
+    const input = { type: ['object', 'null'] };
+    const result = ensureObjectRootParameters(input);
+    expect(result['type']).toEqual(['object', 'null']);
   });
 });

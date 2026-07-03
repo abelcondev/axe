@@ -863,18 +863,18 @@ describe('ACP Streamable HTTP transport (over the wire)', () => {
   async function withRuntimeDir<T>(
     fn: (runtimeDir: string) => Promise<T>,
   ): Promise<T> {
-    const previousRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+    const previousRuntimeDir = process.env['AXE_RUNTIME_DIR'];
     const runtimeDir = await fs.mkdtemp(
       path.join(os.tmpdir(), 'qwen-acp-archive-'),
     );
-    process.env['QWEN_RUNTIME_DIR'] = runtimeDir;
+    process.env['AXE_RUNTIME_DIR'] = runtimeDir;
     try {
       return await fn(runtimeDir);
     } finally {
       if (previousRuntimeDir === undefined) {
-        delete process.env['QWEN_RUNTIME_DIR'];
+        delete process.env['AXE_RUNTIME_DIR'];
       } else {
-        process.env['QWEN_RUNTIME_DIR'] = previousRuntimeDir;
+        process.env['AXE_RUNTIME_DIR'] = previousRuntimeDir;
       }
       await fs.rm(runtimeDir, { recursive: true, force: true });
     }
@@ -2956,11 +2956,11 @@ describe('ACP Streamable HTTP transport (over the wire)', () => {
   it.each(['session/load', 'session/resume'])(
     '%s rejects archived sessions',
     async (method) => {
-      const previousRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+      const previousRuntimeDir = process.env['AXE_RUNTIME_DIR'];
       const runtimeDir = await fs.mkdtemp(
         path.join(os.tmpdir(), 'qwen-acp-archive-'),
       );
-      process.env['QWEN_RUNTIME_DIR'] = runtimeDir;
+      process.env['AXE_RUNTIME_DIR'] = runtimeDir;
       const sessionId = '550e8400-e29b-41d4-a716-446655440123';
       try {
         const chatsDir = path.join(
@@ -3003,9 +3003,9 @@ describe('ACP Streamable HTTP transport (over the wire)', () => {
         expect(frame.error.data?.errorKind).toBe('session_archived');
       } finally {
         if (previousRuntimeDir === undefined) {
-          delete process.env['QWEN_RUNTIME_DIR'];
+          delete process.env['AXE_RUNTIME_DIR'];
         } else {
-          process.env['QWEN_RUNTIME_DIR'] = previousRuntimeDir;
+          process.env['AXE_RUNTIME_DIR'] = previousRuntimeDir;
         }
         await fs.rm(runtimeDir, { recursive: true, force: true });
       }
@@ -4301,10 +4301,10 @@ describe('ACP Streamable HTTP transport (over the wire)', () => {
     const scratch = await fs.mkdtemp(path.join(os.tmpdir(), 'qwen-acp-'));
     const workspace = path.join(scratch, 'workspace');
     const home = path.join(scratch, 'home');
-    const originalQwenHome = process.env['QWEN_HOME'];
+    const originalQwenHome = process.env['AXE_HOME'];
     const setSpy = vi.spyOn(fakeWorkspace, 'setWorkspacePermissionRules');
     try {
-      process.env['QWEN_HOME'] = home;
+      process.env['AXE_HOME'] = home;
       resetHomeEnvBootstrapForTesting();
       await fs.mkdir(workspace, { recursive: true });
       await writeJson(
@@ -4335,9 +4335,9 @@ describe('ACP Streamable HTTP transport (over the wire)', () => {
       });
     } finally {
       if (originalQwenHome === undefined) {
-        delete process.env['QWEN_HOME'];
+        delete process.env['AXE_HOME'];
       } else {
-        process.env['QWEN_HOME'] = originalQwenHome;
+        process.env['AXE_HOME'] = originalQwenHome;
       }
       resetHomeEnvBootstrapForTesting();
       setSpy.mockRestore();

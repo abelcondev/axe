@@ -95,7 +95,7 @@ function findCanonicalGitRoot(startPath: string): string | null {
 
 /**
  * Returns the base directory for all auto-memory storage.
- * Defaults to the runtime output dir (`runtimeOutputDir`, `QWEN_RUNTIME_DIR`,
+ * Defaults to the runtime output dir (`runtimeOutputDir`, `AXE_RUNTIME_DIR`,
  * or the global qwen dir);
  * overridable via QWEN_CODE_MEMORY_BASE_DIR for tests.
  */

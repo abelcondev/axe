@@ -72,7 +72,7 @@ describe('cleanupOldFileHistoryBackups', () => {
   beforeEach(() => {
     qwenHome = fs.mkdtempSync(path.join(os.tmpdir(), 'qwen-cleanup-test-'));
     fileHistoryRoot = path.join(qwenHome, FILE_HISTORY_DIR);
-    vi.stubEnv('QWEN_HOME', qwenHome);
+    vi.stubEnv('AXE_HOME', qwenHome);
     cutoff = new Date(Date.now() - 30 * MS_PER_DAY);
   });
 

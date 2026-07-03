@@ -54,7 +54,7 @@ let lastReloadSnapshotSeeded = false;
  * Returns the set of normalized .env file paths that count as user-level.
  *
  * User-level paths cover the home `.env` and the global Qwen config dir
- * `.env` (which respects `QWEN_HOME`). When `QWEN_HOME` redirects elsewhere,
+ * `.env` (which respects `AXE_HOME`). When `AXE_HOME` redirects elsewhere,
  * the legacy `<homedir>/.axe/.env` is also included so credentials users
  * left there continue to load (and the trust check in untrusted workspaces
  * still allows reading it).
@@ -72,12 +72,12 @@ function getUserLevelEnvPaths(): Set<string> {
 }
 
 /**
- * Pre-resolves QWEN_HOME and QWEN_RUNTIME_DIR from user-level `.env` files
+ * Pre-resolves AXE_HOME and AXE_RUNTIME_DIR from user-level `.env` files
  * before any settings or storage paths are read. Required because
  * module-load `Storage.getGlobalQwenDir()` would otherwise snapshot legacy
  * paths for settings.json, OAuth tokens, installation_id, etc., while the
  * regular `.env` load only runs later — splitting global state between
- * `~/.axe/...` and `<QWEN_HOME>/...`.
+ * `~/.axe/...` and `<AXE_HOME>/...`.
  */
 let homeEnvBootstrapped = false;
 export function preResolveHomeEnvOverrides(): void {
@@ -91,9 +91,9 @@ export function preResolveHomeEnvOverrides(): void {
   }
 
   // Storage.getGlobalQwenDir() shares the same homedir resolution as the
-  // rest of the storage layer; when QWEN_HOME is unset it equals
+  // rest of the storage layer; when AXE_HOME is unset it equals
   // `<homedir>/.qwen`, so path.dirname() recovers `<homedir>`.
-  const initialQwenHome = process.env['QWEN_HOME'];
+  const initialQwenHome = process.env['AXE_HOME'];
   const initialQwenDir = Storage.getGlobalQwenDir();
   const candidates: string[] = [path.join(initialQwenDir, '.env')];
   if (!initialQwenHome) {
@@ -104,9 +104,9 @@ export function preResolveHomeEnvOverrides(): void {
     readHomeEnvInto(candidate);
   }
 
-  // If QWEN_HOME was just discovered, also read <new QWEN_HOME>/.env so
-  // QWEN_RUNTIME_DIR can be sourced from there.
-  const discoveredQwenHome = process.env['QWEN_HOME'];
+  // If AXE_HOME was just discovered, also read <new AXE_HOME>/.env so
+  // AXE_RUNTIME_DIR can be sourced from there.
+  const discoveredQwenHome = process.env['AXE_HOME'];
   if (discoveredQwenHome && discoveredQwenHome !== initialQwenHome) {
     const discoveredDir = Storage.getGlobalQwenDir();
     if (discoveredDir !== initialQwenDir) {
@@ -157,11 +157,11 @@ export function getHomeEnvFallbackVars(
 ): Record<string, string> {
   const globalQwenDir = Storage.getGlobalQwenDir();
   const candidates = [path.join(globalQwenDir, '.env')];
-  // When QWEN_HOME is set, skip ~/.env to avoid surprise cross-contamination
+  // When AXE_HOME is set, skip ~/.env to avoid surprise cross-contamination
   // from a shared home .env. getUserLevelEnvPaths() always includes ~/.env
   // because loadEnvironment() populates process.env independently — the two
   // scopes are intentionally different.
-  if (!process.env['QWEN_HOME']) {
+  if (!process.env['AXE_HOME']) {
     candidates.push(path.join(path.dirname(globalQwenDir), '.env'));
   }
 
@@ -192,7 +192,7 @@ export function getHomeEnvFallbackVars(
  * When workspace is untrusted, only allow user-level .env files at:
  * - ~/.axe/.env
  * - ~/.env
- * - <QWEN_HOME>/.env (when set)
+ * - <AXE_HOME>/.env (when set)
  */
 function findEnvFiles(
   settings: Settings,
@@ -222,7 +222,7 @@ function findEnvFiles(
     isTrusted !== false || userLevelPaths.has(path.normalize(filePath));
 
   // Home-dir candidates in priority order: globalQwenDir/.env, then legacy
-  // ~/.axe/.env (only when QWEN_HOME redirects), then ~/.env.
+  // ~/.axe/.env (only when AXE_HOME redirects), then ~/.env.
   const pushCandidate = (filePath: string): boolean => {
     const normalized = path.normalize(filePath);
     if (
@@ -351,7 +351,7 @@ export function loadEnvironment(
         settings?.advanced?.excludedEnvVars || DEFAULT_EXCLUDED_ENV_VARS;
       const normalizedEnvFilePath = path.normalize(envFilePath);
       // homeScoped: `.env` lives under the user's home Qwen dir or `~/.env` —
-      //   only these may set QWEN_HOME / QWEN_RUNTIME_DIR.
+      //   only these may set AXE_HOME / AXE_RUNTIME_DIR.
       // qwenScoped: any `.env` whose immediate parent is `.qwen` (including
       //   `<repo>/.axe/.env`) — exempt from the user `excludedEnvVars` list.
       const isHomeScopedEnvFile = userLevelPaths.has(normalizedEnvFilePath);

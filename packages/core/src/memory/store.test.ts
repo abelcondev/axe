@@ -28,7 +28,7 @@ import { sanitizeCwd } from '../utils/paths.js';
 
 const originalMemoryLocal = process.env['QWEN_CODE_MEMORY_LOCAL'];
 const originalMemoryBaseDir = process.env['QWEN_CODE_MEMORY_BASE_DIR'];
-const originalRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+const originalRuntimeDir = process.env['AXE_RUNTIME_DIR'];
 
 describe('auto-memory storage scaffold', () => {
   let tempDir: string;
@@ -48,9 +48,9 @@ describe('auto-memory storage scaffold', () => {
       process.env['QWEN_CODE_MEMORY_BASE_DIR'] = originalMemoryBaseDir;
     }
     if (originalRuntimeDir === undefined) {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
     } else {
-      process.env['QWEN_RUNTIME_DIR'] = originalRuntimeDir;
+      process.env['AXE_RUNTIME_DIR'] = originalRuntimeDir;
     }
 
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'auto-memory-'));
@@ -72,9 +72,9 @@ describe('auto-memory storage scaffold', () => {
       process.env['QWEN_CODE_MEMORY_BASE_DIR'] = originalMemoryBaseDir;
     }
     if (originalRuntimeDir === undefined) {
-      delete process.env['QWEN_RUNTIME_DIR'];
+      delete process.env['AXE_RUNTIME_DIR'];
     } else {
-      process.env['QWEN_RUNTIME_DIR'] = originalRuntimeDir;
+      process.env['AXE_RUNTIME_DIR'] = originalRuntimeDir;
     }
     await fs.rm(tempDir, {
       recursive: true,
@@ -121,10 +121,10 @@ describe('auto-memory storage scaffold', () => {
     );
   });
 
-  it('uses QWEN_RUNTIME_DIR for managed auto-memory', () => {
+  it('uses AXE_RUNTIME_DIR for managed auto-memory', () => {
     delete process.env['QWEN_CODE_MEMORY_LOCAL'];
     const envRuntimeDir = path.join(tempDir, 'env-runtime-output');
-    process.env['QWEN_RUNTIME_DIR'] = envRuntimeDir;
+    process.env['AXE_RUNTIME_DIR'] = envRuntimeDir;
     Storage.setRuntimeBaseDir(path.join(tempDir, 'settings-runtime-output'));
     clearAutoMemoryRootCache();
 

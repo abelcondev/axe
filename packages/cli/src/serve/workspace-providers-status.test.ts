@@ -46,8 +46,8 @@ describe('createWorkspaceProvidersStatusProvider', () => {
   let tmpDir: string;
   let workspace: string;
   let qwenHome: string;
-  const originalQwenHome = process.env['QWEN_HOME'];
-  const originalQwenRuntimeDir = process.env['QWEN_RUNTIME_DIR'];
+  const originalQwenHome = process.env['AXE_HOME'];
+  const originalQwenRuntimeDir = process.env['AXE_RUNTIME_DIR'];
   const originalSystemSettings = process.env['QWEN_CODE_SYSTEM_SETTINGS_PATH'];
   const originalSystemDefaults = process.env['QWEN_CODE_SYSTEM_DEFAULTS_PATH'];
 
@@ -57,8 +57,8 @@ describe('createWorkspaceProvidersStatusProvider', () => {
     qwenHome = path.join(tmpDir, 'qwen-home');
     await fs.mkdir(workspace, { recursive: true });
     await fs.mkdir(qwenHome, { recursive: true });
-    process.env['QWEN_HOME'] = qwenHome;
-    process.env['QWEN_RUNTIME_DIR'] = path.join(tmpDir, 'runtime');
+    process.env['AXE_HOME'] = qwenHome;
+    process.env['AXE_RUNTIME_DIR'] = path.join(tmpDir, 'runtime');
     process.env['QWEN_CODE_SYSTEM_SETTINGS_PATH'] = path.join(
       tmpDir,
       'system-settings.json',
@@ -75,8 +75,8 @@ describe('createWorkspaceProvidersStatusProvider', () => {
   });
 
   afterEach(async () => {
-    restoreEnv('QWEN_HOME', originalQwenHome);
-    restoreEnv('QWEN_RUNTIME_DIR', originalQwenRuntimeDir);
+    restoreEnv('AXE_HOME', originalQwenHome);
+    restoreEnv('AXE_RUNTIME_DIR', originalQwenRuntimeDir);
     restoreEnv('QWEN_CODE_SYSTEM_SETTINGS_PATH', originalSystemSettings);
     restoreEnv('QWEN_CODE_SYSTEM_DEFAULTS_PATH', originalSystemDefaults);
     resetHomeEnvBootstrapForTesting();

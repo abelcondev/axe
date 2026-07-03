@@ -21,7 +21,7 @@ describe('sessionPaths', () => {
 
   beforeEach(async () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'session-paths-'));
-    vi.stubEnv('QWEN_RUNTIME_DIR', path.join(tmpDir, 'runtime'));
+    vi.stubEnv('AXE_RUNTIME_DIR', path.join(tmpDir, 'runtime'));
   });
 
   afterEach(async () => {

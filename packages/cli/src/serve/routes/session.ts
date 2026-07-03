@@ -34,6 +34,7 @@ import {
   parseClientIdHeader,
   parseOptionalWorkspaceCwd,
   requireSessionId,
+  routeParam,
   safeBody,
   safeLogValue,
 } from '../server/request-helpers.js';
@@ -512,7 +513,7 @@ export function registerSessionRoutes(
     withMutableSession(
       'POST /session/:id/tasks/:taskId/cancel',
       async (req, res, sessionId) => {
-        const taskId = req.params['taskId'];
+        const taskId = routeParam(req.params['taskId']);
         if (!taskId) {
           res.status(400).json({
             error: '`taskId` route parameter is required',
@@ -1168,7 +1169,7 @@ export function registerSessionRoutes(
       (req, res, sessionId) => {
         const clientId = parseClientIdHeader(req, res);
         if (clientId === null) return;
-        const promptId = req.params['promptId'];
+        const promptId = routeParam(req.params['promptId']);
         if (!promptId) {
           res
             .status(400)

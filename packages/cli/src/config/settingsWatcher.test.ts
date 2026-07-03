@@ -997,7 +997,7 @@ describe('SettingsWatcher', () => {
   });
 
   describe('path resolution', () => {
-    it('should use resolved paths from LoadedSettings (supports QWEN_HOME redirect)', () => {
+    it('should use resolved paths from LoadedSettings (supports AXE_HOME redirect)', () => {
       const customSettings = makeLoadedSettings({
         user: { path: '/custom/qwen-home/settings.json' },
       });

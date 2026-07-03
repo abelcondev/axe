@@ -113,7 +113,7 @@ const NOOP_LOGGER: DaemonLogger = {
 };
 
 function getRuntimeBaseDir(runtimeOutputDir?: string, cwd?: string): string {
-  const envDir = process.env['QWEN_RUNTIME_DIR'];
+  const envDir = process.env['AXE_RUNTIME_DIR'];
   if (envDir) return resolveConfigPathLite(envDir);
   if (runtimeOutputDir) return resolveConfigPathLite(runtimeOutputDir, cwd);
   return getGlobalQwenDirLite();

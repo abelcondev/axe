@@ -2496,7 +2496,7 @@ describe('PermissionManager — compound shell write attribution', () => {
     expect(
       await pm.evaluate({
         toolName: 'run_shell_command',
-        command: "cd .qwen && echo '{}' > settings.json",
+        command: "cd .axe && echo '{}' > settings.json",
         cwd: '/repo',
       }),
     ).toBe('deny');
@@ -2514,7 +2514,7 @@ describe('PermissionManager — compound shell write attribution', () => {
     expect(
       await pm.evaluate({
         toolName: 'run_shell_command',
-        command: "cd .qwen && bash -lc 'echo {} > settings.json'",
+        command: "cd .axe && bash -lc 'echo {} > settings.json'",
         cwd: '/repo',
       }),
     ).toBe('deny');
@@ -2555,7 +2555,7 @@ describe('PermissionManager — compound shell write attribution', () => {
     expect(
       await pm.evaluate({
         toolName: 'run_shell_command',
-        command: "cd .qwen && bash -lc 'echo {} > settings.json'",
+        command: "cd .axe && bash -lc 'echo {} > settings.json'",
         cwd: '/repo',
       }),
     ).toBe('deny');
@@ -2609,7 +2609,7 @@ describe('PermissionManager — compound shell write attribution', () => {
     expect(
       pm.hasRelevantRules({
         toolName: 'run_shell_command',
-        command: "cd .qwen && bash -lc 'echo {} > settings.json'",
+        command: "cd .axe && bash -lc 'echo {} > settings.json'",
         cwd: '/repo',
       }),
     ).toBe(true);
@@ -2627,7 +2627,7 @@ describe('PermissionManager — compound shell write attribution', () => {
     expect(
       pm.hasMatchingAskRule({
         toolName: 'run_shell_command',
-        command: "cd .qwen && bash -lc 'echo {} > settings.json'",
+        command: "cd .axe && bash -lc 'echo {} > settings.json'",
         cwd: '/repo',
       }),
     ).toBe(true);

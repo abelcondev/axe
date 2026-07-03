@@ -229,31 +229,31 @@ describe('extractShellOperations', () => {
 
   it('cp/mv/install/ln -t forms emit target-directory writes', () => {
     expect(
-      sorted(extractShellOperations('cp -t .qwen /tmp/settings.json', CWD)),
+      sorted(extractShellOperations('cp -t .axe /tmp/settings.json', CWD)),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/settings.json' },
       { virtualTool: 'write_file', filePath: `${CWD}/.axe/settings.json` },
     ]);
     expect(
-      sorted(extractShellOperations('mv --target-directory=.qwen /tmp/a', CWD)),
+      sorted(extractShellOperations('mv --target-directory=.axe /tmp/a', CWD)),
     ).toEqual([
       { virtualTool: 'edit', filePath: '/tmp/a' },
       { virtualTool: 'write_file', filePath: `${CWD}/.axe/a` },
     ]);
     expect(
-      sorted(extractShellOperations('install -t .qwen /tmp/tool', CWD)),
+      sorted(extractShellOperations('install -t .axe /tmp/tool', CWD)),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/tool' },
       { virtualTool: 'write_file', filePath: `${CWD}/.axe/tool` },
     ]);
     expect(
-      sorted(extractShellOperations('ln -t .qwen /tmp/target', CWD)),
+      sorted(extractShellOperations('ln -t .axe /tmp/target', CWD)),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/target' },
       { virtualTool: 'write_file', filePath: `${CWD}/.axe/target` },
     ]);
     expect(
-      sorted(extractShellOperations('cp -rt .qwen /tmp/payload', CWD)),
+      sorted(extractShellOperations('cp -rt .axe /tmp/payload', CWD)),
     ).toEqual([
       { virtualTool: 'read_file', filePath: '/tmp/payload' },
       { virtualTool: 'write_file', filePath: `${CWD}/.axe/payload` },
@@ -701,7 +701,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('tracks literal `cd` across compound segments before resolving writes', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        "cd .qwen && bash -lc 'echo {} > settings.json'",
+        "cd .axe && bash -lc 'echo {} > settings.json'",
         '/repo',
       ),
     ).toEqual([
@@ -734,7 +734,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('tracks cwd before leading env assignments', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        "cd .qwen && FOO=bar echo '{}' > settings.json",
+        "cd .axe && FOO=bar echo '{}' > settings.json",
         '/repo',
       ),
     ).toEqual([
@@ -766,7 +766,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('splits literal newlines as command boundaries', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        'cd .qwen\ncp /tmp/malicious settings.json',
+        'cd .axe\ncp /tmp/malicious settings.json',
         '/repo',
       ),
     ).toEqual([
@@ -784,7 +784,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('tracks cwd through brace-grouped commands', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        "{ cd .qwen && echo '{}' > settings.json; }",
+        "{ cd .axe && echo '{}' > settings.json; }",
         '/repo',
       ),
     ).toEqual([
@@ -811,7 +811,7 @@ describe('extractShellOperationsAcrossCommand', () => {
     expect(
       extractShellOperationsAcrossCommand(
         [
-          'cd .qwen',
+          'cd .axe',
           "cat <<'EOF'",
           'cd /tmp',
           'EOF',
@@ -827,7 +827,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('does not treat quoted heredoc-looking text as a heredoc marker', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        ["echo '<<EOF'", 'cd .qwen', "echo '{}' > settings.json"].join('\n'),
+        ["echo '<<EOF'", 'cd .axe', "echo '{}' > settings.json"].join('\n'),
         '/repo',
       ),
     ).toEqual([
@@ -838,7 +838,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('handles `cd --` and other POSIX flag forms before the target', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        "cd -- .qwen && printf '{}' > settings.local.json",
+        "cd -- .axe && printf '{}' > settings.local.json",
         '/repo',
       ),
     ).toEqual([
@@ -866,7 +866,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('ignores redirects attached to cd when resolving static cwd', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        "cd .qwen >/dev/null && echo '{}' > settings.json",
+        "cd .axe >/dev/null && echo '{}' > settings.json",
         '/repo',
       ),
     ).toEqual([
@@ -877,7 +877,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('tracks static pushd targets like cd targets', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        "pushd .qwen && printf '{}' > settings.local.json",
+        "pushd .axe && printf '{}' > settings.local.json",
         '/repo',
       ),
     ).toEqual([
@@ -959,7 +959,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('marks all file ops after dynamic `cd` as cwd-unknown', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        'cd "$QWEN_HOME" && echo hi > ../settings.json',
+        'cd "$AXE_HOME" && echo hi > ../settings.json',
         '/repo',
       ),
     ).toEqual([
@@ -975,7 +975,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('does not mark absolute writes after dynamic `cd` as cwd-dependent', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        'cd "$QWEN_HOME" && echo hi > /tmp/out.txt',
+        'cd "$AXE_HOME" && echo hi > /tmp/out.txt',
         '/repo',
       ),
     ).toEqual([
@@ -989,7 +989,7 @@ describe('extractShellOperationsAcrossCommand', () => {
 
     expect(
       extractShellOperationsAcrossCommand(
-        'cd "$QWEN_HOME" && echo hi 1>/tmp/out.txt',
+        'cd "$AXE_HOME" && echo hi 1>/tmp/out.txt',
         '/repo',
       ),
     ).toEqual([
@@ -1005,7 +1005,7 @@ describe('extractShellOperationsAcrossCommand', () => {
   it('clears cwd-unknown after an absolute static `cd`', () => {
     expect(
       extractShellOperationsAcrossCommand(
-        'cd $TARGET && cd /repo/.qwen && echo hi > settings.json',
+        'cd $TARGET && cd /repo/.axe && echo hi > settings.json',
         '/repo',
       ),
     ).toEqual([
@@ -1028,7 +1028,7 @@ describe('extractShellOperationsAcrossCommand', () => {
 
   it('returns no ops when only `cd` segments are present', () => {
     expect(
-      extractShellOperationsAcrossCommand('cd .qwen && cd ..', '/repo'),
+      extractShellOperationsAcrossCommand('cd .axe && cd ..', '/repo'),
     ).toEqual([]);
   });
 
