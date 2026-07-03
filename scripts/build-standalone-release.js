@@ -203,7 +203,7 @@ function assertStandaloneOutput(outDir) {
     .sort();
   const expectedArchiveNames = RELEASE_TARGETS.map(
     ({ qwenTarget }) =>
-      `qwen-code-${qwenTarget}.${qwenTarget === 'win-x64' ? 'zip' : 'tar.gz'}`,
+      `axe-${qwenTarget}.${qwenTarget === 'win-x64' ? 'zip' : 'tar.gz'}`,
   ).sort();
   const missing = expectedArchiveNames.filter(
     (archiveName) => !archiveNames.includes(archiveName),

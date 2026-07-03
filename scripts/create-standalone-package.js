@@ -123,12 +123,12 @@ async function main() {
   fs.mkdirSync(outDir, { recursive: true });
 
   const targetConfig = TARGETS.get(target);
-  const outputName = `qwen-code-${target}.${targetConfig.outputExtension}`;
+  const outputName = `axe-${target}.${targetConfig.outputExtension}`;
   const outputPath = path.join(outDir, outputName);
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'qwen-standalone-'));
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axe-standalone-'));
 
   try {
-    const packageRoot = path.join(tempRoot, 'qwen-code');
+    const packageRoot = path.join(tempRoot, 'axe');
     const runtimeExtractDir = path.join(tempRoot, 'runtime');
     fs.mkdirSync(packageRoot, { recursive: true });
     fs.mkdirSync(runtimeExtractDir, { recursive: true });
@@ -341,7 +341,7 @@ function copyNativeAddon(packageRoot, target) {
   );
 
   const modulesDir = path.join(packageRoot, 'lib', 'node_modules');
-  const addonDest = path.join(modulesDir, '@qwen-code', 'audio-capture');
+  const addonDest = path.join(modulesDir, '@axe', 'audio-capture');
   fs.mkdirSync(addonDest, { recursive: true });
 
   // Trimmed manifest: keep type/exports so ESM resolution works; drop the
@@ -612,7 +612,7 @@ if [ "\${1:-}" = "serve" ]; then
 fi
 exec "$ROOT/node/bin/node" --expose-gc "$ROOT/lib/cli.js" "$@"
 `;
-  const unixShimPath = path.join(binDir, 'qwen');
+  const unixShimPath = path.join(binDir, 'axe');
   fs.writeFileSync(unixShimPath, unixShim);
   fs.chmodSync(unixShimPath, 0o755);
 
@@ -627,7 +627,7 @@ exit /b %ERRORLEVEL%
 "%ROOT%\\node\\node.exe" "%ROOT%\\lib\\cli-entry.js" %*
 exit /b %ERRORLEVEL%
 `;
-  fs.writeFileSync(path.join(binDir, 'qwen.cmd'), windowsShim);
+  fs.writeFileSync(path.join(binDir, 'axe.cmd'), windowsShim);
 }
 
 function writeManifest(packageRoot, manifest) {
@@ -636,7 +636,7 @@ function writeManifest(packageRoot, manifest) {
     manifestPath,
     JSON.stringify(
       {
-        name: '@qwen-code/qwen-code',
+        name: '@axe/axe',
         version: manifest.version,
         target: manifest.target,
         nodeArchive: manifest.nodeArchive,
@@ -654,7 +654,7 @@ function createArchive(outputExtension, outputPath, cwd) {
     return;
   }
 
-  run('tar', ['-czf', outputPath, '-C', cwd, 'qwen-code']);
+  run('tar', ['-czf', outputPath, '-C', cwd, 'axe']);
 }
 
 function createZipArchive(outputPath, cwd) {
@@ -671,7 +671,7 @@ function createZipArchive(outputPath, cwd) {
       {
         env: {
           ...process.env,
-          QWEN_PACKAGE_ROOT: path.join(cwd, 'qwen-code'),
+          QWEN_PACKAGE_ROOT: path.join(cwd, 'axe'),
           QWEN_OUTPUT_PATH: outputPath,
         },
       },
@@ -679,7 +679,7 @@ function createZipArchive(outputPath, cwd) {
     return;
   }
 
-  run('zip', ['-qr', outputPath, 'qwen-code'], { cwd });
+  run('zip', ['-qr', outputPath, 'axe'], { cwd });
 }
 
 async function writeSha256Sums(outDir) {
@@ -687,14 +687,14 @@ async function writeSha256Sums(outDir) {
     .readdirSync(outDir)
     .filter(
       (entry) =>
-        entry.startsWith('qwen-code-') &&
+        entry.startsWith('axe-') &&
         (entry.endsWith('.tar.gz') || entry.endsWith('.zip')),
     )
     .sort();
 
   if (entries.length === 0) {
     fail(
-      `No qwen-code archives found in ${outDir}; refusing to write empty SHA256SUMS.`,
+      `No axe archives found in ${outDir}; refusing to write empty SHA256SUMS.`,
     );
   }
 
