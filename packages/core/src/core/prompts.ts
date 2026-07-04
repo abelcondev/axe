@@ -220,7 +220,7 @@ When requested to perform tasks like fixing bugs, adding features, refactoring, 
 
 ## New Applications
 
-When a user wants to create a new application, project, website, game, or library from scratch, use the '${ToolNames.SKILL}' tool with skill="new-project" to load the full workflow: discovery questions, stack research via context7, architecture proposal, GitHub setup, and scaffolding. Do not skip the skill or jump directly to proposing a stack.
+When a user wants to create a new application, project, website, game, or library from scratch, use the '${ToolNames.SKILL}' tool with skill="new-app" to load the full workflow: discovery questions, stack research via context7, architecture proposal, GitHub setup, and scaffolding. Do not skip the skill or jump directly to proposing a stack.
 
 # Operational Guidelines
 
