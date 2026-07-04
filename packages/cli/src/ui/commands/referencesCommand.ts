@@ -21,7 +21,9 @@ function mb(bytes: number): string {
  * Renders the reference index status panel: one row per active dependency with
  * its indexing state, file count, size, and source.
  */
-function renderStatus(context: CommandContext): SlashCommandActionReturn {
+async function renderStatus(
+  context: CommandContext,
+): Promise<SlashCommandActionReturn> {
   const { config } = context.services;
   const service = config?.getReferenceService();
   if (!service) {
@@ -32,6 +34,9 @@ function renderStatus(context: CommandContext): SlashCommandActionReturn {
     };
   }
 
+  // The startup scan is stale when the project was scaffolded or deps were
+  // installed mid-session — re-read package.json so the panel never lies.
+  await service.rescan();
   const active = service.getActivePackages();
   if (active.length === 0) {
     return {
@@ -101,6 +106,9 @@ const refreshCommand: SlashCommand = {
       };
     }
 
+    // Pick up dependencies installed after session start (mid-session
+    // scaffold / npm install) before resolving targets.
+    await service.rescan();
     const pkgArg = args.trim();
     const targets = pkgArg
       ? service.getActivePackages().filter((p) => p.name === pkgArg || p.installName === pkgArg)

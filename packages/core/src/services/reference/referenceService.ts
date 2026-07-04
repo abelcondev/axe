@@ -162,6 +162,8 @@ export class ReferenceService implements IReferenceService {
   private ready = false;
   private activePackages: ActivePackage[] = [];
   private moduleResolveRoots: string[] = [];
+  /** cwd of the last initialize() — lets rescan() re-read package.json. */
+  private lastCwd: string | null = null;
   private manifest: ReferenceManifest = {
     version: MANIFEST_VERSION,
     references: {},
@@ -183,8 +185,11 @@ export class ReferenceService implements IReferenceService {
 
   async initialize(cwd: string): Promise<void> {
     this.ready = true;
+    this.lastCwd = cwd;
     this.activePackages = [];
-    this.inFlight.clear();
+    // Note: `inFlight` is deliberately NOT cleared — initialize() doubles as
+    // rescan() and must not lose dedup tracking of indexing tasks already
+    // running in the background.
 
     try {
       const projectRoot = (await findProjectRoot(cwd)) ?? path.resolve(cwd);
@@ -239,6 +244,18 @@ export class ReferenceService implements IReferenceService {
 
   isReady(): boolean {
     return this.ready;
+  }
+
+  /**
+   * Re-reads the project's package.json(s) with the cwd from the last
+   * initialize(). Dependencies installed mid-session (e.g. a project
+   * scaffolded by the new-app workflow after startup) become visible without
+   * restarting — the startup scan is otherwise frozen for the session.
+   */
+  async rescan(): Promise<void> {
+    if (this.lastCwd) {
+      await this.initialize(this.lastCwd);
+    }
   }
 
   getActivePackages(): ActivePackage[] {
@@ -597,7 +614,13 @@ ${lines.join('\n')}`;
     query: string,
     signal?: AbortSignal,
   ): Promise<ReferenceSearchOutcome> {
-    const pkg = this.resolveActive(packageName);
+    let pkg = this.resolveActive(packageName);
+    if (!pkg) {
+      // The startup scan may be stale (dependency installed mid-session).
+      // Re-read package.json once before declaring it not a dependency.
+      await this.rescan();
+      pkg = this.resolveActive(packageName);
+    }
     if (!pkg) {
       return { results: [], reason: 'not-a-dependency' };
     }

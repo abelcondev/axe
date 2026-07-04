@@ -216,8 +216,11 @@ After scaffolding: show the generated folder structure. Wait for confirmation.
 Pin all versions in `package.json`. Run the package manager install.
 Verify there are no peer dependency warnings before reporting.
 
-After install: show which packages were added and any warnings. Wait for
-confirmation.
+After install: show which packages were added and any warnings. Then suggest
+the user run `/references refresh` — it downloads and indexes the real source
+of every production dependency, so during feature development the Reference
+tool answers API questions from the exact installed version instead of
+guessing. Wait for confirmation.
 
 ### Step 4 — Environment variables & gitignore
 

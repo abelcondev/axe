@@ -125,6 +125,30 @@ describe('ReferenceService', () => {
     expect(active[0].version).toBe('1.2.3');
   });
 
+  it('rescan picks up dependencies installed after initialize', async () => {
+    // Initialize BEFORE the project exists (mid-session scaffold scenario).
+    const svc = new ReferenceService();
+    await svc.initialize(projectDir);
+    expect(svc.getActivePackages()).toEqual([]);
+
+    await scaffoldProject();
+    await svc.rescan();
+    expect(svc.getActivePackages().map((p) => p.name)).toEqual(['foo']);
+  });
+
+  it('search rescans instead of reporting not-a-dependency on a stale scan', async () => {
+    const svc = new ReferenceService();
+    await svc.initialize(projectDir);
+    expect(svc.getActivePackages()).toEqual([]);
+
+    // Project scaffolded + deps installed mid-session (new-app workflow).
+    await scaffoldProject();
+
+    const outcome = await svc.search('foo', 'createFoo');
+    expect(outcome.reason).not.toBe('not-a-dependency');
+    expect(svc.getActivePackages().map((p) => p.name)).toEqual(['foo']);
+  });
+
   it('indexes from local node_modules and persists the manifest', async () => {
     await scaffoldProject();
     const svc = new ReferenceService();

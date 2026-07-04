@@ -84,6 +84,11 @@ export interface IReferenceService {
    * throws.
    */
   initialize(cwd: string): Promise<void>;
+  /**
+   * Re-runs {@link initialize} with the last cwd so dependencies installed
+   * mid-session become visible without a restart. No-op before initialize.
+   */
+  rescan(): Promise<void>;
   /** True once {@link initialize} has run. */
   isReady(): boolean;
   /** The production dependencies eligible for indexing. */
