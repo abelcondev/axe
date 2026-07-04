@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import type { Mock } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -147,6 +148,48 @@ describe('ReferenceService', () => {
     const outcome = await svc.search('foo', 'createFoo');
     expect(outcome.reason).not.toBe('not-a-dependency');
     expect(svc.getActivePackages().map((p) => p.name)).toEqual(['foo']);
+  });
+
+  it('falls back to node_modules when the git clone exceeds the size cap', async () => {
+    await scaffoldProject();
+    (execCommand as Mock).mockImplementation(
+      async (cmd: string, args: string[] = []) => {
+        if (cmd === 'npm' && args[0] === 'view') {
+          return {
+            stdout: 'git+https://github.com/acme/foo.git\n',
+            stderr: '',
+            code: 0,
+          };
+        }
+        if (cmd === 'git' && args[0] === 'clone') {
+          // "Clone" an oversized monorepo into the destination dir.
+          const dest = args[args.length - 1];
+          await fs.mkdir(dest, { recursive: true });
+          const fh = await fs.open(path.join(dest, 'big.bin'), 'w');
+          await fh.truncate(151 * 1024 * 1024);
+          await fh.close();
+          return { stdout: '', stderr: '', code: 0 };
+        }
+        return { stdout: '', stderr: '', code: 1 };
+      },
+    );
+
+    try {
+      const svc = new ReferenceService();
+      await svc.initialize(projectDir);
+      const entry = await svc.ensureIndexed('foo');
+      // The oversized git clone is discarded; the local install (exact
+      // published files of the resolved version) is indexed instead.
+      expect(entry?.status).toBe('indexed');
+      expect(entry?.source).toBe('local');
+    } finally {
+      // Restore the default all-fail implementation for subsequent tests.
+      (execCommand as Mock).mockImplementation(async () => ({
+        stdout: '',
+        stderr: '',
+        code: 1,
+      }));
+    }
   });
 
   it('indexes from local node_modules and persists the manifest', async () => {

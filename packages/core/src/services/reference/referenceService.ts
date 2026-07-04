@@ -31,7 +31,7 @@ import type {
 const debugLogger = createDebugLogger('ReferenceService');
 
 /** Hard cap on the on-disk size of a single indexed package. */
-const MAX_INDEX_BYTES = 50 * 1024 * 1024;
+const MAX_INDEX_BYTES = 150 * 1024 * 1024;
 /** How many packages to fetch concurrently during background warmup. */
 const BACKGROUND_INDEX_CONCURRENCY = 3;
 /** Cap on search matches returned to the model. */
@@ -414,6 +414,15 @@ ${lines.join('\n')}`;
       repo = await this.tryGit(pkg, cachePath);
       if (repo !== undefined) {
         source = 'git';
+        // An oversized clone is usually a monorepo carrying far more than
+        // this package (server, examples, sibling packages). Discard it and
+        // fall through to the local install, which holds exactly the
+        // published files of the resolved version.
+        if ((await dirStats(cachePath)).size > MAX_INDEX_BYTES) {
+          await rmrf(cachePath);
+          source = null;
+          repo = undefined;
+        }
       }
       // Strategy 2: copy the local node_modules install.
       if (!source && (await this.tryLocal(pkg, cachePath))) {
