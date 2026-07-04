@@ -43,11 +43,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # package-lock.json is gitignored in this repo, but a workspace
-          # prepare hook (vscode-ide-companion generate:notices) reads it during
-          # install. Materialize the lockfile first (no scripts), then install.
-          npm install --package-lock-only --ignore-scripts
-          npm install
+          # --ignore-scripts skips the root `prepare` hook (which runs the FULL
+          # build incl. webui/web-shell — broken in this fork) and other workspace
+          # prepare hooks. We then apply the ink patch manually (normally done by
+          # the patch-package postinstall) and run our own --cli-only build below.
+          npm install --ignore-scripts
+          npx patch-package
 
       - name: Compute version
         id: ver
