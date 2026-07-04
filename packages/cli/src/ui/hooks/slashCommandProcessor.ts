@@ -605,6 +605,19 @@ export const useSlashCommandProcessor = (
               return null;
             },
           );
+          // SkillTool.refreshSkills() ran at construction, BEFORE this
+          // provider existed — its in-memory validation set has no
+          // model-invocable commands until a SkillManager change fires, so
+          // the tool would reject commands (e.g. sdd-setup) that the
+          // <available_skills> listing (recomputed fresh each turn) already
+          // advertises. Mirror the /skills dialog and the non-interactive
+          // path: suppress the slash-reload listener (this load IS the
+          // reload) and notify so SkillTool re-collects with the provider.
+          const skillManager = config.getSkillManager();
+          if (skillManager) {
+            skillManager.suppressNextSlashReload();
+            await skillManager.notifyConfigChanged();
+          }
         }
         setCommands(commandService.getCommandsForMode('interactive'));
       } catch (error) {

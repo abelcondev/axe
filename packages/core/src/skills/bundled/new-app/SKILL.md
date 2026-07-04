@@ -123,9 +123,22 @@ When research is done, report a short summary of findings before Phase 3.
 
 Execute **one sub-step at a time**. After each: report and wait.
 
-### Step 1 — git init
+### Step 1 — git init (in the project directory, never above it)
 
-Check `git status`. If the directory is not a git repository, run `git init`.
+The repository must belong to the project directory itself. **Never
+initialize or reuse a repository at the user's home directory or any other
+parent directory.**
+
+1. Confirm you are working inside a dedicated project folder. If axe was
+   started in the user's home or a general-purpose directory, stop: ask the
+   user to create (or pick) a folder for this project — offer to create it
+   for them — and do all remaining work inside that folder.
+2. Run `git rev-parse --show-toplevel`:
+   - It fails → run `git init` in the project directory.
+   - It prints the project directory → a repo already exists; reuse it.
+   - It prints a directory **above** the project (e.g. the home directory is
+     itself a git repo) → do NOT reuse that repo: run
+     `git init <project-dir>` so the project gets its own repository.
 
 ### Step 2 — Scaffold the SDD knowledge base
 
