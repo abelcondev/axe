@@ -9,10 +9,13 @@ on:
   push:
     branches: [main]
     # Don't cut a release for docs-only or CI-config-only changes.
+    # Note: '**.md' would also exclude skill files (packages/**/*.md) which ARE
+    # product code. Use explicit doc paths instead.
     paths-ignore:
-      - '**.md'
+      - '*.md'
+      - 'docs/**'
+      - 'docs-site/**'
       - '.github/**'
-      - 'axe-plan.md'
   workflow_dispatch:
     inputs:
       version:
