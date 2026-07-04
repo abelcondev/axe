@@ -40,6 +40,8 @@ This installs a standalone build (with a bundled Node.js runtime, so Node is **n
 
 > Restart your terminal after installation to ensure environment variables take effect.
 
+**Updating:** re-run the same command — it fetches the latest release and swaps the install in place.
+
 <details>
 <summary>Options & uninstall</summary>
 
