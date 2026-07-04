@@ -17,6 +17,9 @@ export const STREAM_DEBOUNCE_MS = 100;
 /** Axe brand color used for the logo and inline-code highlights. */
 export const AXE_BRAND_COLOR = '#b8621f';
 
+/** Lighter rust variant for dark backgrounds (accents, inline code). */
+export const AXE_BRAND_COLOR_BRIGHT = '#d98a4a';
+
 export const SHELL_COMMAND_NAME = 'Shell Command';
 
 export const SHELL_NAME = 'Shell';

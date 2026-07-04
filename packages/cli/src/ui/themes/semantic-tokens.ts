@@ -5,6 +5,7 @@
  */
 
 import { lightTheme, darkTheme, ansiTheme } from './theme.js';
+import { AXE_BRAND_COLOR, AXE_BRAND_COLOR_BRIGHT } from '../constants.js';
 
 export interface SemanticColors {
   text: {
@@ -16,6 +17,8 @@ export interface SemanticColors {
   };
   background: {
     primary: string;
+    /** Subtle shading behind user messages; omit for no shading. */
+    message?: string;
     diff: {
       added: string;
       removed: string;
@@ -46,10 +49,11 @@ export const lightSemanticColors: SemanticColors = {
     secondary: lightTheme.Gray,
     link: lightTheme.AccentBlue,
     accent: lightTheme.AccentPurple,
-    code: lightTheme.LightBlue,
+    code: AXE_BRAND_COLOR,
   },
   background: {
     primary: lightTheme.Background,
+    message: '#ECECEC',
     diff: {
       added: lightTheme.DiffAdded,
       removed: lightTheme.DiffRemoved,
@@ -79,10 +83,11 @@ export const darkSemanticColors: SemanticColors = {
     secondary: darkTheme.Gray,
     link: darkTheme.AccentBlue,
     accent: darkTheme.AccentPurple,
-    code: darkTheme.LightBlue,
+    code: AXE_BRAND_COLOR_BRIGHT,
   },
   background: {
     primary: darkTheme.Background,
+    message: '#2F2F36',
     diff: {
       added: darkTheme.DiffAdded,
       removed: darkTheme.DiffRemoved,

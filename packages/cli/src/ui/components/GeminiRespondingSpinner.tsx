@@ -86,14 +86,14 @@ export const GeminiSpinner: React.FC<GeminiSpinnerProps> = ({
     // Ink forbids <Box> nested inside <Text>. The 3-char fixed-width frames
     // already give us stable layout without an explicit width container.
     return (
-      <Text color={theme.text.primary}>
+      <Text color={theme.text.accent}>
         {TMUX_SPINNER_FRAMES[tmuxFrameIndex]}
       </Text>
     );
   }
 
   return (
-    <Text color={theme.text.primary}>
+    <Text color={theme.text.accent}>
       <Spinner type={spinnerType} />
     </Text>
   );

@@ -897,7 +897,10 @@ export const AppContainer = (props: AppContainerProps) => {
     return { inputWidth, suggestionsWidth };
   }, [terminalWidth]);
   // Uniform width for bordered box components: accounts for margins and caps at 100
-  const mainAreaWidth = Math.min(terminalWidth - 4, 100);
+  // Leave extra right-margin slack: terminals that render East Asian
+  // Ambiguous characters (á, é, →, —, ◆…) as double-width would otherwise
+  // hard-wrap our longest lines at the terminal edge.
+  const mainAreaWidth = Math.max(20, Math.min(terminalWidth - 8, 100));
   const staticAreaMaxItemHeight = Math.max(terminalHeight * 4, 100);
 
   const isValidPath = useCallback((filePath: string): boolean => {

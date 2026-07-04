@@ -198,20 +198,37 @@ const ContinuationMarkdownMessage: React.FC<
   );
 };
 
-export const UserMessage: React.FC<UserMessageProps> = ({ text }) => (
-  // The TUI paints no background of its own; user messages render directly on
-  // the terminal background so they blend in across terminals and themes.
+export const UserMessage: React.FC<UserMessageProps> = ({ text }) => {
+  // Claude Code-style block: primary-colored text over a subtle shaded band.
+  // theme.background.message is optional — themes without it (e.g. ansi,
+  // no-color) fall back to an unshaded block on the terminal background.
   // Vertical spacing comes from the history container (getHistoryItemMarginTop
   // in HistoryItemDisplay) so user/assistant gaps share one source of truth.
-  <PrefixedTextMessage
-    text={text}
-    prefix=">"
-    prefixColor={theme.text.accent}
-    textColor={theme.text.accent}
-    ariaLabel={SCREEN_READER_USER_PREFIX}
-    alignSelf="flex-start"
-  />
-);
+  const prefix = '>';
+  const prefixWidth = getPrefixWidth(prefix);
+
+  return (
+    <Box
+      flexDirection="row"
+      alignSelf="flex-start"
+      backgroundColor={theme.background.message}
+    >
+      <Box width={prefixWidth} flexShrink={0}>
+        <Text
+          color={theme.text.secondary}
+          aria-label={SCREEN_READER_USER_PREFIX}
+        >
+          {prefix}
+        </Text>
+      </Box>
+      <Box flexGrow={1}>
+        <Text wrap="wrap" color={theme.text.primary}>
+          {text}
+        </Text>
+      </Box>
+    </Box>
+  );
+};
 
 export const UserShellMessage: React.FC<UserShellMessageProps> = ({ text }) => {
   const commandToDisplay = text.startsWith('!') ? text.substring(1) : text;

@@ -209,7 +209,10 @@ const HistoryItemDisplayComponent: React.FC<HistoryItemDisplayProps> = ({
   const showTimestamps = settings.merged.output?.showTimestamps === true;
 
   const itemForDisplay = useMemo(() => escapeAnsiCtrlCodes(item), [item]);
-  const contentWidth = terminalWidth - 4;
+  // Cap content width and keep right-margin slack (see mainAreaWidth in
+  // AppContainer): long prose stays readable and lines never touch the
+  // terminal edge, which hard-wraps on ambiguous-width glyphs (á, →, —…).
+  const contentWidth = Math.max(20, Math.min(terminalWidth - 8, 100));
   const boxWidth = mainAreaWidth || contentWidth;
 
   return (
@@ -219,6 +222,7 @@ const HistoryItemDisplayComponent: React.FC<HistoryItemDisplayProps> = ({
       marginTop={marginTop}
       marginLeft={2}
       marginRight={2}
+      width={contentWidth}
     >
       {/* Render standard message types */}
       {itemForDisplay.type === 'user' && (

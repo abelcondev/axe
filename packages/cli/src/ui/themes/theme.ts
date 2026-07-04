@@ -44,6 +44,7 @@ export interface CustomTheme {
   };
   background?: {
     primary?: string;
+    message?: string;
     diff?: {
       added?: string;
       removed?: string;
@@ -90,8 +91,8 @@ export const lightTheme: ColorsTheme = {
   Background: '#FAFAFA',
   Foreground: '',
   LightBlue: '#89BDCD',
-  AccentBlue: '#3B82F6',
-  AccentPurple: '#8B5CF6',
+  AccentBlue: '#4E7E9B',
+  AccentPurple: '#B8621F',
   AccentCyan: '#06B6D4',
   AccentGreen: '#3CA84B',
   AccentYellow: '#D5A40A',
@@ -102,7 +103,7 @@ export const lightTheme: ColorsTheme = {
   DiffRemoved: '#FFCCCC',
   Comment: '#008000',
   Gray: '#97a0b0',
-  GradientColors: ['#4796E4', '#847ACE', '#C3677F'],
+  GradientColors: ['#D98A4A', '#B8621F', '#8A4A17'],
 };
 
 export const darkTheme: ColorsTheme = {
@@ -110,8 +111,8 @@ export const darkTheme: ColorsTheme = {
   Background: '#1E1E2E',
   Foreground: '',
   LightBlue: '#ADD8E6',
-  AccentBlue: '#89B4FA',
-  AccentPurple: '#CBA6F7',
+  AccentBlue: '#7FA8BF',
+  AccentPurple: '#D98A4A',
   AccentCyan: '#89DCEB',
   AccentGreen: '#A6E3A1',
   AccentYellow: '#F9E2AF',
@@ -122,7 +123,7 @@ export const darkTheme: ColorsTheme = {
   DiffRemoved: '#430000',
   Comment: '#6C7086',
   Gray: '#6C7086',
-  GradientColors: ['#4796E4', '#847ACE', '#C3677F'],
+  GradientColors: ['#D98A4A', '#B8621F', '#8A4A17'],
 };
 
 export const ansiTheme: ColorsTheme = {
@@ -179,6 +180,12 @@ export class Theme {
       },
       background: {
         primary: this.colors.Background,
+        message:
+          this.type === 'light'
+            ? '#ECECEC'
+            : this.type === 'dark'
+              ? '#2F2F36'
+              : undefined,
         diff: {
           added: this.colors.DiffAdded,
           removed: this.colors.DiffRemoved,
@@ -439,6 +446,7 @@ export function createCustomTheme(customTheme: CustomTheme): Theme {
     },
     background: {
       primary: customTheme.background?.primary ?? colors.Background,
+      message: customTheme.background?.message,
       diff: {
         added: customTheme.background?.diff?.added ?? colors.DiffAdded,
         removed: customTheme.background?.diff?.removed ?? colors.DiffRemoved,

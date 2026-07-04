@@ -624,13 +624,13 @@ export const TableRenderer: React.FC<TableRendererProps> = ({
 
         // Re-apply base color after any SGR reset (\x1b[39m or \x1b[0m)
         if (isHeader) {
-          const linkCode = getColorCode(theme.text.link);
-          const recolored = linkCode
-            ? recolorAfterResets(padded, linkCode)
+          const headerCode = getColorCode(theme.text.accent);
+          const recolored = headerCode
+            ? recolorAfterResets(padded, headerCode)
             : padded;
           const styledPadded = applyColor(
             ansiFmt.bold(recolored),
-            theme.text.link,
+            theme.text.accent,
           );
           line += ' ' + styledPadded + ' ' + borderPipe;
         } else {
