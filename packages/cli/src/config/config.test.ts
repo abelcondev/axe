@@ -2625,7 +2625,9 @@ describe('loadCliConfig with includeDirectories', () => {
 
     expect(config.getManagedAutoMemoryEnabled()).toBe(true);
     expect(config.getManagedAutoDreamEnabled()).toBe(true);
-    expect(config.getAutoSkillEnabled()).toBe(true);
+    // Auto-skill is opt-in: background skill generation interrupts the flow
+    // with review prompts, so it defaults off.
+    expect(config.getAutoSkillEnabled()).toBe(false);
   });
 
   it('autoSkillConfirm: defaults to true when unset', async () => {
@@ -3434,7 +3436,7 @@ describe('loadCliConfig fileFiltering', () => {
       '.cursorignore',
     ]);
     expect(config.getFileService().getQwenIgnoreFileNamesDisplay()).toBe(
-      '.qwenignore, .cursorignore',
+      '.axeignore, .cursorignore',
     );
   });
 });
