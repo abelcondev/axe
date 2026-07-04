@@ -2327,7 +2327,7 @@ describe('AppContainer State Management', () => {
         process.stdout.write as ReturnType<typeof vi.fn>
       ).mock.calls.filter((call: string[]) => call[0].includes('\x1b]2;'));
       expect(titleWrites).toHaveLength(1);
-      expect(titleWrites[0][0]).toBe(titleEscape('Qwen - workspace'));
+      expect(titleWrites[0][0]).toBe(titleEscape('workspace - axe'));
       unmount();
     });
 
@@ -2373,7 +2373,7 @@ describe('AppContainer State Management', () => {
         process.stdout.write as ReturnType<typeof vi.fn>
       ).mock.calls.filter((call: string[]) => call[0].includes('\x1b]2;'));
       expect(titleWrites).toHaveLength(1);
-      expect(titleWrites[0][0]).toBe(titleEscape('Qwen - workspace'));
+      expect(titleWrites[0][0]).toBe(titleEscape('workspace - axe'));
       unmount();
     });
 
@@ -2420,7 +2420,7 @@ describe('AppContainer State Management', () => {
         process.stdout.write as ReturnType<typeof vi.fn>
       ).mock.calls.filter((call: string[]) => call[0].includes('\x1b]2;'));
       expect(titleWrites).toHaveLength(1);
-      expect(titleWrites[0][0]).toBe(titleEscape('Qwen - workspace'));
+      expect(titleWrites[0][0]).toBe(titleEscape('workspace - axe'));
       unmount();
     });
 
@@ -2468,11 +2468,11 @@ describe('AppContainer State Management', () => {
       ).mock.calls.filter((call: string[]) => call[0].includes('\x1b]2;'));
       expect(titleWrites).toHaveLength(1);
       const calledWith = titleWrites[0][0];
-      expect(calledWith).toContain('Qwen - workspace');
+      expect(calledWith).toContain('workspace - axe');
       expect(calledWith).toContain('\x1b]0;');
       expect(calledWith).toContain('\x1b]2;');
       expect(calledWith).toContain('\x07');
-      expect(calledWith).toBe(titleEscape('Qwen - workspace'));
+      expect(calledWith).toBe(titleEscape('workspace - axe'));
       unmount();
     });
 
@@ -2519,7 +2519,7 @@ describe('AppContainer State Management', () => {
         process.stdout.write as ReturnType<typeof vi.fn>
       ).mock.calls.filter((call: string[]) => call[0].includes('\x1b]2;'));
       expect(titleWrites).toHaveLength(1);
-      expect(titleWrites[0][0]).toBe(titleEscape('Qwen - workspace'));
+      expect(titleWrites[0][0]).toBe(titleEscape('workspace - axe'));
       unmount();
     });
 
@@ -2655,11 +2655,11 @@ describe('AppContainer State Management', () => {
         'Fix terminal title',
       );
       // When null, falls back to computeWindowTitle() which returns
-      // 'Qwen - qwen' when CLI_TITLE is not set.
-      expect(formatSessionWindowTitle(null)).toBe('Qwen - qwen');
+      // 'axe' when CLI_TITLE is not set.
+      expect(formatSessionWindowTitle(null)).toBe('axe');
       // When null with a folder name, adds the Qwen prefix.
       expect(formatSessionWindowTitle(null, 'my-project')).toBe(
-        'Qwen - my-project',
+        'my-project - axe',
       );
       // Session names with control characters are sanitized at entry point.
       expect(formatSessionWindowTitle('Bad\x07Title')).toBe('BadTitle');
@@ -2750,7 +2750,7 @@ describe('AppContainer State Management', () => {
 
       // When sessionName is null (revert case), should use computeWindowTitle fallback
       const staticTitle = formatSessionWindowTitle(null, folderName);
-      expect(staticTitle).toBe('Qwen - my-project');
+      expect(staticTitle).toBe('my-project - axe');
 
       // When CLI_TITLE is set, it should use that instead
       vi.stubEnv('CLI_TITLE', 'Custom Title');

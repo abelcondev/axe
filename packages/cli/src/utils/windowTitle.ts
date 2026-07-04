@@ -28,7 +28,8 @@ export function sanitizeWindowTitle(title: string): string {
  */
 export function computeWindowTitle(folderName?: string): string {
   return sanitizeWindowTitle(
-    process.env['CLI_TITLE'] || `Qwen - ${folderName || DEFAULT_WINDOW_TITLE}`,
+    process.env['CLI_TITLE'] ||
+      (folderName ? `${folderName} - axe` : DEFAULT_WINDOW_TITLE),
   );
 }
 

@@ -37,13 +37,13 @@ describe('<Header />', () => {
 
   it('renders the ASCII logo on wide terminal', () => {
     const { lastFrame } = render(<Header {...defaultProps} />);
-    expect(lastFrame()).toContain('██╔═══██╗');
+    expect(lastFrame()).toContain('╚██╗██╔╝');
   });
 
   it('hides the ASCII logo on narrow terminal', () => {
     useTerminalSizeMock.mockReturnValue({ columns: 60, rows: 24 });
     const { lastFrame } = render(<Header {...defaultProps} />);
-    expect(lastFrame()).not.toContain('██╔═══██╗');
+    expect(lastFrame()).not.toContain('╚██╗██╔╝');
     expect(lastFrame()).toContain('>_ Axe');
   });
 
@@ -106,7 +106,7 @@ describe('<Header />', () => {
 
     const { lastFrame } = render(<Header {...defaultProps} />);
 
-    expect(lastFrame()).toContain('██╔═══██╗');
+    expect(lastFrame()).toContain('╚██╗██╔╝');
   });
 
   it('renders the custom subtitle in place of the blank spacer row', () => {
@@ -154,7 +154,7 @@ describe('<Header />', () => {
       />,
     );
     expect(lastFrame()).toContain('LARGE_LOGO');
-    expect(lastFrame()).not.toContain('██╔═══██╗');
+    expect(lastFrame()).not.toContain('╚██╗██╔╝');
   });
 
   it('falls back to the small tier when the large one does not fit', () => {
@@ -179,7 +179,7 @@ describe('<Header />', () => {
         customAsciiArt={{ small: 'X'.repeat(150), large: 'Y'.repeat(150) }}
       />,
     );
-    expect(lastFrame()).not.toContain('██╔═══██╗');
+    expect(lastFrame()).not.toContain('╚██╗██╔╝');
     expect(lastFrame()).not.toContain('X'.repeat(150));
     expect(lastFrame()).not.toContain('Y'.repeat(150));
     // Info panel still renders.

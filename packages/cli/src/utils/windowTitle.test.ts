@@ -23,9 +23,9 @@ describe('computeWindowTitle', () => {
     process.env = originalEnv;
   });
 
-  it('should use default Qwen title when CLI_TITLE is not set', () => {
+  it('should use default axe title when CLI_TITLE is not set', () => {
     const result = computeWindowTitle();
-    expect(result).toBe('Qwen - qwen');
+    expect(result).toBe('axe');
   });
 
   it('should use CLI_TITLE environment variable when set', () => {
@@ -34,9 +34,9 @@ describe('computeWindowTitle', () => {
     expect(result).toBe('Custom Title');
   });
 
-  it('should use Qwen prefix with folder name when CLI_TITLE is not set', () => {
+  it('should use folder name with axe suffix when CLI_TITLE is not set', () => {
     const result = computeWindowTitle('my-project');
-    expect(result).toBe('Qwen - my-project');
+    expect(result).toBe('my-project - axe');
   });
 
   it('should prefer CLI_TITLE over folder name', () => {
@@ -60,7 +60,7 @@ describe('computeWindowTitle', () => {
 
   it('should fall back to default when folderName is empty string', () => {
     const result = computeWindowTitle('');
-    expect(result).toBe('Qwen - qwen');
+    expect(result).toBe('axe');
   });
 });
 
@@ -195,7 +195,7 @@ describe('formatSessionWindowTitle', () => {
 
   it('should fall back to computeWindowTitle when sessionName is null', () => {
     expect(formatSessionWindowTitle(null, 'my-project')).toBe(
-      'Qwen - my-project',
+      'my-project - axe',
     );
   });
 
@@ -209,6 +209,6 @@ describe('formatSessionWindowTitle', () => {
   });
 
   it('should use default title when sessionName is null and no folder', () => {
-    expect(formatSessionWindowTitle(null)).toBe('Qwen - qwen');
+    expect(formatSessionWindowTitle(null)).toBe('axe');
   });
 });

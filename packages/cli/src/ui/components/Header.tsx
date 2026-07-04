@@ -6,13 +6,12 @@
 
 import type React from 'react';
 import { Box, Text } from 'ink';
-import Gradient from 'ink-gradient';
 import { shortenPath, tildeifyPath } from '@axe/core';
 import { theme } from '../semantic-colors.js';
 import { shortAsciiLogo } from './AsciiArt.js';
 import { getAsciiArtWidth, getCachedStringWidth } from '../utils/textUtils.js';
 import { useTerminalSize } from '../hooks/useTerminalSize.js';
-import { getRenderableGradientColors } from '../utils/gradientUtils.js';
+import { AXE_BRAND_COLOR } from '../constants.js';
 import { pickAsciiArtTier } from '../utils/customBanner.js';
 import { t } from '../../i18n/index.js';
 
@@ -164,12 +163,6 @@ export const Header: React.FC<HeaderProps> = ({
         ? shortenedPath.slice(0, maxPathLength)
         : shortenedPath;
 
-  const gradientColors = getRenderableGradientColors(theme.ui.gradient, [
-    theme.text.secondary,
-    theme.text.link,
-    theme.text.accent,
-  ]);
-
   return (
     <Box
       flexDirection="row"
@@ -181,13 +174,7 @@ export const Header: React.FC<HeaderProps> = ({
       {showLogo && (
         <>
           <Box flexShrink={0}>
-            {gradientColors ? (
-              <Gradient colors={gradientColors}>
-                <Text>{displayLogo}</Text>
-              </Gradient>
-            ) : (
-              <Text>{displayLogo}</Text>
-            )}
+            <Text color={AXE_BRAND_COLOR}>{displayLogo}</Text>
           </Box>
           {/* Fixed gap between logo and info panel */}
           <Box width={logoGap} />
@@ -206,7 +193,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Title line: customBannerTitle (already sanitized) or the default
             ">_ Axe" brand. Version suffix is always appended. */}
         <Text>
-          <Text bold color={theme.text.accent}>
+          <Text bold color={AXE_BRAND_COLOR}>
             {customBannerTitle ? customBannerTitle : '>_ Axe'}
           </Text>
           <Text color={theme.text.secondary}> (v{version})</Text>

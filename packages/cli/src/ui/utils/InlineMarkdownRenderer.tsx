@@ -7,6 +7,7 @@
 import React from 'react';
 import { Text } from 'ink';
 import { theme } from '../semantic-colors.js';
+import { AXE_BRAND_COLOR } from '../constants.js';
 import stringWidth from 'string-width';
 import { createDebugLogger } from '@axe/core';
 import { renderInlineLatex } from './latexRenderer.js';
@@ -142,7 +143,7 @@ const RenderInlineInternal: React.FC<RenderInlineProps> = ({
         const codeMatch = fullMatch.match(/^(`+)(.+?)\1$/s);
         if (codeMatch && codeMatch[2]) {
           renderedNode = (
-            <Text key={key} color={theme.text.code}>
+            <Text key={key} color={AXE_BRAND_COLOR}>
               {codeMatch[2]}
             </Text>
           );

@@ -14,6 +14,9 @@ export const UI_WIDTH =
 
 export const STREAM_DEBOUNCE_MS = 100;
 
+/** Axe brand color used for the logo and inline-code highlights. */
+export const AXE_BRAND_COLOR = '#b8621f';
+
 export const SHELL_COMMAND_NAME = 'Shell Command';
 
 export const SHELL_NAME = 'Shell';

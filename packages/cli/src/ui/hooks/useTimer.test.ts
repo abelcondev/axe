@@ -42,12 +42,16 @@ describe('useTimer', () => {
     expect(result.current).toBe(3);
   });
 
-  it('should report sub-second wall-clock time while active', () => {
+  it('should report whole seconds only while active', () => {
     const { result } = renderHook(() => useTimer(true, 0));
     act(() => {
       vi.advanceTimersByTime(500);
     });
-    expect(result.current).toBe(0.5);
+    expect(result.current).toBe(0);
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    expect(result.current).toBe(1);
   });
 
   it('should keep timing stable if the system clock moves backward', () => {
@@ -189,9 +193,9 @@ describe('useTimer', () => {
 
     rerender({ resetKey: 1, isPaused: false });
     act(() => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(1000);
     });
-    expect(result.current).toBe(0.5);
+    expect(result.current).toBe(1);
   });
 
   it('should accumulate elapsedTime across multiple pause and resume cycles', () => {
@@ -213,20 +217,20 @@ describe('useTimer', () => {
 
     rerender({ isPaused: false });
     act(() => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(1000);
     });
-    expect(result.current).toBe(1.5);
+    expect(result.current).toBe(2);
 
     rerender({ isPaused: true });
     act(() => {
       vi.advanceTimersByTime(1000);
     });
-    expect(result.current).toBe(1.5);
+    expect(result.current).toBe(2);
 
     rerender({ isPaused: false });
     act(() => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(1000);
     });
-    expect(result.current).toBe(2);
+    expect(result.current).toBe(3);
   });
 });

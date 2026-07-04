@@ -117,7 +117,7 @@ describe('<AppHeader />', () => {
       createSettings({ hideTips: false, hideBanner: true }),
     );
     expect(lastFrame()).not.toContain('>_ Axe');
-    expect(lastFrame()).not.toContain('██╔═══██╗');
+    expect(lastFrame()).not.toContain('╚██╗██╔╝');
   });
 
   it('renders the custom subtitle end-to-end through resolveCustomBanner (replaces the blank spacer between title and auth line)', () => {
@@ -149,6 +149,6 @@ describe('<AppHeader />', () => {
     expect(frame).not.toContain('>_ Axe');
     expect(frame).toContain('ACME');
     // Default Qwen logo must NOT bleed through when the user supplied art.
-    expect(frame).not.toContain('██╔═══██╗');
+    expect(frame).not.toContain('╚██╗██╔╝');
   });
 });
