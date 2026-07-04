@@ -42,7 +42,12 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          # package-lock.json is gitignored in this repo, but a workspace
+          # prepare hook (vscode-ide-companion generate:notices) reads it during
+          # install. Materialize the lockfile first (no scripts), then install.
+          npm install --package-lock-only --ignore-scripts
+          npm install
 
       - name: Compute version
         id: ver
