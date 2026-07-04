@@ -158,6 +158,29 @@ Write the proposal to `sdd/proposal.md` (`type: Proposal`,
 with this skill). It must be built around the user's stack from Phase 2, with
 every version pinned from the research.
 
+**Quality bar — the proposal must read like a senior engineer wrote it:**
+
+- **Folder structure is modular by domain, not flat.** Group code by
+  feature/domain (e.g. `features/orders/` with its own components, stores,
+  types), keep routes/pages thin (they compose features), and share only
+  true primitives (`components/ui/`, `utils/`). Annotate every folder with
+  its purpose. Scale it to the project — a small CLI doesn't need domain
+  modules, a multi-screen app does; say which shape applies and why.
+- **Explicit module boundaries.** State the dependency direction (routes →
+  features → shared) and the rules that keep it (features don't import each
+  other directly; nothing imports from routes).
+- **Data model with intent.** Entities, relationships, and the constraints
+  that matter (uniqueness, ordering, timestamps, indexes for hot queries) —
+  not just a table list.
+- **The critical flow, engineered.** Walk the one flow that cannot fail
+  step by step and state what happens when each step fails (offline,
+  hardware down, double-submit, races between clients).
+- **Every non-obvious choice justified** by a discovery answer or a research
+  finding. No generic filler.
+
+Before presenting, self-review: would a senior engineer sign this? If any
+section is generic enough to fit any project, rewrite it for this one.
+
 **Gate: direct the user to review `sdd/proposal.md` and stop. Do not
 scaffold, do not install, do not write any other files until the user
 explicitly approves the architecture.**

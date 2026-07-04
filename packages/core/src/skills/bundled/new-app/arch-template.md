@@ -32,16 +32,49 @@ timestamp: <ISO-8601 timestamp>
 
 ## Data Model
 
-<!-- Simplified entity list with key relationships. Table or bullet list. -->
+<!-- Entities + relationships + the constraints that matter (uniqueness,
+     ordering, soft-delete, timestamps, indexes for the hot queries). Not
+     just a table list — a senior reader should see the shape of the data
+     and why it holds. -->
 
 ## Folder Structure
+
+<!-- Modular by domain, not flat-by-type. Routes/pages stay thin and compose
+     feature modules; only true primitives are shared. Annotate every folder
+     with its purpose. Scale it to the project: a CLI tool or landing page
+     doesn't need feature modules — say which shape applies and why. -->
 
 ```
 <project-name>/
   src/
+    lib/
+      db.ts                 # client init
+      types.ts              # cross-feature types only — feature types live in the feature
+      utils/                # generic helpers (currency, dates)
+      components/ui/        # shared primitives (Button, Dialog, …)
+      features/
+        <domain>/           # one folder per business domain
+          components/
+          stores/
+          types.ts
+    routes/                 # thin — compose features, no business logic
   sdd/
+  static/
   .env.example
 ```
+
+### Module boundaries
+
+<!-- Dependency direction and the rules that keep it, e.g.:
+     routes → features → lib/{components/ui, utils, types}.
+     Features never import each other directly — share via lib/types or
+     events. Nothing imports from routes. -->
+
+## Critical Flow & Failure Modes
+
+<!-- Walk the one flow that cannot fail (from discovery) step by step. For
+     each step: what happens when it fails — offline, hardware down,
+     double-submit, race between terminals? State the recovery behavior. -->
 
 ## Auth Strategy
 
