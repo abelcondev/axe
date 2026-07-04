@@ -222,11 +222,24 @@ confirmation.
 ### Step 4 — Environment variables & gitignore
 
 Create `.env.example` with every required key documented. Ensure `.gitignore`
-covers `.env` (plus OS/editor noise). Never commit `.env`.
+covers `.env` (and variants), `.axe/` (session-internal state — unless the
+user wants to version project-level axe config), and OS/editor noise. Never
+commit `.env`.
 
 After creating: show the file contents. Wait for confirmation.
 
-### Step 5 — Repository
+### Step 5 — First commit
+
+The commit must exist BEFORE the repository step — `gh repo create --push`
+fails on a repo with no commits.
+
+Stage the project, review `git status` for anything that should not be
+committed (fix `.gitignore` if something leaked), and propose the commit
+message (e.g. `chore: initial project setup`). Ask the user whether they
+want to run the commit themselves or have you do it — default to doing it
+yourself once they confirm the message. Verify with `git log -1`.
+
+### Step 6 — Repository
 
 Ask the user: create a new GitHub repo, or is there an existing remote?
 - **New repo**: present the exact command for the USER to run — do not run it
@@ -234,15 +247,12 @@ Ask the user: create a new GitHub repo, or is there an existing remote?
   ```bash
   gh repo create <project-name> --private --source=. --remote=origin --push
   ```
-- **Existing remote**: help configure it (`git remote add origin ...`).
+  The first commit from Step 5 already exists, so `--push` works.
+- **Existing remote**: help configure it (`git remote add origin ...`) and
+  push once the user confirms.
 
-Offer a minimal CI workflow (lint + typecheck on push/PR) in one line — create
-it only if the user says yes.
-
-### Step 6 — First commit
-
-Stage the project and propose the first commit message (e.g.
-`chore: initial project setup`). Run the commit once the user confirms.
+Offer a minimal CI workflow (lint + typecheck on push/PR) in one line —
+create it only if the user says yes. If they accept, commit it and push.
 
 ### Step 7 — Handoff (end of skill)
 
@@ -251,6 +261,11 @@ and that from now on features follow the standing SDD loop: they describe a
 feature, you run a mini-discovery, write `sdd/proposal.md` for review, and on
 approval continue per the SDD workflow in your system prompt. Do not start
 proposing features yourself.
+
+If the repo has a remote (and especially if CI was added), also suggest the
+day-to-day git mode in two lines: substantial features on a feature branch +
+PR (CI checks + preview deploy before merge), small fixes committed directly
+to main. Offer to explain the workflow if the user is not familiar with it.
 
 ---
 
