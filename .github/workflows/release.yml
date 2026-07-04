@@ -79,6 +79,12 @@ jobs:
         run: |
           npm run build -- --cli-only
           npm run bundle
+          # prepare:package gates on the web-shell UI (shipped by the npm
+          # package), which this fork doesn't build. Stub it so the packaging
+          # step still generates dist/cli-entry.js for the standalone archive.
+          # `axe serve`'s browser UI is out of scope; the CLI is unaffected.
+          mkdir -p dist/web-shell/assets
+          printf '<!doctype html><meta charset="utf-8"><title>axe serve</title>' > dist/web-shell/index.html
           npm run prepare:package
 
       - name: Build standalone archives
