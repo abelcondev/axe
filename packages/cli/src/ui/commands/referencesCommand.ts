@@ -142,23 +142,41 @@ const refreshCommand: SlashCommand = {
       };
     }
 
-    // Confirmed: index each target, forcing a re-fetch.
-    let ok = 0;
-    let failed = 0;
-    for (const pkg of targets) {
-      const entry = await service.ensureIndexed(pkg.installName, {
-        force: true,
-      });
-      if (entry?.status === 'indexed') {
-        ok++;
-      } else {
-        failed++;
+    // Confirmed: index in the background. Cloning several monorepos can take
+    // minutes (each fetch has its own network timeout) and slash-command
+    // actions block the composer while they run — awaiting here left the UI
+    // without an input box until every clone finished.
+    const { addItem } = context.ui;
+    void (async () => {
+      let ok = 0;
+      let failed = 0;
+      for (const pkg of targets) {
+        try {
+          const entry = await service.ensureIndexed(pkg.installName, {
+            force: true,
+          });
+          if (entry?.status === 'indexed') {
+            ok++;
+          } else {
+            failed++;
+          }
+        } catch {
+          failed++;
+        }
       }
-    }
+      addItem(
+        {
+          type: failed === 0 ? 'info' : 'warning',
+          text: `References: indexed ${ok} package(s)${failed ? `, ${failed} failed` : ''}. Run \`/references\` for details.`,
+        },
+        Date.now(),
+      );
+    })();
+
     return {
       type: 'message',
-      messageType: failed === 0 ? 'info' : 'warning',
-      content: `Indexed ${ok} package(s)${failed ? `, ${failed} failed` : ''}. Run \`/references\` for details.`,
+      messageType: 'info',
+      content: `Indexing ${targets.length} package(s) in the background… Run \`/references\` to check progress.`,
     };
   },
 };

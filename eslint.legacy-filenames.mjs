@@ -283,6 +283,7 @@ export const legacyFilenames = [
   'readManyFiles',
   'readStdin',
   'recapCommand',
+  'referencesCommand',
   'registerSkillHooks',
   'relevanceSelector',
   'rememberCommand',
