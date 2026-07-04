@@ -555,7 +555,16 @@ export const useSlashCommandProcessor = (
                 services: { config, settings, logger: null },
               } as unknown as Parameters<typeof cmd.action>[0];
               const result = await cmd.action(minimalContext, args);
-              if (!result || result.type !== 'submit_prompt') return null;
+              if (!result) return null;
+              // Built-in actions with deterministic side effects (e.g.
+              // sdd-setup) report back via a message result — surface it
+              // to the model verbatim instead of dropping it.
+              if (result.type === 'message') {
+                return result.messageType === 'error'
+                  ? { error: result.content }
+                  : result.content;
+              }
+              if (result.type !== 'submit_prompt') return null;
               const output = hasUserPromptExpansionHooks(config)
                 ? await config
                     .getHookSystem()

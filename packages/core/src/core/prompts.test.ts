@@ -721,11 +721,17 @@ describe('SDD harness', () => {
   it('always includes the 8-step workflow and hard rules', () => {
     const harness = getSddHarness();
     expect(harness).toContain('Spec-Driven Development');
-    expect(harness).toContain('Discovery');
+    expect(harness).toContain('Mini-discovery');
     expect(harness).toContain('Proposal');
     expect(harness).toContain('Verify');
     expect(harness).toContain('explicit approval before writing production');
     expect(harness).toContain('English');
+    // Proportionality: trivial fixes bypass the proposal entirely.
+    expect(harness).toContain('Proportionality');
+    // proposal.md is transient staging; durable references point at decisions/.
+    expect(harness).toContain('transient staging');
+    // Architecture-relevant choices made mid-implementation become Decisions.
+    expect(harness).toContain('mid-implementation');
   });
 
   it('shows the /sdd-setup hint when there is no knowledge base', () => {

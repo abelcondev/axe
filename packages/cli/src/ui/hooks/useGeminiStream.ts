@@ -477,19 +477,6 @@ export const useGeminiStream = (
   const turnSawContentEventRef = useRef(false);
   const lastPromptErroredRef = useRef(false);
 
-  // Wrapper around addItem that attaches timestamp to gemini items for display.
-  // Only 'gemini' (new assistant turn) gets a timestamp; 'gemini_content'
-  // (same turn, performance-split continuation) does not.
-  const commitItem = useCallback(
-    (item: HistoryItemWithoutId, userMessageTimestamp: number): number => {
-      if (item.type === 'gemini' && !(item as HistoryItemGemini).timestamp) {
-        (item as HistoryItemGemini).timestamp = Date.now();
-      }
-      return addItem(item, userMessageTimestamp);
-    },
-    [addItem],
-  );
-
   const dualOutput = useDualOutput();
   const [isResponding, setIsResponding] = useState<boolean>(false);
   // React state can lag by one render; this tracks the actual stream lifetime.
@@ -511,6 +498,35 @@ export const useGeminiStream = (
   const auxiliaryAbortRefsRef = useRef<Set<AbortController>>(new Set());
   const [pendingHistoryItem, pendingHistoryItemRef, setPendingHistoryItem] =
     useStateAndRef<HistoryItemWithoutId | null>(null);
+  // Wrapper around addItem that attaches timestamp to gemini items for display.
+  // Only 'gemini' (new assistant turn) gets a timestamp; 'gemini_content'
+  // (same turn, performance-split continuation) does not.
+  const commitItem = useCallback(
+    (item: HistoryItemWithoutId, userMessageTimestamp: number): number => {
+      if (
+        (item.type === 'gemini' || item.type === 'gemini_content') &&
+        item === pendingHistoryItemRef.current
+      ) {
+        // Committing the turn's tail chunk: final commits always pass the
+        // pending ref, while intermediate performance-split chunks pass
+        // literals (their trailing newlines separate them from the next
+        // chunk and must survive). Strip trailing blank lines here so the
+        // gap below the finalized message comes from layout margins, not
+        // from stray model newlines — the live preview already trims them
+        // (MarkdownDisplay), so this keeps the pending→<Static> transition
+        // from shifting content.
+        const trimmed = item.text.trimEnd();
+        if (trimmed !== item.text) {
+          item = { ...item, text: trimmed };
+        }
+      }
+      if (item.type === 'gemini' && !(item as HistoryItemGemini).timestamp) {
+        (item as HistoryItemGemini).timestamp = Date.now();
+      }
+      return addItem(item, userMessageTimestamp);
+    },
+    [addItem, pendingHistoryItemRef],
+  );
   // Streamed model reasoning for the current turn. Rendered (height-limited)
   // above the answer while thinking, then committed to history as a
   // collapsible `gemini_thought` block when the answer/tool/turn begins.

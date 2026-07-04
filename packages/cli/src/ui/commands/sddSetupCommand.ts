@@ -73,6 +73,7 @@ const TASK_TEMPLATE = `---
 type: Task
 title: Short task title
 description: One-line summary of the task.
+decision: decisions/NNN-name.md
 tags: []
 status: pending
 timestamp: ${new Date().toISOString()}
@@ -112,6 +113,9 @@ export const sddSetupCommand: SlashCommand = {
     return 'Scaffold the SDD (Spec-Driven Development) knowledge base under sdd/.';
   },
   kind: CommandKind.BUILT_IN,
+  // Deterministic filesystem scaffold — safe for the model to invoke via the
+  // Skill tool (e.g. from the new-app workflow) so templates live in one place.
+  modelInvocable: true,
   supportedModes: ['interactive', 'non_interactive', 'acp'] as const,
   action: async (
     context: CommandContext,
@@ -166,9 +170,14 @@ export const sddSetupCommand: SlashCommand = {
         lines.push(`  = ${f}`);
       }
     }
+    // Re-index immediately so the knowledge tool and the system prompt's
+    // knowledge summary (recomputed per call) pick up the new bundle in this
+    // same session — no restart required.
+    await config.getKnowledgeService()?.initialize(targetDir);
+
     lines.push('');
     lines.push(
-      'SDD knowledge base ready. Restart the session (or it will be picked up on the next start) so the knowledge index loads into context.',
+      'SDD knowledge base ready. The knowledge index is loaded and available in this session.',
     );
 
     return {

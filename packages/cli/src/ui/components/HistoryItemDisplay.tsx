@@ -157,6 +157,7 @@ function getHistoryItemMarginTop(item: HistoryItem): number {
   switch (item.type) {
     case 'gemini':
     case 'gemini_thought':
+    case 'user':
       return 1;
     case 'gemini_content':
     case 'gemini_thought_content':
@@ -174,7 +175,6 @@ function getHistoryItemMarginTop(item: HistoryItem): number {
     case 'insight_progress':
     case 'btw':
     case 'away_recap':
-    case 'user':
     case 'user_prompt_submit_blocked':
     case 'stop_hook_loop':
     case 'stop_hook_system_message':

@@ -1,7 +1,9 @@
 ---
-type: Decision
+type: Proposal
 title: Architecture — <project-name>
-status: proposed
+description: Initial architecture proposal for <project-name>.
+status: in review
+timestamp: <ISO-8601 timestamp>
 ---
 
 # Architecture: <project-name>
@@ -9,79 +11,56 @@ status: proposed
 ## Context
 
 <!-- One paragraph: what is being built, for whom, and the key constraints
-     from the discovery phase that drive the decisions below. -->
+     from discovery (decisions/001-discovery.md) that drive the decisions
+     below. -->
 
----
+## Stack
 
-## Option A — <stack-name> (Recommended)
+<!-- Built around the user's chosen base. Every version pinned from Phase 2
+     research — never "latest". "Chosen by" records whether the layer came
+     from the user's preference or from research. -->
 
-### Stack
+| Layer | Technology | Version | Chosen by |
+|---|---|---|---|
+| Frontend | | | user |
+| Backend/BaaS | | | user |
+| Database | | | user |
+| UI components | | | research |
+| Icons | | | research |
+| Auth | | | |
+| Hosting | | | |
 
-| Layer | Technology | Version |
-|---|---|---|
-| Frontend | | |
-| Backend/BaaS | | |
-| Database | | |
-| Auth | | |
-| Hosting | | |
-| CI/CD | | |
+## Data Model
 
-### Data Model
+<!-- Simplified entity list with key relationships. Table or bullet list. -->
 
-<!-- Simplified entity list with key relationships. Use a table or bullet list. -->
-
-### Folder Structure
+## Folder Structure
 
 ```
 <project-name>/
   src/
   sdd/
-  .github/workflows/
   .env.example
 ```
 
-### Auth Strategy
+## Auth Strategy
 
 <!-- How authentication works. Who can log in, how sessions are managed. -->
 
-### Deployment
+## Deployment
 
 <!-- Where it runs, how it gets deployed, estimated cost. -->
 
-### Why this fits
+## Why this fits
 
-<!-- 2–3 bullets connecting discovery answers to this choice. -->
+<!-- 2–3 bullets connecting discovery answers + the user's stack preferences
+     to this design. -->
 
-### Tradeoffs
+## Alternatives considered
 
-<!-- What this option sacrifices vs. Option B. -->
+<!-- Only for layers where a real choice existed (user had no preference, or
+     research surfaced a conflict): the alternative + why it was not chosen. -->
 
----
+## Open questions
 
-## Option B — <stack-name>
-
-### Stack
-
-| Layer | Technology | Version |
-|---|---|---|
-| Frontend | | |
-| Backend/BaaS | | |
-| Database | | |
-| Auth | | |
-| Hosting | | |
-
-### Why consider it
-
-<!-- When would Option B be the better choice. -->
-
-### Tradeoffs
-
-<!-- What this option sacrifices vs. Option A. -->
-
----
-
-## Decision
-
-> Waiting for user approval.
-
-<!-- After approval, record here: chosen option + any modifications the user requested. -->
+<!-- Decisions that still need the user's input before approval. -->

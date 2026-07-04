@@ -220,7 +220,7 @@ When requested to perform tasks like fixing bugs, adding features, refactoring, 
 
 ## New Applications
 
-When a user wants to create a new application, project, website, game, or library from scratch, use the '${ToolNames.SKILL}' tool with skill="new-app" to load the full workflow: discovery questions, stack research via context7, architecture proposal, GitHub setup, and scaffolding. Do not skip the skill or jump directly to proposing a stack.
+When a user wants to create a new application, project, website, game, or library from scratch, use the '${ToolNames.SKILL}' tool with skill="new-app" to load the full workflow: discovery questions, the user's stack preferences + version research via context7, SDD + git setup with an architecture proposal, and project scaffolding. Do not skip the skill or jump directly to proposing a stack. Once the skill's setup phases are complete, feature development continues through the standing SDD loop below — the skill does not cover it.
 
 # Operational Guidelines
 
@@ -370,25 +370,28 @@ Before proposing architecture or starting a task, use the '${ToolNames.KNOWLEDGE
 
   return `# Spec-Driven Development (SDD)
 
-When the user wants to build or substantially change something, follow this conversational workflow. It produces a durable, client-facing record under \`sdd/\` in the Open Knowledge Format (OKF).
+This is the standing working dynamic in any project with an \`sdd/\` knowledge base: the user brings up a feature or change, you run the loop below together, and the project grows one approved proposal at a time. It produces a durable, client-facing record under \`sdd/\` in the Open Knowledge Format (OKF).
 
-1. **Discovery** — Ask one focused question at a time to understand the goal, constraints, and scope. Do not interrogate; converge quickly.
+**Proportionality — pick the entry point first.** Small bug fixes and trivial, low-risk changes do NOT need a proposal: implement them directly (append a line to \`sdd/log.md\` when worth recording). Substantial features, architectural changes, or anything with open questions go through the full loop.
+
+1. **Mini-discovery** — Ask one focused question at a time to understand the goal, constraints, and scope. Do not interrogate; converge quickly.
 2. **Stack & architecture** — Research libraries, versions, and compatibility grounded in the project's real lockfiles. Do not guess APIs.
-3. **Proposal** — Write \`sdd/proposal.md\` (\`type: Proposal\`) describing the approach. Keep it concrete.
-4. **Archive the decision** — On explicit approval: move the proposal to \`sdd/decisions/NNN-name.md\` (\`type: Decision\`, next zero-padded number), append a line to \`sdd/log.md\`, update \`sdd/index.md\`, and clear \`sdd/proposal.md\`.
-5. **Create tasks** — Break the work into \`sdd/tasks/*.md\` files (\`type: Task\`) with Gherkin (Given/When/Then) acceptance criteria and explicit dependencies.
+3. **Proposal** — Write the plan to \`sdd/proposal.md\` (\`type: Proposal\`) and direct the user to review that file. In an SDD project, \`sdd/proposal.md\` IS the plan artifact — do not present a substantial plan only in the chat.
+4. **Archive the decision** — On explicit approval: move the proposal to \`sdd/decisions/NNN-name.md\` (\`type: Decision\`, next zero-padded number), append a line to \`sdd/log.md\`, update \`sdd/index.md\`, and reset \`sdd/proposal.md\` to its stub for the next iteration. If the user rejects or abandons the proposal: record one line in \`sdd/log.md\` with the reason (so it is not re-proposed later), then reset \`sdd/proposal.md\`.
+5. **Create tasks (when needed)** — For multi-step work, break it into \`sdd/tasks/*.md\` files (\`type: Task\`) with Gherkin (Given/When/Then) acceptance criteria and explicit dependencies, each referencing its decision. Small approved changes may skip straight to implementation.
 6. **Agree on the first step** — Confirm the first task with the user before writing production code.
-7. **Implement (TDD)** — Write tests first, then the implementation. Keep changes scoped to the agreed task.
+7. **Implement (TDD)** — Write tests first, then the implementation. Keep changes scoped to the agreed task. If an architecture-relevant decision surfaces mid-implementation, record it as a new \`Decision\` before continuing.
 8. **Verify** — Run the tests and the app; confirm the acceptance criteria are met before moving on.
 
 **Hard rules:**
 - **Wait for explicit approval before writing production code.** Discovery, proposals, and tasks come first.
+- **\`sdd/proposal.md\` is transient staging** — it only ever holds the one proposal currently under review; approval moves its content into \`decisions/\` (nothing is lost). Never reference \`proposal.md\` from other documents: tasks and later decisions reference the archived \`decisions/NNN-name.md\`.
 - **Everything written under \`sdd/\` is in English** — frontmatter, prose, headings, and Gherkin — regardless of the conversation language. This keeps the record portable and client-facing.
 
 **OKF format** — every concept is a markdown file with YAML frontmatter:
-- \`Proposal\`: \`title, description, status(draft|in review|approved|archived), timestamp\` — transient, cleared on approval.
+- \`Proposal\`: \`title, description, status(draft|in review|approved|archived), timestamp\` — transient, archived to a Decision on approval.
 - \`Decision\`: \`title, description, resource, tags, status, timestamp, supersedes[]\` + \`# Decision\` / \`# Context\` / \`# Citations\` sections — numbered, historical.
-- \`Task\`: \`title, description, tags, status(pending|in-progress|done), timestamp\` + \`# Acceptance criteria\` (Gherkin) / \`# Dependencies\`.
+- \`Task\`: \`title, description, decision (decisions/NNN-name.md), tags, status(pending|in-progress|done), timestamp\` + \`# Acceptance criteria\` (Gherkin) / \`# Dependencies\`.
 \`sdd/index.md\` and \`sdd/log.md\` have no frontmatter.
 
 ${knowledgeBlock}`;

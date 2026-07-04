@@ -201,6 +201,8 @@ const ContinuationMarkdownMessage: React.FC<
 export const UserMessage: React.FC<UserMessageProps> = ({ text }) => (
   // The TUI paints no background of its own; user messages render directly on
   // the terminal background so they blend in across terminals and themes.
+  // Vertical spacing comes from the history container (getHistoryItemMarginTop
+  // in HistoryItemDisplay) so user/assistant gaps share one source of truth.
   <PrefixedTextMessage
     text={text}
     prefix=">"
@@ -208,7 +210,6 @@ export const UserMessage: React.FC<UserMessageProps> = ({ text }) => (
     textColor={theme.text.accent}
     ariaLabel={SCREEN_READER_USER_PREFIX}
     alignSelf="flex-start"
-    marginTop={1}
   />
 );
 

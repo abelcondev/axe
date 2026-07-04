@@ -186,7 +186,10 @@ export class BuiltinCommandLoader implements ICommandLoader {
         ...cmd,
         source: 'builtin-command' as const,
         sourceLabel: 'Built-in',
-        modelInvocable: false,
+        // Built-ins are user-only unless they explicitly opt in (e.g.
+        // sdd-setup, whose deterministic scaffold the model may invoke
+        // through the Skill tool).
+        modelInvocable: cmd.modelInvocable ?? false,
         userInvocable: cmd.userInvocable ?? true,
       }));
   }

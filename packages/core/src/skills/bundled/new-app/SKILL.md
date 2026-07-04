@@ -1,8 +1,10 @@
 ---
 name: new-app
-description: End-to-end workflow for creating a new application from scratch.
-  Covers discovery, stack research via context7, architecture proposal, project
-  setup, and SDD-driven feature development. Never skips phases or gates.
+description: Workflow for creating a new application from scratch. Covers
+  discovery, the user's stack preferences with version research via context7,
+  SDD + git setup with an architecture proposal, and project setup. Ends when
+  the project foundations are delivered — feature development then continues
+  through the native SDD loop.
 when_to_use: When the user asks to create a new application, project, website, game, mobile app, CLI tool, or library from scratch.
 ---
 
@@ -11,6 +13,11 @@ when_to_use: When the user asks to create a new application, project, website, g
 This workflow keeps the user in control at every step. **Never batch multiple
 phases or sub-steps**. Always report what you did, then wait for the user to
 say "continue" or give the next instruction before moving forward.
+
+It covers project creation only — Phases 1 to 4. Once Phase 4 delivers the
+project foundations, this skill is done: feature development continues through
+the standing SDD loop from your system prompt (mini-discovery → proposal →
+approval → tasks → implementation), not through this skill.
 
 ## Core Rule: One Step at a Time
 
@@ -21,20 +28,6 @@ After any step that writes files, runs commands, or installs dependencies:
 
 If the user says something like "sigue" or "continúa" without specifying what,
 do the **next single sub-step** only — not everything remaining.
-
----
-
-## Artifact Paths
-
-SDD artifacts live in `<project-dir>/sdd/`. Do not create them before the
-project directory exists (Phase 4, step 2).
-
-- `sdd/discovery.md` — answered discovery questions (`type: Decision`)
-- `sdd/architecture.md` — approved architecture (`type: Decision`)
-- `sdd/proposals/<feature>.md` — feature proposal awaiting approval (`type: Proposal`)
-- `sdd/tasks/<feature>.md` — tasks for an approved feature (`type: Task`)
-
-KnowledgeService picks up the entire `sdd/` tree in future sessions.
 
 ---
 
@@ -77,19 +70,35 @@ what the user already said. Do not rush or combine all questions into one block.
 - Deadline or specific launch date?
 
 When all questions are answered, summarize the answers back to the user to
-confirm. Hold them in context — do not write to disk yet.
+confirm. Hold them in context — they are written to disk in Phase 3, step 3.
 
 **Gate:** confirm the summary with the user before moving to Phase 2.
 
 ---
 
-## Phase 2: Research (mandatory — do not skip)
+## Phase 2: The User's Stack First, Then Research
 
-For every library or framework being considered, run these steps in order.
-Do **not** propose a stack without completing this phase.
+**Never propose a stack before asking.** The user usually arrives with a base
+stack already in mind and deep expertise in specific technologies. Your job is
+to build around their base, not to replace it.
+
+### Step 1 — Ask for the user's stack
+
+Ask conversationally (not as a form):
+- Which base technologies do you plan to use? (frontend framework,
+  backend/BaaS, database)
+- Any other pieces already decided? (UI library, auth, hosting)
+- Where do you have the most expertise, and is there anything you want to avoid?
+
+### Step 2 — Research (mandatory — do not skip)
+
+Take the user's base (e.g. frontend + database) and build everything else
+around it: UI component library, icons, state management, forms, validation —
+whatever the project needs. For every library — the user's picks AND the
+complements you propose — run these steps in order:
 
 ```
-For each candidate library:
+For each library:
   1. resolve-library-id (context7 MCP) — find the library's context7 ID
   2. get-library-docs   (context7 MCP) — current version, breaking changes, known issues
   3. Cross-check peer dependencies between all candidates
@@ -102,176 +111,110 @@ Research output must include for each library:
 - Any breaking changes or known issues relevant to the use case
 - Whether it's production-ready for the requirements from Phase 1
 
-When research is done, report a short summary of findings before presenting
-the architecture proposal.
+If a user choice conflicts with a discovery requirement (e.g. offline-first vs
+a server-only stack), flag the conflict and explain it — never silently
+substitute the user's technology. The user decides.
+
+When research is done, report a short summary of findings before Phase 3.
 
 ---
 
-## Phase 3: Architecture Proposal
+## Phase 3: SDD + Git + Architecture Proposal
 
-Using the structure from `arch-template.md` (co-located with this skill),
-present **two options** (with a recommended one) in the conversation. Each
-option must cover:
+Execute **one sub-step at a time**. After each: report and wait.
 
-- Stack with pinned versions (from Phase 2 research)
-- Data model (simplified entity list)
-- Folder structure
-- Auth strategy
-- Deployment target
-- Why this option fits the discovery answers
-- Tradeoffs vs. the other option
+### Step 1 — git init
 
-Hold the approved option in context. It will be written to `sdd/architecture.md`
-in Phase 4, step 2.
+Check `git status`. If the directory is not a git repository, run `git init`.
 
-**Gate: stop here and wait for explicit user approval before doing anything
-else. Do not scaffold, do not install, do not write any files until the user
-says the architecture is approved.**
+### Step 2 — Scaffold the SDD knowledge base
+
+Invoke the `sdd-setup` command through the Skill tool (skill="sdd-setup").
+It creates `sdd/` (index.md, log.md, proposal.md, decisions/, tasks/) and
+loads the knowledge index into the current session.
+
+### Step 3 — Record discovery
+
+Write the confirmed Phase 1 answers to `sdd/decisions/001-discovery.md`
+(`type: Decision`), append a line to `sdd/log.md`, and update `sdd/index.md`.
+
+### Step 4 — Write the architecture proposal
+
+Write the proposal to `sdd/proposal.md` (`type: Proposal`,
+`status: in review`) using the structure from `arch-template.md` (co-located
+with this skill). It must be built around the user's stack from Phase 2, with
+every version pinned from the research.
+
+**Gate: direct the user to review `sdd/proposal.md` and stop. Do not
+scaffold, do not install, do not write any other files until the user
+explicitly approves the architecture.**
 
 If the user changes the stack (e.g., "I want InstantDB instead"), return to
-Phase 2 and re-research the new libraries before updating the proposal.
+Phase 2 research for the new libraries, then update the proposal.
 
 ---
 
-## Phase 4: Setup
+## Phase 4: Setup (After Approval)
 
-Execute **one sub-step at a time**. After each sub-step: report what was done
-and wait for the user to say "continue" before moving to the next.
+Starts only when the user approves the architecture proposal. Execute **one
+sub-step at a time**. After each: report and wait for confirmation.
 
-### Step 1 — Scaffold
+### Step 1 — Archive the decision
+
+Move the approved proposal to `sdd/decisions/002-architecture.md`
+(`type: Decision`), append a line to `sdd/log.md`, update `sdd/index.md`, and
+reset `sdd/proposal.md` to its stub — leaving it ready for the first feature's
+proposal.
+
+### Step 2 — Scaffold the app
 
 Run the scaffold command with pinned versions from Phase 2. Do not use
-`@latest`. Most scaffold tools auto-run `git init` — verify with `git status`
-and do not run `git init` manually if the scaffold already did.
+`@latest`. The directory already contains `sdd/` and `.git`: if the scaffold
+tool refuses a non-empty directory, scaffold into a temporary subdirectory and
+move the results into the project root.
 
 After scaffolding: show the generated folder structure. Wait for confirmation.
-
-### Step 2 — SDD artifacts
-
-```bash
-mkdir sdd
-```
-
-Write these two files (content held in context from Phases 1 and 3):
-- `sdd/discovery.md` with `type: Decision` frontmatter
-- `sdd/architecture.md` with `type: Decision` frontmatter, using arch-template.md structure
-
-After writing: confirm the files were created. Wait for confirmation.
 
 ### Step 3 — Dependencies
 
 Pin all versions in `package.json`. Run the package manager install.
 Verify there are no peer dependency warnings before reporting.
 
-After install: show which packages were added and any warnings. Wait for confirmation.
+After install: show which packages were added and any warnings. Wait for
+confirmation.
 
-### Step 4 — Environment variables
+### Step 4 — Environment variables & gitignore
 
-Create `.env.example` with every required key documented. Never commit `.env`.
-Add `.env` to `.gitignore` if not already there.
+Create `.env.example` with every required key documented. Ensure `.gitignore`
+covers `.env` (plus OS/editor noise). Never commit `.env`.
 
 After creating: show the file contents. Wait for confirmation.
 
-### Step 5 — Minimal CI
+### Step 5 — Repository
 
-Create `.github/workflows/ci.yml` with lint + typecheck on every push and PR.
+Ask the user: create a new GitHub repo, or is there an existing remote?
+- **New repo**: present the exact command for the USER to run — do not run it
+  yourself:
+  ```bash
+  gh repo create <project-name> --private --source=. --remote=origin --push
+  ```
+- **Existing remote**: help configure it (`git remote add origin ...`).
 
-After creating: show the workflow. Wait for confirmation.
+Offer a minimal CI workflow (lint + typecheck on push/PR) in one line — create
+it only if the user says yes.
 
-### Step 6 — GitHub repo (user decision — do not run automatically)
+### Step 6 — First commit
 
-Present the exact command and let the user decide:
+Stage the project and propose the first commit message (e.g.
+`chore: initial project setup`). Run the commit once the user confirms.
 
-```bash
-gh repo create <project-name> --private --source=. --remote=origin --push
-```
+### Step 7 — Handoff (end of skill)
 
-Explain: this creates the repo on GitHub, sets the remote, and pushes the
-initial commit in one step. Tell the user to run it when ready, or skip if
-the repo already exists.
-
-**Do not run this command yourself.**
-
----
-
-## Phase 5: Feature Development (SDD Loop)
-
-After setup is complete, development follows a Proposal → Approval → Tasks →
-Implementation cycle. Never start coding a feature without an approved Proposal.
-
-### Step 5.1 — Write a Proposal
-
-For each new feature (starting with the critical flow from Phase 1):
-
-Create `sdd/proposals/<feature-name>.md` with this structure:
-
-```markdown
----
-type: Proposal
-title: <Feature Name>
-status: draft
----
-
-## What
-One paragraph: what this feature does and why it matters.
-
-## Scope
-Bullet list of exactly what is included and explicitly what is NOT included.
-
-## Affected files
-List the files that will be created or modified.
-
-## Open questions
-Any decisions that still need the user's input before implementation starts.
-```
-
-After writing the proposal: show it to the user. Wait for approval.
-If there are open questions, answer them with the user before proceeding.
-
-**Gate: do not write any implementation code until the user approves the Proposal.**
-
-### Step 5.2 — Write Tasks
-
-Once the Proposal is approved, create `sdd/tasks/<feature-name>.md`:
-
-```markdown
----
-type: Task
-title: <Feature Name>
-proposal: proposals/<feature-name>.md
-status: in-progress
----
-
-## Tasks
-
-- [ ] Task 1 — description
-- [ ] Task 2 — description
-- [ ] Task 3 — description
-```
-
-Show the task list to the user. Ask if the breakdown looks right before starting.
-
-### Step 5.3 — Implement one task at a time
-
-Pick the first unchecked task. Implement only that task.
-After each task: show what was changed, mark it done in the task file, and
-ask the user whether to continue to the next task.
-
-Do not implement multiple tasks in one response.
-
-### Step 5.4 — Verify before closing
-
-When all tasks are checked, run the type checker and linter.
-If there are errors, fix them one at a time before reporting completion.
-
-Update the proposal status to `approved` and task status to `done`.
-
-### Step 5.5 — Next feature
-
-Ask the user what to work on next. Go back to Step 5.1.
-
-If the user changes a requirement that affects the architecture, create a new
-`sdd/decisions/<topic>.md` recording the change before touching code.
+The workflow ends here. Tell the user the project foundations are delivered
+and that from now on features follow the standing SDD loop: they describe a
+feature, you run a mini-discovery, write `sdd/proposal.md` for review, and on
+approval continue per the SDD workflow in your system prompt. Do not start
+proposing features yourself.
 
 ---
 
@@ -285,7 +228,9 @@ full control.
 
 ## Returning to a phase
 
-- Requirement changes the architecture → back to Phase 3, new approval gate.
-- Dependency conflict found in Phase 4 → back to Phase 2, resolve, then continue.
-- New feature → always start at Phase 5.1 (Proposal), never skip to code.
-- Do not loop more than twice between phases without asking the user explicitly.
+- Requirement changes the architecture → back to Phase 3, step 4; new approval
+  gate.
+- Dependency conflict found in Phase 4 → back to Phase 2, resolve, then
+  continue.
+- Do not loop more than twice between phases without asking the user
+  explicitly.
