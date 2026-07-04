@@ -33,30 +33,46 @@
 **Linux / macOS:**
 
 ```bash
-curl -fsSL https://qwen-code-assets.oss-cn-hangzhou.aliyuncs.com/installation/install-qwen-standalone.sh | bash
+curl -fsSL https://raw.githubusercontent.com/abelcondev/axe/main/scripts/installation/install-axe-standalone.sh | bash
 ```
 
-**Windows:**
-
-```powershell
-irm https://qwen-code-assets.oss-cn-hangzhou.aliyuncs.com/installation/install-qwen-standalone.ps1 | iex
-```
+This installs a standalone build (with a bundled Node.js runtime, so Node is **not** required) to `~/.local/bin/axe` and adds it to your `PATH`.
 
 > Restart your terminal after installation to ensure environment variables take effect.
 
 <details>
-<summary>NPM / Homebrew</summary>
+<summary>Options & uninstall</summary>
 
-**NPM** (requires [Node.js 22+](https://nodejs.org/)):
+Install without modifying your shell rc, or into a custom location:
 
 ```bash
-npm install -g @qwen-code/qwen-code@latest
+curl -fsSL https://raw.githubusercontent.com/abelcondev/axe/main/scripts/installation/install-axe-standalone.sh | \
+  AXE_INSTALL_ROOT="$HOME/.local" bash -s -- --no-modify-path
 ```
 
-**Homebrew** (macOS / Linux):
+Uninstall:
 
 ```bash
-brew install qwen-code
+curl -fsSL https://raw.githubusercontent.com/abelcondev/axe/main/scripts/installation/uninstall-axe-standalone.sh | bash
+```
+
+Prebuilt archives for `darwin` (arm64/x64), `linux` (arm64/x64), and `win-x64`
+are attached to each [GitHub Release](https://github.com/abelcondev/axe/releases/latest).
+
+</details>
+
+<details>
+<summary>Build from source</summary>
+
+Requires [Node.js 22+](https://nodejs.org/). `npm` is used for install (workspace
+hoisting); scripts can be run with `bun`.
+
+```bash
+git clone https://github.com/abelcondev/axe.git
+cd axe
+npm install
+npm run build -- --cli-only && npm run bundle
+node dist/cli.js --version    # or alias: axe -> node <repo>/dist/cli.js
 ```
 
 </details>
@@ -64,7 +80,7 @@ brew install qwen-code
 ## Quick Start
 
 ```bash
-qwen          # Launch interactive terminal UI
+axe           # Launch interactive terminal UI
 # Inside the session:
 /auth         # Configure your provider and API key
 ```
