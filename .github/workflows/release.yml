@@ -75,6 +75,9 @@ jobs:
           echo "version=$NEW" >> "$GITHUB_OUTPUT"
           echo "Releasing v$NEW"
 
+      - name: Bump version
+        run: npm pkg set version="${{ steps.ver.outputs.version }}"
+
       - name: Build CLI + bundle
         run: |
           npm run build -- --cli-only
