@@ -44,11 +44,14 @@ jobs:
       - name: Install dependencies
         run: |
           # --ignore-scripts skips the root `prepare` hook (which runs the FULL
-          # build incl. webui/web-shell — broken in this fork) and other workspace
-          # prepare hooks. We then apply the ink patch manually (normally done by
-          # the patch-package postinstall) and run our own --cli-only build below.
+          # build incl. webui/web-shell — broken in this fork) and workspace
+          # prepare hooks (e.g. vscode generate:notices, which needs a lockfile).
+          # Materialize the gitignored lockfile first as a safety net, install
+          # without scripts, then apply the ink patch via the direct binary
+          # (npx would re-trigger an npm exec that runs the broken prepare).
+          npm install --package-lock-only --ignore-scripts
           npm install --ignore-scripts
-          npx patch-package
+          node_modules/.bin/patch-package
 
       - name: Compute version
         id: ver
