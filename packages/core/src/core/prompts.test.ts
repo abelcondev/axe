@@ -718,12 +718,17 @@ describe('getCompressionPrompt', () => {
 });
 
 describe('SDD harness', () => {
-  it('always includes the 9-step workflow and hard rules', () => {
+  it('always includes the 10-step workflow and hard rules', () => {
     const harness = getSddHarness();
     expect(harness).toContain('Spec-Driven Development');
     expect(harness).toContain('Mini-discovery');
     expect(harness).toContain('Proposal');
     expect(harness).toContain('Verify');
+    // Git strategy mirrors the tasks-or-direct gate: one branch per
+    // decision, shipped via squash-merged PR; direct work goes to main.
+    expect(harness).toContain('one branch per decision');
+    expect(harness).toContain('Ship the decision');
+    expect(harness).toContain('gh pr merge --squash');
     // Design phase: free-form UI design before implementation when a design
     // tool MCP is connected; design artifacts bypass the approval gate.
     expect(harness).toContain('Design (UI features)');
