@@ -16,12 +16,12 @@ export interface ReferenceToolParams {
 
 const DESCRIPTION = `Searches the REAL source code of an installed dependency — the exact version resolved in this project — instead of relying on memory or guessing an API.
 
-Use this before calling into a third-party library whose API you are unsure of: search its actual source for the function, class, type, or option you need. Results are lines from the dependency's source, with file and line number.
+Use this before calling into a third-party library whose API you are unsure of: search its actual source for the function, class, type, or option you need. Results are match blocks with surrounding context lines, ranked so type definitions and hand-written source come before compiled output and docs.
 
-- \`package\`: the dependency name exactly as it appears in \`package.json\` (e.g. \`react\`, \`@tanstack/react-query\`).
-- \`query\`: what to search for. A single term is treated as a ripgrep pattern (regex allowed); multiple words match any of them (OR).
+- \`package\`: any package installed under \`node_modules\` (e.g. \`react\`, \`@tanstack/react-query\`). Direct dependencies are pre-indexed; transitive dependencies (e.g. the core package behind a framework adapter) are indexed on demand — if an API seems to live in a sub-dependency, search that package directly by name.
+- \`query\`: PREFER one exact identifier per call (e.g. \`sendMagicCode\`). A single term is treated as a ripgrep pattern (regex allowed). Multiple words are OR-matched as whole words and ranked by how many distinct words each block hits — do NOT write natural-language phrases.
 
-Only production dependencies (\`dependencies\`/\`peerDependencies\`) are indexed. The set of available packages is listed in the system prompt under "Dependency source references".`;
+The set of pre-indexed packages is listed in the system prompt under "Dependency source references".`;
 
 class ReferenceToolInvocation extends BaseToolInvocation<
   ReferenceToolParams,
@@ -56,9 +56,9 @@ class ReferenceToolInvocation extends BaseToolInvocation<
         .getActivePackages()
         .map((p) => p.name)
         .join(', ');
-      const msg = `"${this.params.package}" is not an indexed production dependency of this project.${
-        active ? ` Available packages: ${active}.` : ''
-      }`;
+      const msg = `"${this.params.package}" was not found in this project's dependencies or node_modules.${
+        active ? ` Pre-indexed packages: ${active}.` : ''
+      } Transitive dependencies can be searched by their exact package name.`;
       return { llmContent: msg, returnDisplay: msg };
     }
     if (outcome.reason === 'errored') {
@@ -79,10 +79,12 @@ class ReferenceToolInvocation extends BaseToolInvocation<
       return { llmContent: msg, returnDisplay: msg };
     }
 
-    const lines = outcome.results.map(
-      (r) => `${r.file}:${r.line}: ${r.snippet}`,
+    const blocks = outcome.results.map((r) =>
+      r.snippet.includes('\n')
+        ? `${r.file}:${r.line}:\n${r.snippet}`
+        : `${r.file}:${r.line}: ${r.snippet}`,
     );
-    const body = lines.join('\n');
+    const body = blocks.join('\n\n');
     const header = `Found ${outcome.results.length} match(es) in ${this.params.package}@${
       outcome.entry?.version ?? '?'
     } source:`;
@@ -111,12 +113,12 @@ export class ReferenceTool extends BaseDeclarativeTool<
           package: {
             type: 'string',
             description:
-              'The dependency name as it appears in package.json (e.g. `react`).',
+              'Any package name installed under node_modules (e.g. `react`), including transitive dependencies.',
           },
           query: {
             type: 'string',
             description:
-              'Text or pattern to search for in the dependency source. Single term = regex; multiple words = OR match.',
+              'Prefer one exact identifier per call (single term = regex). Multiple words OR-match as whole words and are relevance-ranked; avoid natural-language phrases.',
           },
         },
         required: ['package', 'query'],

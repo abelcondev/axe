@@ -23,12 +23,8 @@ vi.mock('../../utils/ripgrepUtils.js', () => ({
 }));
 
 // Imported after the mocks are registered.
-const {
-  ReferenceService,
-  buildSearchPattern,
-  escapeRegExp,
-  normalizeGitUrl,
-} = await import('./referenceService.js');
+const { ReferenceService, buildSearchPattern, escapeRegExp, normalizeGitUrl } =
+  await import('./referenceService.js');
 
 async function writeJson(file: string, obj: unknown): Promise<void> {
   await fs.mkdir(path.dirname(file), { recursive: true });
@@ -46,9 +42,25 @@ describe('buildSearchPattern', () => {
     expect(buildSearchPattern('  foo.*bar  ')).toBe('foo.*bar');
   });
 
-  it('escapes and OR-joins multiple tokens', () => {
-    expect(buildSearchPattern('foo bar')).toBe('foo|bar');
-    expect(buildSearchPattern('a.b c')).toBe('a\\.b|c');
+  it('escapes, word-bounds, and OR-joins multiple tokens', () => {
+    expect(buildSearchPattern('foo bar')).toBe('\\bfoo\\b|\\bbar\\b');
+  });
+
+  it('drops short tokens that would match everywhere', () => {
+    expect(buildSearchPattern('schema i entity')).toBe(
+      '\\bschema\\b|\\bentity\\b',
+    );
+    expect(buildSearchPattern('a.b c')).toBe('\\ba\\.b\\b');
+  });
+
+  it('keeps short tokens when dropping them would drop everything', () => {
+    expect(buildSearchPattern('a b')).toBe('\\ba\\b|\\bb\\b');
+  });
+
+  it('omits word boundaries next to non-word token edges', () => {
+    expect(buildSearchPattern('$state effect')).toBe(
+      '\\$state\\b|\\beffect\\b',
+    );
   });
 });
 
@@ -156,7 +168,10 @@ describe('ReferenceService', () => {
       async (cmd: string, args: string[] = []) => {
         if (cmd === 'npm' && args[0] === 'view') {
           return {
-            stdout: 'git+https://github.com/acme/foo.git\n',
+            stdout: JSON.stringify({
+              type: 'git',
+              url: 'git+https://github.com/acme/foo.git',
+            }),
             stderr: '',
             code: 0,
           };
@@ -190,6 +205,88 @@ describe('ReferenceService', () => {
         code: 1,
       }));
     }
+  });
+
+  it('sparse-checkouts the package directory when the repo is a monorepo', async () => {
+    await scaffoldProject();
+    const gitCalls: string[][] = [];
+    (execCommand as Mock).mockImplementation(
+      async (cmd: string, args: string[] = []) => {
+        if (cmd === 'npm' && args[0] === 'view') {
+          return {
+            stdout: JSON.stringify({
+              type: 'git',
+              url: 'git+https://github.com/acme/mono.git',
+              directory: 'packages/foo',
+            }),
+            stderr: '',
+            code: 0,
+          };
+        }
+        if (cmd === 'git') {
+          gitCalls.push(args);
+          if (args[0] === 'clone') {
+            const dest = args[args.length - 1];
+            await fs.mkdir(dest, { recursive: true });
+          }
+          if (args.includes('checkout')) {
+            // Materialize the sparse tree in the clone dir.
+            const dest = args[1];
+            await writeFile(
+              path.join(dest, 'packages', 'foo', 'index.ts'),
+              'export const foo = 1;\n',
+            );
+          }
+          return { stdout: '', stderr: '', code: 0 };
+        }
+        return { stdout: '', stderr: '', code: 1 };
+      },
+    );
+
+    try {
+      const svc = new ReferenceService();
+      await svc.initialize(projectDir);
+      const entry = await svc.ensureIndexed('foo');
+      expect(entry?.status).toBe('indexed');
+      expect(entry?.source).toBe('git');
+
+      const clone = gitCalls.find((args) => args[0] === 'clone');
+      expect(clone).toContain('--filter=blob:none');
+      expect(clone).toContain('--no-checkout');
+      const sparse = gitCalls.find((args) => args.includes('sparse-checkout'));
+      expect(sparse).toContain('packages/foo');
+    } finally {
+      (execCommand as Mock).mockImplementation(async () => ({
+        stdout: '',
+        stderr: '',
+        code: 1,
+      }));
+    }
+  });
+
+  it('indexes a transitive dependency from node_modules on demand', async () => {
+    await scaffoldProject();
+    // `bar` is installed (a dependency of `foo`) but NOT in package.json.
+    await writeJson(
+      path.join(projectDir, 'node_modules', 'bar', 'package.json'),
+      { name: 'bar', version: '2.0.0' },
+    );
+    await writeFile(
+      path.join(projectDir, 'node_modules', 'bar', 'index.js'),
+      'export function createBar() {}\n',
+    );
+
+    const svc = new ReferenceService();
+    await svc.initialize(projectDir);
+    expect(svc.getActivePackages().map((p) => p.name)).toEqual(['foo']);
+
+    const entry = await svc.ensureIndexed('bar');
+    expect(entry?.status).toBe('indexed');
+    expect(entry?.source).toBe('local');
+    expect(entry?.version).toBe('2.0.0');
+
+    const outcome = await svc.search('bar', 'createBar');
+    expect(outcome.reason).toBeUndefined();
   });
 
   it('indexes from local node_modules and persists the manifest', async () => {
@@ -265,7 +362,9 @@ describe('ReferenceService', () => {
       stdout: JSON.stringify({
         type: 'match',
         data: {
-          path: { text: path.join(homeDir, 'references', 'foo@1.2.3', 'index.js') },
+          path: {
+            text: path.join(homeDir, 'references', 'foo@1.2.3', 'index.js'),
+          },
           line_number: 1,
           lines: { text: 'export function createFoo() { return 42; }\n' },
         },
@@ -278,6 +377,54 @@ describe('ReferenceService', () => {
     expect(outcome.results).toHaveLength(1);
     expect(outcome.results[0].file).toBe('index.js');
     expect(outcome.results[0].line).toBe(1);
+  });
+
+  it('ranks type definitions above docs and groups context into blocks', async () => {
+    await scaffoldProject();
+    const svc = new ReferenceService();
+    await svc.initialize(projectDir);
+    await svc.ensureIndexed('foo');
+
+    const root = path.join(homeDir, 'references', 'foo@1.2.3');
+    const event = (
+      type: 'match' | 'context',
+      file: string,
+      line: number,
+      text: string,
+    ) =>
+      JSON.stringify({
+        type,
+        data: {
+          path: { text: path.join(root, file) },
+          line_number: line,
+          lines: { text: `${text}\n` },
+        },
+      });
+
+    // Ripgrep emits in file-traversal order: README first, then the .d.ts.
+    runRipgrep.mockResolvedValueOnce({
+      stdout: [
+        event('match', 'README.md', 5, 'Use sendMagicCode to sign in.'),
+        event('context', 'dist/index.d.ts', 9, 'interface Auth {'),
+        event(
+          'match',
+          'dist/index.d.ts',
+          10,
+          '  sendMagicCode(params: P): Promise<R>;',
+        ),
+        event('context', 'dist/index.d.ts', 11, '}'),
+      ].join('\n'),
+      truncated: false,
+    });
+
+    const outcome = await svc.search('foo', 'sendMagicCode');
+    expect(outcome.results).toHaveLength(2);
+    expect(outcome.results[0].file).toBe(path.join('dist', 'index.d.ts'));
+    expect(outcome.results[0].line).toBe(10);
+    expect(outcome.results[0].snippet).toBe(
+      'interface Auth {\n  sendMagicCode(params: P): Promise<R>;\n}',
+    );
+    expect(outcome.results[1].file).toBe('README.md');
   });
 
   it('clears cached references', async () => {

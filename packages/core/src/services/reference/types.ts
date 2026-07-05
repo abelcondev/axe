@@ -21,6 +21,8 @@ export interface ActivePackage {
   installName: string;
   /** Cleaned version (range operators stripped) or `latest`. */
   version: string;
+  /** Resolved install dir, when found via an on-demand node_modules lookup. */
+  localPath?: string;
 }
 
 /**
@@ -53,13 +55,13 @@ export interface ReferenceManifest {
   references: Record<string, ReferenceEntry>;
 }
 
-/** A line-level match returned by {@link IReferenceService.search}. */
+/** A ranked match block returned by {@link IReferenceService.search}. */
 export interface ReferenceSearchResult {
   /** Path relative to the package's indexed source root. */
   file: string;
-  /** 1-based line number of the match. */
+  /** 1-based line number of the (first) matching line in the block. */
   line: number;
-  /** Trimmed content of the matching line. */
+  /** The matching line(s) plus surrounding context; may span multiple lines. */
   snippet: string;
 }
 

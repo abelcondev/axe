@@ -34,8 +34,12 @@ const debugLogger = createDebugLogger('ReferenceService');
 const MAX_INDEX_BYTES = 150 * 1024 * 1024;
 /** How many packages to fetch concurrently during background warmup. */
 const BACKGROUND_INDEX_CONCURRENCY = 3;
-/** Cap on search matches returned to the model. */
-const MAX_SEARCH_RESULTS = 40;
+/** Cap on ranked result blocks returned to the model. */
+const MAX_SEARCH_RESULTS = 24;
+/** Cap on a single snippet line (compiled dist lines can be enormous). */
+const MAX_LINE_CHARS = 300;
+/** Multi-word query tokens shorter than this match everywhere; drop them. */
+const MIN_TOKEN_LENGTH = 3;
 const MANIFEST_VERSION = 1;
 const GIT_TIMEOUT_MS = 60_000;
 const NPM_TIMEOUT_MS = 60_000;
@@ -46,16 +50,41 @@ export function escapeRegExp(s: string): string {
 }
 
 /**
- * Builds the ripgrep pattern for a query. A single token is passed through
- * verbatim (so callers can use a regex or an exact identifier); multiple tokens
- * are escaped and OR-joined so any word matches.
+ * Wraps an escaped token in `\b` word boundaries where the token edge is a
+ * word character (Rust's regex crate has no lookarounds, and `\b` next to a
+ * non-word edge like `$state` would never match).
  */
-export function buildSearchPattern(query: string): string {
+function wordBounded(token: string): string {
+  const lead = /^\w/.test(token) ? '\\b' : '';
+  const trail = /\w$/.test(token) ? '\\b' : '';
+  return `${lead}${escapeRegExp(token)}${trail}`;
+}
+
+/**
+ * Splits a multi-word query into the tokens actually worth matching: short
+ * tokens (`i`, `of`) match nearly every line as substrings, so they are
+ * dropped — unless that would drop everything.
+ */
+export function queryTokens(query: string): string[] {
   const tokens = query.trim().split(/\s+/).filter(Boolean);
   if (tokens.length <= 1) {
+    return tokens;
+  }
+  const meaningful = tokens.filter((t) => t.length >= MIN_TOKEN_LENGTH);
+  return meaningful.length > 0 ? meaningful : tokens;
+}
+
+/**
+ * Builds the ripgrep pattern for a query. A single token is passed through
+ * verbatim (so callers can use a regex or an exact identifier); multiple
+ * tokens are escaped, word-bounded, and OR-joined.
+ */
+export function buildSearchPattern(query: string): string {
+  const tokens = queryTokens(query);
+  if (tokens.length <= 1 && tokens[0] === query.trim()) {
     return query.trim();
   }
-  return tokens.map(escapeRegExp).join('|');
+  return tokens.map(wordBounded).join('|');
 }
 
 /** Filesystem-safe manifest key → directory name (scoped names contain `/`). */
@@ -96,9 +125,7 @@ async function pathExists(p: string): Promise<boolean> {
   }
 }
 
-async function readJson(
-  file: string,
-): Promise<Record<string, unknown> | null> {
+async function readJson(file: string): Promise<Record<string, unknown> | null> {
   try {
     return JSON.parse(await fsp.readFile(file, 'utf8'));
   } catch {
@@ -161,6 +188,8 @@ async function dirStats(
 export class ReferenceService implements IReferenceService {
   private ready = false;
   private activePackages: ActivePackage[] = [];
+  /** Transitive deps resolved from node_modules on demand (not in package.json). */
+  private onDemandPackages: ActivePackage[] = [];
   private moduleResolveRoots: string[] = [];
   /** cwd of the last initialize() — lets rescan() re-read package.json. */
   private lastCwd: string | null = null;
@@ -187,6 +216,7 @@ export class ReferenceService implements IReferenceService {
     this.ready = true;
     this.lastCwd = cwd;
     this.activePackages = [];
+    this.onDemandPackages = [];
     // Note: `inFlight` is deliberately NOT cleared — initialize() doubles as
     // rescan() and must not lose dedup tracking of indexing tasks already
     // running in the background.
@@ -351,7 +381,7 @@ export class ReferenceService implements IReferenceService {
 
     return `# Dependency source references
 
-These installed dependencies have their real source indexed under \`~/.axe/references\` (or are being indexed now). Use the '${ToolNames.REFERENCE}' tool to search a package's ACTUAL source for the exact installed version instead of relying on memory or guessing its API.
+These installed dependencies have their real source indexed under \`~/.axe/references\` (or are being indexed now). Use the '${ToolNames.REFERENCE}' tool to search a package's ACTUAL source for the exact installed version instead of relying on memory or guessing its API. Transitive dependencies not listed below (packages inside node_modules, e.g. the core package behind a framework adapter) can also be searched by exact name — they are indexed on demand.
 
 ${lines.join('\n')}`;
   }
@@ -360,7 +390,7 @@ ${lines.join('\n')}`;
     packageName: string,
     options?: { force?: boolean },
   ): Promise<ReferenceEntry | null> {
-    const pkg = this.resolveActive(packageName);
+    const pkg = await this.resolvePackage(packageName);
     if (!pkg) {
       return null;
     }
@@ -392,11 +422,82 @@ ${lines.join('\n')}`;
   }
 
   private resolveActive(packageName: string): ActivePackage | null {
+    const match = (p: ActivePackage) =>
+      p.installName === packageName || p.name === packageName;
     return (
-      this.activePackages.find(
-        (p) => p.installName === packageName || p.name === packageName,
-      ) ?? null
+      this.activePackages.find(match) ??
+      this.onDemandPackages.find(match) ??
+      null
     );
+  }
+
+  /**
+   * Resolves a package from the active set, falling back to a node_modules
+   * lookup so transitive dependencies (e.g. `@instantdb/core` behind
+   * `@instantdb/svelte`) can be indexed and searched on demand.
+   */
+  private async resolvePackage(
+    packageName: string,
+  ): Promise<ActivePackage | null> {
+    const active = this.resolveActive(packageName);
+    if (active) {
+      return active;
+    }
+    const found = await this.resolveFromNodeModules(packageName);
+    if (found) {
+      this.onDemandPackages.push(found);
+    }
+    return found;
+  }
+
+  /**
+   * Locates an installed package in node_modules: hoisted (npm/bun), nested
+   * one level under a direct dependency, or in pnpm's `.pnpm` store.
+   */
+  private async resolveFromNodeModules(
+    packageName: string,
+  ): Promise<ActivePackage | null> {
+    const candidates: string[] = [];
+    for (const root of this.moduleResolveRoots) {
+      candidates.push(path.join(root, 'node_modules', packageName));
+      for (const dep of this.activePackages) {
+        candidates.push(
+          path.join(
+            root,
+            'node_modules',
+            dep.installName,
+            'node_modules',
+            packageName,
+          ),
+        );
+      }
+      // pnpm store layout: node_modules/.pnpm/<name>@<ver>/node_modules/<name>
+      const pnpmDir = path.join(root, 'node_modules', '.pnpm');
+      const prefix = `${keyToDirName(packageName)}@`;
+      try {
+        for (const entry of await fsp.readdir(pnpmDir)) {
+          if (entry.startsWith(prefix)) {
+            candidates.push(
+              path.join(pnpmDir, entry, 'node_modules', packageName),
+            );
+          }
+        }
+      } catch {
+        // Not a pnpm project.
+      }
+    }
+    for (const dir of candidates) {
+      const pkgJson = await readJson(path.join(dir, 'package.json'));
+      const version = pkgJson?.['version'];
+      if (typeof version === 'string' && version) {
+        const name =
+          typeof pkgJson['name'] === 'string'
+            ? (pkgJson['name'] as string)
+            : packageName;
+        return { name, installName: packageName, version, localPath: dir };
+      }
+    }
+    return null;
   }
 
   private async indexPackage(pkg: ActivePackage): Promise<ReferenceEntry> {
@@ -494,17 +595,28 @@ ${lines.join('\n')}`;
     pkg: ActivePackage,
     cachePath: string,
   ): Promise<string | undefined> {
-    let url: string;
+    let url = '';
+    let subdir: string | undefined;
     try {
       const { stdout, code } = await execCommand(
         'npm',
-        ['view', `${pkg.name}@${pkg.version}`, 'repository.url'],
+        ['view', `${pkg.name}@${pkg.version}`, 'repository', '--json'],
         { preserveOutputOnError: true, timeout: NPM_TIMEOUT_MS },
       );
       if (code !== 0) {
         return undefined;
       }
-      url = normalizeGitUrl(stdout.split('\n')[0] ?? '');
+      const parsed: unknown = JSON.parse(stdout || 'null');
+      if (typeof parsed === 'string') {
+        url = normalizeGitUrl(parsed);
+      } else if (parsed && typeof parsed === 'object') {
+        const repo = parsed as { url?: unknown; directory?: unknown };
+        url = normalizeGitUrl(typeof repo.url === 'string' ? repo.url : '');
+        subdir =
+          typeof repo.directory === 'string' && repo.directory.trim()
+            ? repo.directory.trim()
+            : undefined;
+      }
     } catch {
       return undefined;
     }
@@ -520,27 +632,45 @@ ${lines.join('\n')}`;
       pkg.version === 'latest'
         ? [undefined]
         : [`v${pkg.version}`, pkg.version, undefined];
+    const gitOpts = { preserveOutputOnError: true, timeout: GIT_TIMEOUT_MS };
 
     try {
       for (const ref of refs) {
         await rmrf(tmp);
+        // When the package lives in a monorepo subdirectory, sparse-checkout
+        // just that directory (plus top-level docs) so the clone stays small
+        // and the real TS source survives the size cap.
         const args = [
           'clone',
           '--depth',
           '1',
           '--single-branch',
           ...(ref ? ['--branch', ref] : []),
+          ...(subdir ? ['--filter=blob:none', '--no-checkout'] : []),
           url,
           tmp,
         ];
-        const { code } = await execCommand('git', args, {
-          preserveOutputOnError: true,
-          timeout: GIT_TIMEOUT_MS,
-        });
-        if (code === 0) {
-          await copyTree(tmp, cachePath);
-          return url;
+        const { code } = await execCommand('git', args, gitOpts);
+        if (code !== 0) {
+          continue;
         }
+        if (subdir) {
+          await execCommand(
+            'git',
+            ['-C', tmp, 'sparse-checkout', 'set', '--cone', subdir, 'docs'],
+            gitOpts,
+          );
+          const checkout = await execCommand(
+            'git',
+            ['-C', tmp, 'checkout'],
+            gitOpts,
+          );
+          if (checkout.code !== 0) {
+            continue;
+          }
+        }
+        await copyTree(tmp, cachePath);
+        return url;
       }
       return undefined;
     } finally {
@@ -552,8 +682,13 @@ ${lines.join('\n')}`;
     pkg: ActivePackage,
     cachePath: string,
   ): Promise<boolean> {
-    for (const root of this.moduleResolveRoots) {
-      const modDir = path.join(root, 'node_modules', pkg.installName);
+    const dirs = [
+      ...(pkg.localPath ? [pkg.localPath] : []),
+      ...this.moduleResolveRoots.map((root) =>
+        path.join(root, 'node_modules', pkg.installName),
+      ),
+    ];
+    for (const modDir of dirs) {
       if (await pathExists(path.join(modDir, 'package.json'))) {
         await copyTree(modDir, cachePath);
         return true;
@@ -597,11 +732,10 @@ ${lines.join('\n')}`;
         return false;
       }
       const tarball = path.join(tmp, filename);
-      const extract = await execCommand(
-        'tar',
-        ['-xzf', tarball, '-C', tmp],
-        { preserveOutputOnError: true, timeout: NPM_TIMEOUT_MS },
-      );
+      const extract = await execCommand('tar', ['-xzf', tarball, '-C', tmp], {
+        preserveOutputOnError: true,
+        timeout: NPM_TIMEOUT_MS,
+      });
       if (extract.code !== 0) {
         return false;
       }
@@ -625,10 +759,11 @@ ${lines.join('\n')}`;
   ): Promise<ReferenceSearchOutcome> {
     let pkg = this.resolveActive(packageName);
     if (!pkg) {
-      // The startup scan may be stale (dependency installed mid-session).
-      // Re-read package.json once before declaring it not a dependency.
+      // The startup scan may be stale (dependency installed mid-session):
+      // re-read package.json first, then fall back to a node_modules lookup
+      // for transitive dependencies.
       await this.rescan();
-      pkg = this.resolveActive(packageName);
+      pkg = await this.resolvePackage(packageName);
     }
     if (!pkg) {
       return { results: [], reason: 'not-a-dependency' };
@@ -654,8 +789,23 @@ ${lines.join('\n')}`;
       [
         '--json',
         '-S',
+        '--context',
+        '2',
         '--max-count',
-        '25',
+        '10',
+        // Metadata and generated files bury real source in noise.
+        '-g',
+        '!package.json',
+        '-g',
+        '!*lock*',
+        '-g',
+        '!*.map',
+        '-g',
+        '!*.min.*',
+        '-g',
+        '!CHANGELOG*',
+        '-g',
+        '!LICENSE*',
         '-e',
         pattern,
         entry.cachePath,
@@ -663,8 +813,13 @@ ${lines.join('\n')}`;
       signal,
     );
 
-    const results = parseRipgrepMatches(stdout, entry.cachePath);
-    return { results: results.slice(0, MAX_SEARCH_RESULTS), entry };
+    const lines = parseRipgrepLines(stdout, entry.cachePath);
+    const results = rankSearchResults(
+      lines,
+      queryTokens(trimmed),
+      MAX_SEARCH_RESULTS,
+    );
+    return { results, entry };
   }
 
   private async loadManifest(): Promise<void> {
@@ -714,12 +869,17 @@ ${lines.join('\n')}`;
   }
 }
 
-/** Parses `rg --json` stdout into line matches, relative to `root`. */
-function parseRipgrepMatches(
-  stdout: string,
-  root: string,
-): ReferenceSearchResult[] {
-  const results: ReferenceSearchResult[] = [];
+/** One parsed line (match or surrounding context) from `rg --json` output. */
+export interface RipgrepLine {
+  file: string;
+  line: number;
+  text: string;
+  isMatch: boolean;
+}
+
+/** Parses `rg --json` stdout (match + context events), relative to `root`. */
+function parseRipgrepLines(stdout: string, root: string): RipgrepLine[] {
+  const lines: RipgrepLine[] = [];
   for (const line of stdout.split('\n')) {
     if (!line.trim()) {
       continue;
@@ -737,7 +897,7 @@ function parseRipgrepMatches(
     } catch {
       continue;
     }
-    if (obj.type !== 'match' || !obj.data) {
+    if ((obj.type !== 'match' && obj.type !== 'context') || !obj.data) {
       continue;
     }
     const absPath = obj.data.path?.text;
@@ -746,11 +906,97 @@ function parseRipgrepMatches(
     if (!absPath || !lineNumber || text === undefined) {
       continue;
     }
-    results.push({
+    const clean = text.replace(/\n$/, '').trimEnd();
+    lines.push({
       file: path.relative(root, absPath),
       line: lineNumber,
-      snippet: text.replace(/\n$/, '').trim(),
+      text:
+        clean.length > MAX_LINE_CHARS
+          ? `${clean.slice(0, MAX_LINE_CHARS)}…`
+          : clean,
+      isMatch: obj.type === 'match',
     });
   }
-  return results;
+  return lines;
+}
+
+/**
+ * Scores a file for result ranking: hand-written types and source are what
+ * the model needs to learn an API; compiled dist output and prose rank lower.
+ */
+function fileScore(file: string): number {
+  const f = file.split(path.sep).join('/');
+  const base = f.slice(f.lastIndexOf('/') + 1).toLowerCase();
+  if (/\.d\.[cm]?ts$/.test(base)) {
+    return 100;
+  }
+  if (/\.[cm]?tsx?$/.test(base) || /\.(svelte|vue)$/.test(base)) {
+    return /(^|\/)src\//.test(f) ? 95 : 90;
+  }
+  if (/\.[cm]?jsx?$/.test(base)) {
+    return /(^|\/)(dist|build|lib)\//.test(f) ? 55 : 65;
+  }
+  if (/\.mdx?$/.test(base)) {
+    return 40;
+  }
+  if (/\.json$/.test(base)) {
+    return 10;
+  }
+  return 30;
+}
+
+/**
+ * Groups parsed lines into contiguous blocks (a match plus its context) and
+ * ranks blocks by how many distinct query tokens they hit, then by file kind.
+ * Ripgrep's own output order is file-traversal order, which put package.json
+ * and README noise first; this puts type definitions and source first.
+ */
+export function rankSearchResults(
+  lines: RipgrepLine[],
+  tokens: string[],
+  limit: number,
+): ReferenceSearchResult[] {
+  interface Block {
+    file: string;
+    endLine: number;
+    matchLine: number | null;
+    texts: string[];
+  }
+  const blocks: Block[] = [];
+  let cur: Block | null = null;
+  for (const l of lines) {
+    if (cur && cur.file === l.file && l.line === cur.endLine + 1) {
+      cur.texts.push(l.text);
+      cur.endLine = l.line;
+      if (l.isMatch && cur.matchLine === null) {
+        cur.matchLine = l.line;
+      }
+    } else {
+      if (cur) {
+        blocks.push(cur);
+      }
+      cur = {
+        file: l.file,
+        endLine: l.line,
+        matchLine: l.isMatch ? l.line : null,
+        texts: [l.text],
+      };
+    }
+  }
+  if (cur) {
+    blocks.push(cur);
+  }
+
+  const regexes = tokens.map((t) => new RegExp(wordBounded(t), 'i'));
+  const scored = blocks.map((b, i) => {
+    const text = b.texts.join('\n');
+    const tokenHits = regexes.filter((r) => r.test(text)).length;
+    return { b, i, score: tokenHits * 1000 + fileScore(b.file) };
+  });
+  scored.sort((x, y) => y.score - x.score || x.i - y.i);
+  return scored.slice(0, limit).map(({ b }) => ({
+    file: b.file,
+    line: b.matchLine ?? b.endLine - b.texts.length + 1,
+    snippet: b.texts.join('\n'),
+  }));
 }
