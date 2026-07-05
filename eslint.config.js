@@ -201,6 +201,9 @@ export default tseslint.config(
       ...vitest.configs.recommended.rules,
       'vitest/expect-expect': 'off',
       'vitest/no-commented-out-tests': 'off',
+      // ~500 pre-existing violations inherited from qwen-code and no CI gate:
+      // keep the signal for new tests without painting the editor red.
+      'vitest/no-conditional-expect': 'warn',
       'no-console': 'off', // Allow console in tests
       '@typescript-eslint/no-unused-vars': [
         'error',
