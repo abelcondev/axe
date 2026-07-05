@@ -9,7 +9,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import { KnowledgeTool } from './knowledge.js';
-import { KnowledgeService } from '../services/knowledge/knowledgeService.js';
+import { KnowledgeService } from '../services/knowledge/knowledge-service.js';
 import type { Config } from '../config/config.js';
 import { partListUnionToString } from '../core/geminiRequest.js';
 

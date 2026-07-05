@@ -8,14 +8,14 @@ import path from 'node:path';
 import { promises as fs, unlinkSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 
-import type { IAxeOAuth2Client } from './axeOAuth2.js';
+import type { IAxeOAuth2Client } from './axe-oauth2.js';
 import {
   type QwenCredentials,
   type TokenRefreshData,
   type ErrorData,
   isErrorResponse,
   CredentialsClearRequiredError,
-} from './axeOAuth2.js';
+} from './axe-oauth2.js';
 import { createDebugLogger } from '../utils/debugLogger.js';
 import { atomicWriteFile } from '../utils/atomicFileWrite.js';
 import { Storage } from '../config/storage.js';

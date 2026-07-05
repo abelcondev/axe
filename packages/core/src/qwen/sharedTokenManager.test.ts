@@ -21,7 +21,7 @@ import type {
   QwenCredentials,
   TokenRefreshData,
   ErrorData,
-} from './axeOAuth2.js';
+} from './axe-oauth2.js';
 
 // Mock external dependencies
 vi.mock('node:fs', () => ({
@@ -835,7 +835,7 @@ describe('SharedTokenManager', () => {
 
   describe('CredentialsClearRequiredError handling', () => {
     it('should clear memory cache when CredentialsClearRequiredError is thrown during refresh', async () => {
-      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axe-oauth2.js');
 
       const tokenManager = SharedTokenManager.getInstance();
       tokenManager.clearCache();
@@ -899,7 +899,7 @@ describe('SharedTokenManager', () => {
     });
 
     it('should convert CredentialsClearRequiredError to TokenManagerError', async () => {
-      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axe-oauth2.js');
 
       const tokenManager = SharedTokenManager.getInstance();
       tokenManager.clearCache();

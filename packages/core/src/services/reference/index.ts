@@ -9,7 +9,7 @@ export {
   buildSearchPattern,
   escapeRegExp,
   normalizeGitUrl,
-} from './referenceService.js';
+} from './reference-service.js';
 export type {
   ActivePackage,
   IReferenceService,

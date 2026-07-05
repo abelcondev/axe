@@ -490,7 +490,7 @@ export * from './utils/sideQuery.js';
 // OAuth & Authentication
 // ============================================================================
 
-export * from './qwen/axeOAuth2.js';
+export * from './qwen/axe-oauth2.js';
 
 // ============================================================================
 // Message Bus Types

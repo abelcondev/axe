@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export { KnowledgeService } from './knowledgeService.js';
+export { KnowledgeService } from './knowledge-service.js';
 export type {
   IKnowledgeService,
   KnowledgeConcept,

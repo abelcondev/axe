@@ -40,7 +40,7 @@ vi.mock('./openaiContentGenerator/index.js', () => {
   };
 });
 
-vi.mock('../qwen/axeOAuth2.js', () => ({
+vi.mock('../qwen/axe-oauth2.js', () => ({
   getAxeOAuthClient: async () => {
     if (qwenMockState.oauthError) {
       throw qwenMockState.oauthError;

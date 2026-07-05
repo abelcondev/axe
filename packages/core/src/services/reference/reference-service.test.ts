@@ -24,7 +24,7 @@ vi.mock('../../utils/ripgrepUtils.js', () => ({
 
 // Imported after the mocks are registered.
 const { ReferenceService, buildSearchPattern, escapeRegExp, normalizeGitUrl } =
-  await import('./referenceService.js');
+  await import('./reference-service.js');
 
 async function writeJson(file: string, obj: unknown): Promise<void> {
   await fs.mkdir(path.dirname(file), { recursive: true });

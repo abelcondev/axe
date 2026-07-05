@@ -5,8 +5,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { IAxeOAuth2Client } from './axeOAuth2.js';
-import { type QwenCredentials, type ErrorData } from './axeOAuth2.js';
+import type { IAxeOAuth2Client } from './axe-oauth2.js';
+import { type QwenCredentials, type ErrorData } from './axe-oauth2.js';
 import type {
   GenerateContentParameters,
   GenerateContentResponse,

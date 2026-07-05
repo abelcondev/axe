@@ -22,7 +22,7 @@ import {
   type DeviceTokenResponse,
   type ErrorData,
   type QwenCredentials,
-} from './axeOAuth2.js';
+} from './axe-oauth2.js';
 import {
   SharedTokenManager,
   TokenManagerError,
@@ -852,7 +852,7 @@ describe('AxeOAuth2Client', () => {
     });
 
     it('should NOT clear credentials on malformed 200 response (e.g. proxy HTML)', async () => {
-      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axe-oauth2.js');
 
       const mockResponse = {
         ok: true,
@@ -874,7 +874,7 @@ describe('AxeOAuth2Client', () => {
     });
 
     it('should clear credentials and throw CredentialsClearRequiredError on 401 response', async () => {
-      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axe-oauth2.js');
 
       const mockResponse = {
         ok: false,
@@ -950,7 +950,7 @@ describe('getAxeOAuthClient', () => {
     const originalGetInstance = SharedTokenManager.getInstance;
     SharedTokenManager.getInstance = vi.fn().mockReturnValue(mockTokenManager);
 
-    const client = await import('./axeOAuth2.js').then((module) =>
+    const client = await import('./axe-oauth2.js').then((module) =>
       module.getAxeOAuthClient(mockConfig),
     );
 
@@ -983,7 +983,7 @@ describe('getAxeOAuthClient', () => {
 
     // The function should handle the invalid cached credentials and throw the expected error
     await expect(
-      import('./axeOAuth2.js').then((module) =>
+      import('./axe-oauth2.js').then((module) =>
         module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Device authorization flow failed');
@@ -1006,7 +1006,7 @@ describe('getAxeOAuthClient', () => {
     vi.mocked(global.fetch).mockResolvedValue({ ok: true } as Response);
 
     await expect(
-      import('./axeOAuth2.js').then((module) =>
+      import('./axe-oauth2.js').then((module) =>
         module.getAxeOAuthClient(mockConfig, {
           requireCachedCredentials: true,
         }),
@@ -1046,7 +1046,7 @@ describe('getAxeOAuthClient', () => {
 
     let thrownError: unknown;
     try {
-      const { getAxeOAuthClient } = await import('./axeOAuth2.js');
+      const { getAxeOAuthClient } = await import('./axe-oauth2.js');
       await getAxeOAuthClient(mockConfig);
     } catch (error: unknown) {
       thrownError = error;
@@ -1075,7 +1075,7 @@ describe('getAxeOAuthClient', () => {
 
 describe('CredentialsClearRequiredError', () => {
   it('should create error with correct name and message', async () => {
-    const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
+    const { CredentialsClearRequiredError } = await import('./axe-oauth2.js');
 
     const message = 'Test error message';
     const originalError = { status: 400, response: 'Bad Request' };
@@ -1088,7 +1088,7 @@ describe('CredentialsClearRequiredError', () => {
   });
 
   it('should work without originalError', async () => {
-    const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
+    const { CredentialsClearRequiredError } = await import('./axe-oauth2.js');
 
     const message = 'Test error message';
     const error = new CredentialsClearRequiredError(message);
@@ -1102,7 +1102,7 @@ describe('CredentialsClearRequiredError', () => {
 describe('clearQwenCredentials', () => {
   it('should successfully clear credentials file', async () => {
     const { promises: fs } = await import('node:fs');
-    const { clearQwenCredentials } = await import('./axeOAuth2.js');
+    const { clearQwenCredentials } = await import('./axe-oauth2.js');
 
     vi.mocked(fs.unlink).mockResolvedValue(undefined);
 
@@ -1112,7 +1112,7 @@ describe('clearQwenCredentials', () => {
 
   it('should handle file not found error gracefully', async () => {
     const { promises: fs } = await import('node:fs');
-    const { clearQwenCredentials } = await import('./axeOAuth2.js');
+    const { clearQwenCredentials } = await import('./axe-oauth2.js');
 
     const notFoundError = new Error('File not found');
     (notFoundError as Error & { code: string }).code = 'ENOENT';
@@ -1123,7 +1123,7 @@ describe('clearQwenCredentials', () => {
 
   it('should handle other file system errors gracefully', async () => {
     const { promises: fs } = await import('node:fs');
-    const { clearQwenCredentials } = await import('./axeOAuth2.js');
+    const { clearQwenCredentials } = await import('./axe-oauth2.js');
 
     const permissionError = new Error('Permission denied');
     vi.mocked(fs.unlink).mockRejectedValue(permissionError);
@@ -1223,7 +1223,7 @@ describe('getAxeOAuthClient - Enhanced Error Scenarios', () => {
     vi.mocked(global.fetch).mockResolvedValue(mockAuthResponse as Response);
 
     await expect(
-      import('./axeOAuth2.js').then((module) =>
+      import('./axe-oauth2.js').then((module) =>
         module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Device authorization flow failed');
@@ -1272,7 +1272,7 @@ describe('getAxeOAuthClient - Enhanced Error Scenarios', () => {
       .mockResolvedValue(mockPendingResponse as Response);
 
     await expect(
-      import('./axeOAuth2.js').then((module) =>
+      import('./axe-oauth2.js').then((module) =>
         module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Authorization timeout, please restart the process.');
@@ -1321,7 +1321,7 @@ describe('getAxeOAuthClient - Enhanced Error Scenarios', () => {
       .mockResolvedValue(mockRateLimitResponse as Response);
 
     await expect(
-      import('./axeOAuth2.js').then((module) =>
+      import('./axe-oauth2.js').then((module) =>
         module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow(
@@ -1359,7 +1359,7 @@ describe('getAxeOAuthClient - Enhanced Error Scenarios', () => {
     global.fetch = vi.fn().mockResolvedValue(mockAuthResponse as Response);
 
     await expect(
-      import('./axeOAuth2.js').then((module) =>
+      import('./axe-oauth2.js').then((module) =>
         module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Device authorization flow failed');
@@ -1418,7 +1418,7 @@ describe('authWithQwenDeviceFlow - Comprehensive Testing', () => {
     global.fetch = vi.fn().mockResolvedValue(mockAuthResponse as Response);
 
     await expect(
-      import('./axeOAuth2.js').then((module) =>
+      import('./axe-oauth2.js').then((module) =>
         module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow('Device authorization flow failed');
@@ -1458,7 +1458,7 @@ describe('authWithQwenDeviceFlow - Comprehensive Testing', () => {
       .mockResolvedValueOnce(mockAuthResponse as Response)
       .mockResolvedValue(mockTokenResponse as Response);
 
-    const client = await import('./axeOAuth2.js').then((module) =>
+    const client = await import('./axe-oauth2.js').then((module) =>
       module.getAxeOAuthClient(mockConfig),
     );
 
@@ -1505,7 +1505,7 @@ describe('authWithQwenDeviceFlow - Comprehensive Testing', () => {
       .mockResolvedValue(mock401Response as Response);
 
     await expect(
-      import('./axeOAuth2.js').then((module) =>
+      import('./axe-oauth2.js').then((module) =>
         module.getAxeOAuthClient(mockConfig),
       ),
     ).rejects.toThrow(
@@ -1561,7 +1561,7 @@ describe('authWithQwenDeviceFlow - Comprehensive Testing', () => {
       .mockResolvedValueOnce(mockAuthResponse as Response)
       .mockResolvedValue(mockTokenResponse as Response);
 
-    const client = await import('./axeOAuth2.js').then((module) =>
+    const client = await import('./axe-oauth2.js').then((module) =>
       module.getAxeOAuthClient(mockConfig),
     );
 
@@ -1636,7 +1636,7 @@ describe('Browser Launch and Error Handling', () => {
       .mockResolvedValueOnce(mockAuthResponse as Response)
       .mockResolvedValue(mockTokenResponse as Response);
 
-    const client = await import('./axeOAuth2.js').then((module) =>
+    const client = await import('./axe-oauth2.js').then((module) =>
       module.getAxeOAuthClient(mockConfig),
     );
 
@@ -1688,7 +1688,7 @@ describe('Browser Launch and Error Handling', () => {
       .mockResolvedValueOnce(mockAuthResponse as Response)
       .mockResolvedValue(mockTokenResponse as Response);
 
-    const client = await import('./axeOAuth2.js').then((module) =>
+    const client = await import('./axe-oauth2.js').then((module) =>
       module.getAxeOAuthClient(mockConfig),
     );
 
@@ -1703,12 +1703,12 @@ describe('Browser Launch and Error Handling', () => {
 
 describe('Event Emitter Integration', () => {
   it('should export axeOAuth2Events as EventEmitter', async () => {
-    const { axeOAuth2Events } = await import('./axeOAuth2.js');
+    const { axeOAuth2Events } = await import('./axe-oauth2.js');
     expect(axeOAuth2Events).toBeInstanceOf(EventEmitter);
   });
 
   it('should define correct event enum values', async () => {
-    const { AxeOAuth2Event } = await import('./axeOAuth2.js');
+    const { AxeOAuth2Event } = await import('./axe-oauth2.js');
     expect(AxeOAuth2Event.AuthUri).toBe('auth-uri');
     expect(AxeOAuth2Event.AuthProgress).toBe('auth-progress');
     expect(AxeOAuth2Event.AuthCancel).toBe('auth-cancel');
@@ -1787,7 +1787,7 @@ describe('Utility Functions', () => {
 
       // Since this is a private function, we test it indirectly through clearQwenCredentials
       const { promises: fs } = await import('node:fs');
-      const { clearQwenCredentials } = await import('./axeOAuth2.js');
+      const { clearQwenCredentials } = await import('./axe-oauth2.js');
 
       vi.mocked(fs.unlink).mockResolvedValue(undefined);
 
@@ -2116,7 +2116,7 @@ describe('Enhanced Error Handling and Edge Cases', () => {
     });
 
     it('should throw CredentialsClearRequiredError on 400 error', async () => {
-      const { CredentialsClearRequiredError } = await import('./axeOAuth2.js');
+      const { CredentialsClearRequiredError } = await import('./axe-oauth2.js');
 
       client.setCredentials({
         refresh_token: 'expired-refresh',
@@ -2289,7 +2289,7 @@ describe('SharedTokenManager Integration in AxeOAuth2Client', () => {
         .mockResolvedValue(mockTokenResponse as Response);
 
       try {
-        await import('./axeOAuth2.js').then((module) =>
+        await import('./axe-oauth2.js').then((module) =>
           module.getAxeOAuthClient(mockConfig),
         );
       } catch {

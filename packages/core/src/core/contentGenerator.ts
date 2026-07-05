@@ -370,7 +370,7 @@ export async function createContentGenerator(
       baseGenerator = createOpenAIContentGenerator(generatorConfig, config);
     } else if (authType === AuthType.AXE_OAUTH) {
       const { getAxeOAuthClient: getQwenOauthClient } = await import(
-        '../qwen/axeOAuth2.js'
+        '../qwen/axe-oauth2.js'
       );
       const { QwenContentGenerator } = await import(
         '../qwen/qwenContentGenerator.js'
