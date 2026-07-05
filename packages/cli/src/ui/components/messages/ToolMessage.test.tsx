@@ -13,11 +13,7 @@ import { Text } from 'ink';
 import { StreamingContext } from '../../contexts/StreamingContext.js';
 import { SettingsContext } from '../../contexts/SettingsContext.js';
 import { CompactModeProvider } from '../../contexts/CompactModeContext.js';
-import type {
-  AnsiOutput,
-  AnsiOutputDisplay,
-  Config,
-} from '@axe/core';
+import type { AnsiOutput, AnsiOutputDisplay, Config } from '@axe/core';
 import type { LoadedSettings } from '../../../config/settings.js';
 
 vi.mock('../TerminalOutput.js', () => ({
@@ -989,6 +985,114 @@ describe('<ToolMessage />', () => {
     // availableHeight = 94, well above 30 lines → all visible
     expect(output).toContain('line 1');
     expect(output).toContain('line 30');
+  });
+
+  describe('verbose tool result cap (MCP / References)', () => {
+    const mcpName = 'get_editor_state (pencil MCP Server)';
+    const longResult = Array.from(
+      { length: 30 },
+      (_, i) => `line ${i + 1}`,
+    ).join('\n');
+
+    const renderMcp = (
+      props: Partial<ToolMessageProps>,
+      ui?: Record<string, unknown>,
+    ) => {
+      const settings = {
+        merged: { ui: ui ?? {} },
+      } as unknown as LoadedSettings;
+      return render(
+        <CompactModeProvider
+          value={{ compactMode: false, compactInline: false }}
+        >
+          <SettingsContext.Provider value={settings}>
+            <StreamingContext.Provider value={StreamingState.Idle}>
+              <ToolMessage
+                {...baseProps}
+                name={mcpName}
+                resultDisplay={longResult}
+                status={ToolCallStatus.Success}
+                {...props}
+              />
+            </StreamingContext.Provider>
+          </SettingsContext.Provider>
+        </CompactModeProvider>,
+      );
+    };
+
+    it('replaces an over-cap successful result with a one-line summary', () => {
+      const { lastFrame } = renderMcp({ availableTerminalHeight: 100 });
+      const output = lastFrame()!;
+      expect(output).toContain('… 30 output lines hidden');
+      expect(output).not.toContain('line 1');
+    });
+
+    it('shows a ctrl+s hint while the tool group is pending', () => {
+      const { lastFrame } = renderMcp({
+        availableTerminalHeight: 100,
+        isPending: true,
+      });
+      expect(lastFrame()).toContain(
+        '… 30 output lines hidden (ctrl+s to view)',
+      );
+    });
+
+    it('shows the full result when pending and height is unconstrained (ctrl+s)', () => {
+      const { lastFrame } = renderMcp({ isPending: true });
+      const output = lastFrame()!;
+      expect(output).not.toContain('output lines hidden');
+      expect(output).toContain('line 1');
+    });
+
+    it('shows short results in full', () => {
+      const { lastFrame } = renderMcp({
+        resultDisplay: 'line 1\nline 2',
+        availableTerminalHeight: 100,
+      });
+      const output = lastFrame()!;
+      expect(output).not.toContain('output lines hidden');
+      expect(output).toContain('line 1');
+    });
+
+    it('caps the References tool the same way', () => {
+      const { lastFrame } = renderMcp({
+        name: 'Reference',
+        availableTerminalHeight: 100,
+      });
+      const output = lastFrame()!;
+      expect(output).toContain('\u2026 30 output lines hidden');
+      expect(output).not.toContain('line 1');
+    });
+
+    it('disables the cap when ui.toolOutputMaxLines is 0', () => {
+      const { lastFrame } = renderMcp(
+        { availableTerminalHeight: 100 },
+        { toolOutputMaxLines: 0 },
+      );
+      const output = lastFrame()!;
+      expect(output).not.toContain('output lines hidden');
+      expect(output).toContain('line 1');
+    });
+
+    it('does not cap error results', () => {
+      const { lastFrame } = renderMcp({
+        status: ToolCallStatus.Error,
+        availableTerminalHeight: 100,
+      });
+      const output = lastFrame()!;
+      expect(output).not.toContain('output lines hidden');
+      expect(output).toContain('line 1');
+    });
+
+    it('does not cap when forceShowResult is set', () => {
+      const { lastFrame } = renderMcp({
+        availableTerminalHeight: 100,
+        forceShowResult: true,
+      });
+      const output = lastFrame()!;
+      expect(output).not.toContain('output lines hidden');
+      expect(output).toContain('line 1');
+    });
   });
 
   it('renders rejected plan content with plan text still visible', () => {

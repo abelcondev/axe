@@ -24,6 +24,7 @@ import type {
   McpToolProgressData,
   FileDiff,
 } from '@axe/core';
+import { ToolDisplayNames } from '@axe/core';
 import { ToolConfirmationMessage } from './ToolConfirmationMessage.js';
 import { PlanSummaryDisplay } from '../PlanSummaryDisplay.js';
 import { ShellInputPrompt } from '../ShellInputPrompt.js';
@@ -51,6 +52,17 @@ const STATIC_HEIGHT = 1;
 const RESERVED_LINE_COUNT = 5; // for tool name, status, padding etc.
 const MIN_LINES_SHOWN = 2; // show at least this many lines
 const DEFAULT_SHELL_OUTPUT_MAX_LINES = 5;
+const DEFAULT_TOOL_OUTPUT_MAX_LINES = 5;
+const DEFAULT_NEW_FILE_MAX_LINES = 10;
+
+// DiscoveredMCPTool display names are `<tool> (<server> MCP Server)`.
+const MCP_TOOL_NAME_SUFFIX = ' MCP Server)';
+
+// Context-fetching tools whose text results are model-facing payloads
+// (schemas, node trees, package sources) rather than answers for the user.
+const isVerboseContextTool = (toolName: string): boolean =>
+  toolName.endsWith(MCP_TOOL_NAME_SUFFIX) ||
+  toolName === ToolDisplayNames.REFERENCE;
 
 // Large threshold to ensure we don't cause performance issues for very large
 // outputs that will get truncated further MaxSizedBox anyway.
@@ -496,6 +508,11 @@ const DiffResultRenderer: React.FC<{
     data.truncatedForSession && availableHeight !== undefined
       ? Math.max(1, availableHeight - 1)
       : availableHeight;
+  // Cap the all-additions listing of newly created files (results only —
+  // approval previews render DiffRenderer without this prop and stay full).
+  const rawNewFileCap =
+    settings?.merged.ui?.newFileMaxLines ?? DEFAULT_NEW_FILE_MAX_LINES;
+  const newFileMaxLines = Math.max(0, Math.floor(rawNewFileCap || 0));
 
   return (
     <Box flexDirection="column">
@@ -515,6 +532,7 @@ const DiffResultRenderer: React.FC<{
         availableTerminalHeight={diffHeight}
         contentWidth={childWidth}
         settings={settings}
+        maxNewFileLines={newFileMaxLines > 0 ? newFileMaxLines : undefined}
       />
     </Box>
   );
@@ -670,6 +688,38 @@ export const ToolMessage: React.FC<ToolMessageProps> = ({
 
   const effectiveDisplayRenderer = useResultDisplayRenderer(resultDisplay);
 
+  // Cap successful results of context-fetching tools (MCP, References):
+  // their raw payloads are model-facing noise for the user. Results larger
+  // than the cap collapse to a one-line `N lines hidden` summary instead of
+  // rendering a tail. Errors keep full output (forceShowResult), and ctrl+s
+  // (constrainHeight off → availableTerminalHeight undefined while pending)
+  // reveals the full result in the live area.
+  const rawToolOutputCap =
+    settings.merged.ui?.toolOutputMaxLines ?? DEFAULT_TOOL_OUTPUT_MAX_LINES;
+  const toolOutputMaxLines = Math.max(0, Math.floor(rawToolOutputCap || 0));
+  const isCappingToolOutput =
+    isVerboseContextTool(name) &&
+    toolOutputMaxLines > 0 &&
+    !forceShowResult &&
+    status === ToolCallStatus.Success &&
+    !(isPending && availableTerminalHeight === undefined);
+  const hiddenResultLines = React.useMemo(() => {
+    if (!isCappingToolOutput || effectiveDisplayRenderer.type !== 'string') {
+      return 0;
+    }
+    const { hiddenLinesCount } = sliceTextForMaxHeight(
+      effectiveDisplayRenderer.data,
+      toolOutputMaxLines + 1,
+      innerWidth,
+    );
+    return hiddenLinesCount > 0 ? hiddenLinesCount + toolOutputMaxLines : 0;
+  }, [
+    isCappingToolOutput,
+    effectiveDisplayRenderer,
+    toolOutputMaxLines,
+    innerWidth,
+  ]);
+
   // Collapse text/ANSI output for completed collapsible tools (read/search/list)
   // to reduce scrollback noise. Non-collapsible tools (command/edit/agent/MCP/etc.)
   // always show results — their output IS the answer. Canceled tools keep partial
@@ -751,14 +801,20 @@ export const ToolMessage: React.FC<ToolMessageProps> = ({
                 )}
               </>
             )}
-            {effectiveDisplayRenderer.type === 'string' && (
-              <StringResultRenderer
-                data={effectiveDisplayRenderer.data}
-                renderAsMarkdown={renderOutputAsMarkdown}
-                availableHeight={shellStringCapHeight}
-                childWidth={innerWidth}
-              />
-            )}
+            {effectiveDisplayRenderer.type === 'string' &&
+              (hiddenResultLines > 0 ? (
+                <Text color={theme.text.secondary}>
+                  … {hiddenResultLines} output lines hidden
+                  {isPending ? ' (ctrl+s to view)' : ''}
+                </Text>
+              ) : (
+                <StringResultRenderer
+                  data={effectiveDisplayRenderer.data}
+                  renderAsMarkdown={renderOutputAsMarkdown}
+                  availableHeight={shellStringCapHeight}
+                  childWidth={innerWidth}
+                />
+              ))}
           </Box>
         </Box>
       )}

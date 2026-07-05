@@ -29,20 +29,10 @@ import type { CustomTheme } from '../ui/themes/theme.js';
 import { getLanguageSettingsOptions } from '../i18n/languages.js';
 
 export type SettingsType =
-  | 'boolean'
-  | 'string'
-  | 'number'
-  | 'array'
-  | 'object'
-  | 'enum';
+  'boolean' | 'string' | 'number' | 'array' | 'object' | 'enum';
 
 export type SettingsValue =
-  | boolean
-  | string
-  | number
-  | string[]
-  | object
-  | undefined;
+  boolean | string | number | string[] | object | undefined;
 
 /**
  * Setting datatypes that "toggle" through a fixed list of options
@@ -162,8 +152,7 @@ export type AsciiArtSource = string | { path: string };
  * both width tiers), or a width-aware `{small, large}` object.
  */
 export type CustomAsciiArtSetting =
-  | AsciiArtSource
-  | { small?: AsciiArtSource; large?: AsciiArtSource };
+  AsciiArtSource | { small?: AsciiArtSource; large?: AsciiArtSource };
 
 /**
  * Common items schema for hook definitions.
@@ -1032,6 +1021,26 @@ const SETTINGS_SCHEMA = {
         default: 5,
         description:
           'Max number of shell output lines shown inline. Set to 0 to disable the cap and show full output. The hidden line count is still surfaced via the `+N lines` indicator.',
+        showInDialog: true,
+      },
+      toolOutputMaxLines: {
+        type: 'number',
+        label: 'Tool Output Max Lines',
+        category: 'UI',
+        requiresRestart: false,
+        default: 5,
+        description:
+          'Max number of result lines shown inline for context-fetching tools (MCP tools and References). Larger results are replaced with a one-line `N lines hidden` summary (ctrl+s shows the full result while the tool group is still live). Set to 0 to disable the cap. Errors always show full output.',
+        showInDialog: true,
+      },
+      newFileMaxLines: {
+        type: 'number',
+        label: 'New File Max Lines',
+        category: 'UI',
+        requiresRestart: false,
+        default: 10,
+        description:
+          'Max number of lines shown inline when a tool creates a new file. Longer files show the first N lines plus a `… +K more lines` marker. Edits to existing files always render as full diffs. Set to 0 to disable the cap.',
         showInDialog: true,
       },
       hideBanner: {

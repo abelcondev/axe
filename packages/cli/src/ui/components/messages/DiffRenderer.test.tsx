@@ -395,6 +395,99 @@ fileDiff Index: Dockerfile
 3 RUN npm run build`);
   });
 
+  describe('maxNewFileLines cap', () => {
+    const lines = Array.from({ length: 15 }, (_, i) => `+line ${i + 1}`).join(
+      '\n',
+    );
+    const newFileDiffContent = `
+diff --git a/test.py b/test.py
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/test.py
+@@ -0,0 +1,15 @@
+${lines}
+`;
+
+    it('caps a new-file listing and appends a more-lines marker', () => {
+      const { lastFrame } = render(
+        <OverflowProvider>
+          <DiffRenderer
+            diffContent={newFileDiffContent}
+            filename="test.py"
+            contentWidth={80}
+            settings={mockSettings}
+            maxNewFileLines={10}
+          />
+        </OverflowProvider>,
+      );
+      const passedContent = mockColorizeCode.mock.calls[0][0] as string;
+      expect(passedContent.split('\n')).toHaveLength(10);
+      expect(lastFrame()).toContain('\u2026 +5 more lines');
+    });
+
+    it('shows new files within the cap in full', () => {
+      const { lastFrame } = render(
+        <OverflowProvider>
+          <DiffRenderer
+            diffContent={newFileDiffContent}
+            filename="test.py"
+            contentWidth={80}
+            settings={mockSettings}
+            maxNewFileLines={15}
+          />
+        </OverflowProvider>,
+      );
+      const passedContent = mockColorizeCode.mock.calls[0][0] as string;
+      expect(passedContent.split('\n')).toHaveLength(15);
+      expect(lastFrame()).not.toContain('more lines');
+    });
+
+    it('shows the full listing when the prop is omitted', () => {
+      const { lastFrame } = render(
+        <OverflowProvider>
+          <DiffRenderer
+            diffContent={newFileDiffContent}
+            filename="test.py"
+            contentWidth={80}
+            settings={mockSettings}
+          />
+        </OverflowProvider>,
+      );
+      const passedContent = mockColorizeCode.mock.calls[0][0] as string;
+      expect(passedContent.split('\n')).toHaveLength(15);
+      expect(lastFrame()).not.toContain('more lines');
+    });
+
+    it('never caps diffs of existing files', () => {
+      const existingFileDiff = `
+diff --git a/file.txt b/file.txt
+index 0000000..e69de29 100644
+--- a/file.txt
++++ b/file.txt
+@@ -1,2 +1,2 @@
+-old line
++new line
+ context line
+`;
+      const { lastFrame } = render(
+        <OverflowProvider>
+          <DiffRenderer
+            diffContent={existingFileDiff}
+            filename="file.txt"
+            contentWidth={80}
+            settings={mockSettings}
+            maxNewFileLines={1}
+          />
+        </OverflowProvider>,
+      );
+      const output = lastFrame()!;
+      expect(output).toContain('old line');
+      expect(output).toContain('new line');
+      expect(output).not.toContain('more lines');
+    });
+  });
+
   describe('showLineNumbers setting', () => {
     const diffContent = `
 diff --git a/test.txt b/test.txt

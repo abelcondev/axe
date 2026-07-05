@@ -88,6 +88,12 @@ interface DiffRendererProps {
   contentWidth: number;
   theme?: Theme;
   settings?: LoadedSettings;
+  /**
+   * Caps the all-additions listing shown for newly created files to the
+   * first N lines (plus a `… +K more lines` marker). Diffs of existing
+   * files are never capped. Omit to show the full listing.
+   */
+  maxNewFileLines?: number;
 }
 
 const DEFAULT_TAB_WIDTH = 4; // Spaces per tab for normalization
@@ -100,6 +106,7 @@ export const DiffRenderer: React.FC<DiffRendererProps> = ({
   contentWidth,
   theme,
   settings,
+  maxNewFileLines,
 }) => {
   const screenReaderEnabled = useIsScreenReaderEnabled();
   if (!diffContent || typeof diffContent !== 'string') {
@@ -145,16 +152,22 @@ export const DiffRenderer: React.FC<DiffRendererProps> = ({
 
   if (isNewFile) {
     // Extract only the added lines' content
-    const addedContent = parsedLines
+    const addedLines = parsedLines
       .filter((line) => line.type === 'add')
-      .map((line) => line.content)
-      .join('\n');
+      .map((line) => line.content);
+    const cappedLineCount =
+      maxNewFileLines !== undefined && addedLines.length > maxNewFileLines
+        ? addedLines.length - maxNewFileLines
+        : 0;
+    const addedContent = (
+      cappedLineCount > 0 ? addedLines.slice(0, maxNewFileLines) : addedLines
+    ).join('\n');
     // Attempt to infer language from filename, default to plain text if no filename
     const fileExtension = filename?.split('.').pop() || null;
     const language = fileExtension
       ? getLanguageFromExtension(fileExtension)
       : null;
-    renderedOutput = colorizeCode(
+    const colorized = colorizeCode(
       addedContent,
       language,
       availableTerminalHeight,
@@ -163,6 +176,17 @@ export const DiffRenderer: React.FC<DiffRendererProps> = ({
       settings,
       tabWidth,
     );
+    renderedOutput =
+      cappedLineCount > 0 ? (
+        <Box flexDirection="column">
+          {colorized}
+          <Text color={semanticTheme.text.secondary}>
+            … +{cappedLineCount} more lines
+          </Text>
+        </Box>
+      ) : (
+        colorized
+      );
   } else {
     renderedOutput = renderDiffContent(
       parsedLines,
