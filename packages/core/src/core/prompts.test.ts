@@ -718,12 +718,16 @@ describe('getCompressionPrompt', () => {
 });
 
 describe('SDD harness', () => {
-  it('always includes the 8-step workflow and hard rules', () => {
+  it('always includes the 9-step workflow and hard rules', () => {
     const harness = getSddHarness();
     expect(harness).toContain('Spec-Driven Development');
     expect(harness).toContain('Mini-discovery');
     expect(harness).toContain('Proposal');
     expect(harness).toContain('Verify');
+    // Design phase: free-form UI design before implementation when a design
+    // tool MCP is connected; design artifacts bypass the approval gate.
+    expect(harness).toContain('Design (UI features)');
+    expect(harness).toContain('not production code');
     expect(harness).toContain('explicit approval before writing production');
     expect(harness).toContain('English');
     // Proportionality: trivial fixes bypass the proposal entirely.
@@ -741,7 +745,8 @@ describe('SDD harness', () => {
   });
 
   it('injects the knowledge summary when one is provided', () => {
-    const summary = '### Decisions\n- **Use PostgreSQL** · `decisions/001-x.md`';
+    const summary =
+      '### Decisions\n- **Use PostgreSQL** · `decisions/001-x.md`';
     const harness = getSddHarness(summary);
     expect(harness).toContain('Current project knowledge');
     expect(harness).toContain('Use PostgreSQL');

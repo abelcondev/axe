@@ -23,6 +23,10 @@ Open Knowledge Format (OKF). It is read first at the start of every session.
 - \`tasks/\` — units of work with Gherkin acceptance criteria.
 - \`log.md\` — append-only history of what happened and when.
 
+UI designs are NOT stored here: they live in \`designs/\` at the project root
+(created in the design app when the first feature is designed) and are
+referenced from decisions via \`resource\` as file + frame name.
+
 Everything here is written in English regardless of conversation language.
 `;
 
