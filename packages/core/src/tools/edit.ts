@@ -47,6 +47,7 @@ import type {
 } from './modifiable-tool.js';
 import { CommitAttributionService } from '../services/commitAttribution.js';
 import { safeLiteralReplace } from '../utils/textUtils.js';
+import { buildRefactorReminder } from '../utils/refactor-reminder.js';
 import {
   countOccurrences,
   extractEditSnippet,
@@ -715,6 +716,15 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       if (snippetResult) {
         const snippetText = `Showing lines ${snippetResult.startLine}-${snippetResult.endLine} of ${snippetResult.totalLines} from the edited file:\n\n---\n\n${snippetResult.content}`;
         llmSuccessMessageParts.push(snippetText);
+      }
+
+      const refactorReminder = buildRefactorReminder(
+        this.params.file_path,
+        editData.newContent,
+        editData.isNewFile ? undefined : editData.currentContent,
+      );
+      if (refactorReminder) {
+        llmSuccessMessageParts.push(refactorReminder);
       }
 
       return {

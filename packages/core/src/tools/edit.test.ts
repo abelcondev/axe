@@ -31,6 +31,7 @@ import { createMockWorkspaceContext } from '../test-utils/mockWorkspaceContext.j
 import { FileReadCache } from '../services/fileReadCache.js';
 import { StandardFileSystemService } from '../services/fileSystemService.js';
 import { CommitAttributionService } from '../services/commitAttribution.js';
+import { REFACTOR_LINE_THRESHOLD } from '../utils/refactor-reminder.js';
 
 describe('EditTool', () => {
   let tool: EditTool;
@@ -578,6 +579,45 @@ describe('EditTool', () => {
       );
 
       calculateSpy.mockRestore();
+    });
+
+    it('appends a refactor reminder when an edit grows a file past the line threshold', async () => {
+      const initialContent = Array.from(
+        { length: REFACTOR_LINE_THRESHOLD },
+        (_, i) => `line ${i}`,
+      ).join('\n');
+      fs.writeFileSync(filePath, initialContent, 'utf8');
+      seedPriorRead(filePath);
+
+      const invocation = tool.build({
+        file_path: filePath,
+        old_string: 'line 0',
+        new_string: 'line 0\nextra line\nextra line',
+      });
+      const result = await invocation.execute(new AbortController().signal);
+
+      expect(result.llmContent).toContain('<system-reminder>');
+      expect(result.llmContent).toContain(
+        `${REFACTOR_LINE_THRESHOLD}-line quality threshold`,
+      );
+    });
+
+    it('stays silent when an edit does not grow an already-large file', async () => {
+      const initialContent = Array.from(
+        { length: REFACTOR_LINE_THRESHOLD + 20 },
+        (_, i) => `line ${i}`,
+      ).join('\n');
+      fs.writeFileSync(filePath, initialContent, 'utf8');
+      seedPriorRead(filePath);
+
+      const invocation = tool.build({
+        file_path: filePath,
+        old_string: 'line 5',
+        new_string: 'line five',
+      });
+      const result = await invocation.execute(new AbortController().signal);
+
+      expect(result.llmContent).not.toContain('<system-reminder>');
     });
 
     it('should edit an existing file and return diff with fileName', async () => {

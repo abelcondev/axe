@@ -34,6 +34,7 @@ import {
 import type { LineEnding } from '../services/fileSystemService.js';
 import { makeRelative, shortenPath, unescapePath } from '../utils/paths.js';
 import { getErrorMessage, isNodeError } from '../utils/errors.js';
+import { buildRefactorReminder } from '../utils/refactor-reminder.js';
 import { createPatchSmart, getDiffStat } from './diffOptions.js';
 import { checkPriorRead, StructuredToolError } from './priorReadEnforcement.js';
 import { ToolNames, ToolDisplayNames } from './tool-names.js';
@@ -549,6 +550,15 @@ class WriteFileToolInvocation extends BaseToolInvocation<
         llmSuccessMessageParts.push(
           `User modified the \`content\` to be: ${content}`,
         );
+      }
+
+      const refactorReminder = buildRefactorReminder(
+        file_path,
+        content,
+        fileExists ? originalContent : undefined,
+      );
+      if (refactorReminder) {
+        llmSuccessMessageParts.push(refactorReminder);
       }
 
       // Log file operation for telemetry (without diff_stat to avoid double-counting)

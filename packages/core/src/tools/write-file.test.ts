@@ -30,6 +30,7 @@ import { createMockWorkspaceContext } from '../test-utils/mockWorkspaceContext.j
 import { FileReadCache } from '../services/fileReadCache.js';
 import { StandardFileSystemService } from '../services/fileSystemService.js';
 import { CommitAttributionService } from '../services/commitAttribution.js';
+import { REFACTOR_LINE_THRESHOLD } from '../utils/refactor-reminder.js';
 
 const rootDir = path.resolve(os.tmpdir(), 'qwen-code-test-root');
 
@@ -442,6 +443,36 @@ describe('WriteFileTool', () => {
       expect(display.fileDiff).toMatch(/\+\+\+ execute_new_file.txt\tWritten/);
       expect(display.fileDiff).toMatch(
         proposedContent.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'),
+      );
+    });
+
+    it('appends a refactor reminder when a new file exceeds the line threshold', async () => {
+      const filePath = path.join(rootDir, 'execute_large_file.txt');
+      const largeContent = Array.from(
+        { length: REFACTOR_LINE_THRESHOLD + 1 },
+        (_, i) => `line ${i}`,
+      ).join('\n');
+
+      const invocation = tool.build({
+        file_path: filePath,
+        content: largeContent,
+      });
+      const confirmDetails =
+        await invocation.getConfirmationDetails(abortSignal);
+      if (
+        typeof confirmDetails === 'object' &&
+        'onConfirm' in confirmDetails &&
+        confirmDetails.onConfirm
+      ) {
+        await confirmDetails.onConfirm(ToolConfirmationOutcome.ProceedOnce);
+      }
+
+      const result = await invocation.execute(abortSignal);
+
+      expect(result.llmContent).toMatch(/Successfully created/);
+      expect(result.llmContent).toContain('<system-reminder>');
+      expect(result.llmContent).toContain(
+        `${REFACTOR_LINE_THRESHOLD}-line quality threshold`,
       );
     });
 
