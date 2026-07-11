@@ -12,11 +12,14 @@ import {
   MCPDiscoveryState,
   MCPServerStatus,
   getMCPServerStatus,
+  hasNetworkTransport,
   populateMcpServerCommand,
   removeMCPServerStatus,
   setMCPDiscoveryState,
 } from './mcp-client.js';
 import type { SendSdkMcpMessage } from './mcp-client.js';
+import { MCPOAuthProvider } from '../mcp/oauth-provider.js';
+import { MCPOAuthTokenStorage } from '../mcp/oauth-token-storage.js';
 import { getErrorMessage } from '../utils/errors.js';
 import { createDebugLogger } from '../utils/debugLogger.js';
 import { recordStartupEvent } from '../utils/startupEventSink.js';
@@ -41,6 +44,10 @@ import {
 
 const debugLogger = createDebugLogger('MCP');
 export const RUNTIME_MCP_IF_ABSENT_CONFIG_FLAG = '__qwenRuntimeMcpIfAbsent';
+
+// Refresh OAuth tokens 5 minutes before expiry so the new token is ready
+// before the server closes the connection.
+const PROACTIVE_OAUTH_REFRESH_BUFFER_MS = 5 * 60 * 1000;
 
 /**
  * Configuration for MCP health monitoring
@@ -387,6 +394,7 @@ export class McpClientManager {
   private readonly sendSdkMcpMessage?: SendSdkMcpMessage;
   private healthConfig: MCPHealthMonitorConfig;
   private healthCheckTimers: Map<string, NodeJS.Timeout> = new Map();
+  private proactiveRefreshTimers: Map<string, NodeJS.Timeout> = new Map();
   private consecutiveFailures: Map<string, number> = new Map();
   private isReconnecting: Map<string, boolean> = new Map();
   private serverDiscoveryPromises: Map<string, Promise<void>> = new Map();
@@ -1390,6 +1398,10 @@ export class McpClientManager {
     try {
       await client.connect();
       await client.discover(cliConfig);
+      // Schedule proactive OAuth token refresh for HTTP/SSE servers that have
+      // a stored token with a known expiry. Fires before the token expires so
+      // the reconnect uses a fresh token and the user sees no gap.
+      void this.scheduleProactiveOAuthRefresh(serverName);
       // Record the connected-config key of the config this client is now
       // connected with, so the incremental reconcile can detect a later
       // in-place config change and reconnect (mirrors the pool path's `conn.id`
@@ -1984,6 +1996,7 @@ export class McpClientManager {
       clearInterval(timer);
       this.healthCheckTimers.delete(serverName);
     }
+    this.stopProactiveRefresh(serverName);
   }
 
   /**
@@ -1994,6 +2007,86 @@ export class McpClientManager {
       clearInterval(timer);
     }
     this.healthCheckTimers.clear();
+    for (const [, timer] of this.proactiveRefreshTimers.entries()) {
+      clearTimeout(timer);
+    }
+    this.proactiveRefreshTimers.clear();
+  }
+
+  private stopProactiveRefresh(serverName: string): void {
+    const timer = this.proactiveRefreshTimers.get(serverName);
+    if (timer) {
+      clearTimeout(timer);
+      this.proactiveRefreshTimers.delete(serverName);
+    }
+  }
+
+  private async scheduleProactiveOAuthRefresh(serverName: string): Promise<void> {
+    this.stopProactiveRefresh(serverName);
+
+    const serverConfig = this.cliConfig.getMcpServers()?.[serverName];
+    if (!serverConfig || !hasNetworkTransport(serverConfig)) return;
+
+    try {
+      const tokenStorage = new MCPOAuthTokenStorage();
+      const credentials = await tokenStorage.getCredentials(serverName);
+      if (!credentials?.token.expiresAt) return;
+
+      const delay =
+        credentials.token.expiresAt - Date.now() - PROACTIVE_OAUTH_REFRESH_BUFFER_MS;
+
+      if (delay <= 0) {
+        // Already within the buffer window — refresh and reconnect now.
+        await this.doProactiveOAuthRefresh(serverName);
+        return;
+      }
+
+      debugLogger.debug(
+        `Proactive OAuth refresh for '${serverName}' scheduled in ${Math.round(delay / 1000)}s`,
+      );
+      const timer = setTimeout(() => {
+        void this.doProactiveOAuthRefresh(serverName);
+      }, delay);
+      this.proactiveRefreshTimers.set(serverName, timer);
+    } catch (error) {
+      debugLogger.warn(
+        `Could not schedule proactive OAuth refresh for '${serverName}': ${getErrorMessage(error)}`,
+      );
+    }
+  }
+
+  private async doProactiveOAuthRefresh(serverName: string): Promise<void> {
+    this.proactiveRefreshTimers.delete(serverName);
+
+    if (!this.clients.has(serverName)) return;
+
+    try {
+      debugLogger.info(`Proactively refreshing OAuth token for MCP server '${serverName}'`);
+      const tokenStorage = new MCPOAuthTokenStorage();
+      const credentials = await tokenStorage.getCredentials(serverName);
+      if (!credentials) return;
+
+      const authProvider = new MCPOAuthProvider(tokenStorage);
+      const newToken = await authProvider.getValidToken(serverName, {
+        clientId: credentials.clientId,
+      });
+
+      if (!newToken) {
+        debugLogger.warn(
+          `Proactive OAuth refresh for '${serverName}' could not obtain a valid token — health monitor will handle reconnect`,
+        );
+        return;
+      }
+
+      debugLogger.info(
+        `Proactive OAuth token refresh succeeded for '${serverName}'; reconnecting to pick up new token`,
+      );
+      await this.reconnectServer(serverName, { skipDelay: true });
+    } catch (error) {
+      debugLogger.error(
+        `Proactive OAuth refresh failed for '${serverName}': ${getErrorMessage(error)}`,
+      );
+    }
   }
 
   /**
@@ -2048,9 +2141,13 @@ export class McpClientManager {
   }
 
   /**
-   * Reconnects a specific server
+   * Reconnects a specific server. Pass `{ skipDelay: true }` for proactive
+   * OAuth reconnects that should not wait the health-monitor backoff period.
    */
-  private async reconnectServer(serverName: string): Promise<void> {
+  private async reconnectServer(
+    serverName: string,
+    opts?: { skipDelay?: boolean },
+  ): Promise<void> {
     if (this.isReconnecting.get(serverName)) {
       return;
     }
@@ -2059,10 +2156,12 @@ export class McpClientManager {
     debugLogger.info(`Attempting to reconnect to server '${serverName}'...`);
 
     try {
-      // Wait before reconnecting
-      await new Promise((resolve) =>
-        setTimeout(resolve, this.healthConfig.reconnectDelayMs),
-      );
+      if (!opts?.skipDelay) {
+        // Wait before reconnecting (health-monitor backoff).
+        await new Promise((resolve) =>
+          setTimeout(resolve, this.healthConfig.reconnectDelayMs),
+        );
+      }
 
       await this.discoverMcpToolsForServer(serverName, this.cliConfig);
 
