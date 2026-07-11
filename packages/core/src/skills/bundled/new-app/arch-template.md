@@ -25,6 +25,7 @@ timestamp: <ISO-8601 timestamp>
 | Frontend | | | user |
 | Backend/BaaS | | | user |
 | Database | | | user |
+| Package manager | | | user |
 | UI components | | | research |
 | Icons | | | research |
 | Auth | | | |

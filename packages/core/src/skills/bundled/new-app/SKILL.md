@@ -87,6 +87,9 @@ to build around their base, not to replace it.
 Ask conversationally (not as a form):
 - Which base technologies do you plan to use? (frontend framework,
   backend/BaaS, database)
+- Which package manager? (bun, pnpm, npm, yarn) — never assume npm. The
+  answer applies to every scaffold, install, and script for the rest of the
+  project.
 - Any other pieces already decided? (UI library, auth, hosting)
 - Where do you have the most expertise, and is there anything you want to avoid?
 
@@ -204,8 +207,9 @@ proposal.
 
 ### Step 2 — Scaffold the app
 
-Run the scaffold command with pinned versions from Phase 2. Do not use
-`@latest`. The directory already contains `sdd/` and `.git`: if the scaffold
+Run the scaffold command with pinned versions from Phase 2, using the
+package manager chosen in Phase 2 (e.g. `bun create …` vs `npm create …`).
+Do not use `@latest`. The directory already contains `sdd/` and `.git`: if the scaffold
 tool refuses a non-empty directory, scaffold into a temporary subdirectory and
 move the results into the project root.
 
@@ -213,8 +217,10 @@ After scaffolding: show the generated folder structure. Wait for confirmation.
 
 ### Step 3 — Dependencies
 
-Pin all versions in `package.json`. Run the package manager install.
-Verify there are no peer dependency warnings before reporting.
+Pin all versions in `package.json`. Run the install with the package manager
+chosen in Phase 2 (e.g. `bun install`) — and keep using that package manager
+for every command you run or document from here on. Verify there are no peer
+dependency warnings before reporting.
 
 After install: show which packages were added and any warnings. Then suggest
 the user run `/references refresh` — it downloads and indexes the real source
