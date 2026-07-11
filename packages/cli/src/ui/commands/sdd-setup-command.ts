@@ -103,6 +103,53 @@ interface ScaffoldFile {
   content: string;
 }
 
+function detectPackageManager(dir: string): string | undefined {
+  if (
+    fs.existsSync(path.join(dir, 'bun.lock')) ||
+    fs.existsSync(path.join(dir, 'bun.lockb'))
+  ) {
+    return 'bun';
+  }
+  if (fs.existsSync(path.join(dir, 'pnpm-lock.yaml'))) {
+    return 'pnpm';
+  }
+  if (fs.existsSync(path.join(dir, 'yarn.lock'))) {
+    return 'yarn';
+  }
+  if (fs.existsSync(path.join(dir, 'package-lock.json'))) {
+    return 'npm';
+  }
+  return undefined;
+}
+
+function hasTestScript(dir: string): boolean {
+  try {
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(dir, 'package.json'), 'utf8'),
+    ) as { scripts?: Record<string, unknown> };
+    return typeof pkg.scripts?.['test'] === 'string';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * One-line testing status for the scaffold report. The SDD loop's TDD step
+ * depends on a working test command, so the setup message either confirms it
+ * or instructs setting one up now (vitest, co-located) — with the package
+ * manager detected from the lockfile, never assuming npm.
+ */
+export function getTestingStatusLine(dir: string): string {
+  const pm = detectPackageManager(dir);
+  if (!fs.existsSync(path.join(dir, 'package.json'))) {
+    return 'Testing: no package.json yet — once the app is scaffolded, set up the test runner (default: vitest, co-located *.test.ts) with the chosen package manager and add a "test" script. The SDD TDD step depends on it.';
+  }
+  if (hasTestScript(dir)) {
+    return `Testing: "test" script found${pm ? ` (run with \`${pm} run test\`)` : ''} — the SDD TDD step will run against it.`;
+  }
+  return `Testing: no "test" script in package.json — set up the test runner now (default: vitest, co-located *.test.ts next to the source) using ${pm ? `${pm} (detected from lockfile)` : "the project's package manager (no lockfile found — ask the user, never assume npm)"} and add the "test" script. The SDD TDD step depends on it.`;
+}
+
 const SCAFFOLD: ScaffoldFile[] = [
   { rel: 'index.md', content: INDEX_MD },
   { rel: 'log.md', content: LOG_MD },
@@ -179,6 +226,8 @@ export const sddSetupCommand: SlashCommand = {
     // same session — no restart required.
     await config.getKnowledgeService()?.initialize(targetDir);
 
+    lines.push('');
+    lines.push(getTestingStatusLine(targetDir));
     lines.push('');
     lines.push(
       'SDD knowledge base ready. The knowledge index is loaded and available in this session.',

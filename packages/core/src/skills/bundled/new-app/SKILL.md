@@ -22,6 +22,7 @@ approval → tasks → implementation), not through this skill.
 ## Core Rule: One Step at a Time
 
 After any step that writes files, runs commands, or installs dependencies:
+
 1. Report what was done (one paragraph, no wall of text).
 2. Ask explicitly whether to continue to the next step.
 3. Do not proceed until the user confirms.
@@ -43,28 +44,34 @@ what the user already said. Do not rush or combine all questions into one block.
 ### Discovery Checklist
 
 **Users & concurrency**
+
 - Who uses the app? (roles: admin, operator, customer, staff, etc.)
 - How many concurrent users? (1 person, small team, public)
 - Single-tenant or multi-tenant (accounts)?
 
 **Connectivity**
+
 - Must it work offline or tolerate flaky internet?
 - If offline: does data need to sync when back online?
 
 **Device & interaction**
+
 - Primary device? (desktop browser, tablet, mobile, kiosk)
 - Hardware to integrate? (thermal printer, barcode scanner, cash drawer, NFC)
 
 **Legal & compliance**
+
 - Electronic invoicing or tax compliance? (SUNAT, SAT, AFIP, etc.)
 - Data residency or privacy regulation? (GDPR, LGPD, etc.)
 
 **Business logic**
+
 - What is the one flow that absolutely cannot fail?
 - External services to integrate? (payment processor, delivery API, SMS, etc.)
 - Existing data to migrate from another system?
 
 **Deployment & maintenance**
+
 - Who hosts it and what is the infrastructure budget?
 - Who maintains the codebase after delivery?
 - Deadline or specific launch date?
@@ -85,6 +92,7 @@ to build around their base, not to replace it.
 ### Step 1 — Ask for the user's stack
 
 Ask conversationally (not as a form):
+
 - Which base technologies do you plan to use? (frontend framework,
   backend/BaaS, database)
 - Which package manager? (bun, pnpm, npm, yarn) — never assume npm. The
@@ -109,6 +117,7 @@ For each library:
 ```
 
 Research output must include for each library:
+
 - Latest stable version (pinned, not "latest")
 - Compatibility confirmed with the rest of the stack
 - Any breaking changes or known issues relevant to the use case
@@ -228,7 +237,18 @@ of every production dependency, so during feature development the Reference
 tool answers API questions from the exact installed version instead of
 guessing. Wait for confirmation.
 
-### Step 4 — Environment variables & gitignore
+### Step 4 — Test runner
+
+Set it up now so the project is born with a working test suite — the SDD
+loop's TDD step (tests first, derived from each task's Gherkin) depends on
+it. Default: vitest, pinned version, with co-located `*.test.ts` files next
+to the source (follow the stack's convention if it dictates otherwise).
+Install it with the chosen package manager, add the `test` script to
+`package.json`, and verify the runner exits green (an empty suite is fine).
+
+After setup: show the script and config added. Wait for confirmation.
+
+### Step 5 — Environment variables & gitignore
 
 Create `.env.example` with every required key documented. Ensure `.gitignore`
 covers `.env` (and variants), `.axe/` (session-internal state — unless the
@@ -237,7 +257,7 @@ commit `.env`.
 
 After creating: show the file contents. Wait for confirmation.
 
-### Step 5 — First commit
+### Step 6 — First commit
 
 The commit must exist BEFORE the repository step — `gh repo create --push`
 fails on a repo with no commits.
@@ -248,22 +268,23 @@ message (e.g. `chore: initial project setup`). Ask the user whether they
 want to run the commit themselves or have you do it — default to doing it
 yourself once they confirm the message. Verify with `git log -1`.
 
-### Step 6 — Repository
+### Step 7 — Repository
 
 Ask the user: create a new GitHub repo, or is there an existing remote?
+
 - **New repo**: present the exact command for the USER to run — do not run it
   yourself:
   ```bash
   gh repo create <project-name> --private --source=. --remote=origin --push
   ```
-  The first commit from Step 5 already exists, so `--push` works.
+  The first commit from Step 6 already exists, so `--push` works.
 - **Existing remote**: help configure it (`git remote add origin ...`) and
   push once the user confirms.
 
 Offer a minimal CI workflow (lint + typecheck on push/PR) in one line —
 create it only if the user says yes. If they accept, commit it and push.
 
-### Step 7 — Handoff (end of skill)
+### Step 8 — Handoff (end of skill)
 
 The workflow ends here. Tell the user the project foundations are delivered
 and that from now on features follow the standing SDD loop: they describe a
