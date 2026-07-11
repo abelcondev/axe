@@ -19,6 +19,12 @@ initCpuProfiler();
 
 // --- Global Entry Point ---
 
+// Terminals that build tab titles from the foreground process argv (e.g.
+// Zed) would otherwise show "node --expose-gc /path/to/cli.js". Rewriting
+// the process title makes them show "axe". Terminal-emulator window titles
+// (OSC 0/2) are handled separately in utils/windowTitle.ts.
+process.title = 'axe';
+
 function writeStderrLine(line: string): void {
   process.stderr.write(line.endsWith('\n') ? line : `${line}\n`);
 }
