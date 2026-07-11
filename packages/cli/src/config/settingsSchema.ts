@@ -2775,6 +2775,28 @@ const SETTINGS_SCHEMA = {
     showInDialog: false,
   },
 
+  quality: {
+    type: 'object',
+    label: 'Quality',
+    category: 'Advanced',
+    requiresRestart: true,
+    default: {},
+    description: 'Quality gate settings.',
+    showInDialog: false,
+    properties: {
+      testCommand: {
+        type: 'string',
+        label: 'Test Command',
+        category: 'Advanced',
+        requiresRestart: true,
+        default: undefined as string | undefined,
+        description:
+          'Shell command for the built-in test gate (e.g. "bun run test"). When set, it runs before the agent may end a turn that changed code; a non-zero exit blocks the turn and feeds the failing output back to the model. The stopHookBlockingCap setting bounds consecutive blocks.',
+        showInDialog: true,
+      },
+    },
+  },
+
   stopHookBlockingCap: {
     type: 'number',
     label: 'Stop Hook Blocking Cap',

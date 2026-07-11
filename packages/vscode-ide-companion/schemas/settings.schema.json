@@ -1310,6 +1310,16 @@
       "type": "boolean",
       "default": false
     },
+    "quality": {
+      "description": "Quality gate settings.",
+      "type": "object",
+      "properties": {
+        "testCommand": {
+          "description": "Shell command for the built-in test gate (e.g. \"bun run test\"). When set, it runs before the agent may end a turn that changed code; a non-zero exit blocks the turn and feeds the failing output back to the model. The stopHookBlockingCap setting bounds consecutive blocks.",
+          "type": "string"
+        }
+      }
+    },
     "stopHookBlockingCap": {
       "type": "integer",
       "minimum": 1,

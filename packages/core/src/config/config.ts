@@ -105,6 +105,7 @@ import { BackgroundShellRegistry } from '../services/backgroundShellRegistry.js'
 import { WorkflowRunRegistry } from '../agents/workflow-run-registry.js';
 import { FileReadCache } from '../services/fileReadCache.js';
 import { resolveStopHookBlockingCap } from '../hooks/stopHookCap.js';
+import { registerTestGateHooks } from '../quality/test-gate-hook.js';
 import { buildContextUsage } from '../hooks/context-usage.js';
 import {
   DEFAULT_OTLP_ENDPOINT,
@@ -1113,6 +1114,12 @@ export interface ConfigParameters {
    */
   stopHookBlockingCap?: number;
   /**
+   * Shell command for the built-in quality test gate. When set, a Stop hook
+   * runs it before the agent may end a turn that changed code, blocking the
+   * turn while the suite is red.
+   */
+  qualityTestCommand?: string;
+  /**
    * User-level hooks configuration (from user settings).
    * These hooks are always loaded regardless of folder trust status.
    */
@@ -1565,6 +1572,7 @@ export class Config {
   private visionModel?: string;
   private readonly disableAllHooks: boolean;
   private readonly stopHookBlockingCap: number;
+  private readonly qualityTestCommand: string | undefined;
   /** User-level hooks (always loaded regardless of trust) */
   private readonly userHooks?: Record<string, unknown>;
   /** Project-level hooks (only loaded in trusted folders) */
@@ -1863,6 +1871,7 @@ export class Config {
     this.stopHookBlockingCap = resolveStopHookBlockingCap(
       params.stopHookBlockingCap,
     );
+    this.qualityTestCommand = params.qualityTestCommand;
     // Store user and project hooks separately for proper source attribution
     this.userHooks = params.userHooks;
     this.projectHooks = params.projectHooks;
@@ -1907,6 +1916,8 @@ export class Config {
       this.hookSystem = new HookSystem(this);
       await this.hookSystem.initialize();
       this.debugLogger.debug('Hook system initialized');
+
+      registerTestGateHooks(this);
 
       // Initialize MessageBus for hook execution
       this.messageBus = new MessageBus();
@@ -5163,6 +5174,10 @@ export class Config {
 
   getStopHookBlockingCap(): number {
     return this.stopHookBlockingCap;
+  }
+
+  getQualityTestCommand(): string | undefined {
+    return this.qualityTestCommand;
   }
 
   getManagedAutoMemoryEnabled(): boolean {

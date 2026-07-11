@@ -2117,6 +2117,8 @@ export async function loadCliConfig(
       bareMode || safeMode ? true : (settings.disableAllHooks ?? false),
     stopHookBlockingCap:
       bareMode || safeMode ? undefined : settings.stopHookBlockingCap,
+    qualityTestCommand:
+      bareMode || safeMode ? undefined : settings.quality?.testCommand,
     channel: argv.channel,
     // CLI flag wins over settings.json. `--json-fd` is fd-only (no settings
     // equivalent — fd passing is a spawn-time concern). `--json-file` and
