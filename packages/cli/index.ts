@@ -21,9 +21,15 @@ initCpuProfiler();
 
 // Terminals that build tab titles from the foreground process argv (e.g.
 // Zed) would otherwise show "node --expose-gc /path/to/cli.js". Rewriting
-// the process title makes them show "axe". Terminal-emulator window titles
+// the process title makes them show "axe". Skipped on macOS: the kernel
+// keeps the original argc, so KERN_PROCARGS2 parsers (Zed's sysinfo) skip
+// the NUL gap the rewrite leaves and read environment variables as argv.
+// There the standalone launcher fixes the name instead, by running node
+// through an "axe"-named hardlink. Terminal-emulator window titles
 // (OSC 0/2) are handled separately in utils/windowTitle.ts.
-process.title = 'axe';
+if (process.platform !== 'darwin') {
+  process.title = 'axe';
+}
 
 function writeStderrLine(line: string): void {
   process.stderr.write(line.endsWith('\n') ? line : `${line}\n`);

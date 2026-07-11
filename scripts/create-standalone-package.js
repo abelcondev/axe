@@ -604,13 +604,20 @@ function writeShims(packageRoot) {
   const binDir = path.join(packageRoot, 'bin');
   fs.mkdirSync(binDir, { recursive: true });
 
-  const unixShim = `#!/usr/bin/env sh
+  const unixShim = `#!/bin/sh
 set -e
 ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
-if [ "\${1:-}" = "serve" ]; then
-  exec "$ROOT/node/bin/node" "$ROOT/lib/cli-entry.js" "$@"
+# Run node through an "axe"-named hardlink so the process — and terminal
+# tab titles derived from it (e.g. Zed's) — reads as "axe", not "node".
+NODE="$ROOT/node/bin/node"
+AXE_NODE="$ROOT/node/bin/axe"
+if [ ! "$AXE_NODE" -ef "$NODE" ]; then
+  ln -f "$NODE" "$AXE_NODE" 2>/dev/null || AXE_NODE="$NODE"
 fi
-exec "$ROOT/node/bin/node" --expose-gc "$ROOT/lib/cli.js" "$@"
+if [ "\${1:-}" = "serve" ]; then
+  exec "$AXE_NODE" "$ROOT/lib/cli-entry.js" "$@"
+fi
+exec "$AXE_NODE" --expose-gc "$ROOT/lib/cli.js" "$@"
 `;
   const unixShimPath = path.join(binDir, 'axe');
   fs.writeFileSync(unixShimPath, unixShim);

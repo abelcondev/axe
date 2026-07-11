@@ -1138,7 +1138,7 @@ write_unix_wrapper() {
     quoted_axe_bin=$(shell_quote "${axe_bin}")
 
     if ! cat > "${wrapper_path}" <<EOF
-#!/usr/bin/env sh
+#!/bin/sh
 exec ${quoted_axe_bin} "\$@"
 EOF
     then

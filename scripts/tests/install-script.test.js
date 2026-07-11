@@ -1891,11 +1891,12 @@ describe('standalone release packaging', () => {
           path.join(extractDir, 'qwen-code', 'bin', 'qwen'),
         );
         expect(shim).toContain('if [ "${1:-}" = "serve" ]; then');
+        expect(shim).toContain('ln -f "$NODE" "$AXE_NODE"');
         expect(shim).toContain(
-          'exec "$ROOT/node/bin/node" "$ROOT/lib/cli-entry.js" "$@"',
+          'exec "$AXE_NODE" "$ROOT/lib/cli-entry.js" "$@"',
         );
         expect(shim).toContain(
-          'exec "$ROOT/node/bin/node" --expose-gc "$ROOT/lib/cli.js" "$@"',
+          'exec "$AXE_NODE" --expose-gc "$ROOT/lib/cli.js" "$@"',
         );
       } finally {
         restoreMinimalDist(createdDist);
