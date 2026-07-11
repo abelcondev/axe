@@ -19,7 +19,14 @@ const DESCRIPTION = `Searches the REAL source code of an installed dependency �
 Use this before calling into a third-party library whose API you are unsure of: search its actual source for the function, class, type, or option you need. Results are match blocks with surrounding context lines, ranked so type definitions and hand-written source come before compiled output and docs.
 
 - \`package\`: any package installed under \`node_modules\` (e.g. \`react\`, \`@tanstack/react-query\`). Direct dependencies are pre-indexed; transitive dependencies (e.g. the core package behind a framework adapter) are indexed on demand — if an API seems to live in a sub-dependency, search that package directly by name.
-- \`query\`: PREFER one exact identifier per call (e.g. \`sendMagicCode\`). A single term is treated as a ripgrep pattern (regex allowed). Multiple words are OR-matched as whole words and ranked by how many distinct words each block hits — do NOT write natural-language phrases.
+- \`query\`: ONE exact identifier per call (e.g. \`LinkDef\`, \`sendMagicCode\`, \`createToken\`). A single term is a ripgrep regex — it finds every occurrence and returns surrounding context. Multi-word queries OR-match whole words and dilute relevance. DO NOT write phrases, descriptions, or lists of terms.
+
+**Pivot rule**: if after 2 Reference searches you have not found the type/function you need, STOP searching and switch strategies:
+1. Grep the dist directly: \`grep -r 'TypeName' node_modules/pkg/dist/esm/ | head -20\`
+2. Read the \`.d.ts\` entry point: \`node_modules/pkg/dist/index.d.ts\`
+Repeating the same concept with different keywords rarely helps — the index is keyword-based and you already have the full package source.
+
+After each search, state in one sentence what you found (or did not find) before deciding whether to search again.
 
 The set of pre-indexed packages is listed in the system prompt under "Dependency source references".`;
 

@@ -804,8 +804,9 @@ export const ToolMessage: React.FC<ToolMessageProps> = ({
             {effectiveDisplayRenderer.type === 'string' &&
               (hiddenResultLines > 0 ? (
                 <Text color={theme.text.secondary}>
-                  … {hiddenResultLines} output lines hidden
-                  {isPending ? ' (ctrl+s to view)' : ''}
+                  {name === ToolDisplayNames.REFERENCE
+                    ? `… ${effectiveDisplayRenderer.data.split('\n')[0].replace(/ source:$/, '')} · ${hiddenResultLines} lines hidden${isPending ? ' (ctrl+s to view)' : ''}`
+                    : `… ${hiddenResultLines} output lines hidden${isPending ? ' (ctrl+s to view)' : ''}`}
                 </Text>
               ) : (
                 <StringResultRenderer
