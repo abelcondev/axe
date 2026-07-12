@@ -79,6 +79,9 @@ description: One-line summary of the task.
 decision: decisions/NNN-name.md
 tags: []
 status: pending
+# design: pending — required on tasks with user-facing UI; the design gate
+# resolves it to a design reference (designs/app.pen#frame, Figma URL) or
+# "skipped (user, YYYY-MM-DD)".
 timestamp: ${new Date().toISOString()}
 ---
 
