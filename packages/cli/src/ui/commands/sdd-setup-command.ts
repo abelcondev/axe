@@ -107,9 +107,12 @@ the code. A single shared file with one top-level page/frame per feature works
 well (e.g. \`app.pen\`, frame \`login\`).
 
 Approved designs are referenced from \`sdd/decisions/*.md\` (\`resource\`) or
-their tasks as file + frame name. Design apps typically cannot create files —
-create the file in the app (File → Save As) into this folder before designing,
-so the design never lives in an unversioned scratch document.
+their tasks as file + frame name (\`designs/app.pen#signup-form\`). The
+\`#frame\` suffix is reference notation, not a path — the file on disk is just
+\`app.pen\`; never create a file whose name contains \`#\`. Design apps
+typically cannot create files — create the file in the app (File → Save As)
+into this folder before designing, so the design never lives in an
+unversioned scratch document.
 `;
 
 interface ScaffoldFile {
