@@ -80,8 +80,9 @@ decision: decisions/NNN-name.md
 tags: []
 status: pending
 # design: pending — required on tasks with user-facing UI; the design gate
-# resolves it to a design reference (designs/app.pen#frame, Figma URL) or
-# "skipped (user, YYYY-MM-DD)".
+# resolves it to a design reference (designs/app.pen#frame, Figma URL with
+# node-id), a YAML list with one reference per view when the task spans
+# several (steps, modals, sheets, states), or "skipped (user, YYYY-MM-DD)".
 timestamp: ${new Date().toISOString()}
 ---
 

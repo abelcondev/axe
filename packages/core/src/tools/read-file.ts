@@ -45,7 +45,7 @@ const SDD_DESIGN_PENDING_RE = /^design:\s*pending\b/m;
 
 const SDD_DESIGN_GATE_REMINDER = `
 
-<system-reminder>SDD design gate: this task has user-facing UI and its design is unresolved (\`design: pending\`). Before writing any production code for it, ask the user how to handle design: design the screens together first (e.g. in Pencil), pull an existing design they already have (e.g. a Figma link via the connected MCP), or skip design. Record the outcome in this task's \`design:\` frontmatter field — a design reference (\`designs/app.pen#frame\`, Figma URL) or \`skipped (user, YYYY-MM-DD)\`. Do NOT write production code for this task while \`design:\` is \`pending\`.</system-reminder>`;
+<system-reminder>SDD design gate: this task has user-facing UI and its design is unresolved (\`design: pending\`). Before writing any production code for it, ask the user how to handle design: design the screens together first (e.g. in Pencil), pull an existing design they already have (e.g. a Figma link via the connected MCP), or skip design. Record the outcome in this task's \`design:\` frontmatter field — a design reference (\`designs/app.pen#frame\`, Figma URL with node-id), a YAML list with one reference per view when the task spans several (steps, modals, sheets, states), or \`skipped (user, YYYY-MM-DD)\`. Do NOT write production code for this task while \`design:\` is \`pending\`.</system-reminder>`;
 
 /** True when absPath is a markdown task file under `<projectRoot>/sdd/tasks/`. */
 function isSddTaskPath(absPath: string, projectRoot: string): boolean {

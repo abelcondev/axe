@@ -745,6 +745,23 @@ describe('ReadFileTool', () => {
         expect(result.llmContent).not.toContain('SDD design gate');
       });
 
+      it('does not append the reminder when design resolved to a list of view references', async () => {
+        const filePath = await writeTask(
+          '003-signup-ui.md',
+          TASK_PENDING.replace(
+            'design: pending',
+            [
+              'design:',
+              '  - designs/app.pen#signup-form',
+              '  - designs/app.pen#signup-success',
+              '  - https://figma.com/design/xxx?node-id=12-345 (plan picker sheet)',
+            ].join('\n'),
+          ),
+        );
+        const result = await read({ file_path: filePath });
+        expect(result.llmContent).not.toContain('SDD design gate');
+      });
+
       it('does not append the reminder for tasks without a design field', async () => {
         const filePath = await writeTask(
           '003-schema.md',
