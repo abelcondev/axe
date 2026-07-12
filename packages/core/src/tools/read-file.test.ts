@@ -702,6 +702,74 @@ describe('ReadFileTool', () => {
       }
     });
 
+    describe('SDD design gate reminder', () => {
+      const TASK_PENDING = [
+        '---',
+        'type: Task',
+        'title: Sign-up page UI',
+        'status: pending',
+        'design: pending',
+        '---',
+        '',
+        '# Acceptance criteria',
+      ].join('\n');
+
+      async function read(params: ReadFileToolParams): Promise<ToolResult> {
+        const invocation = tool.build(params) as ToolInvocation<
+          ReadFileToolParams,
+          ToolResult
+        >;
+        return invocation.execute(abortSignal);
+      }
+
+      async function writeTask(name: string, content: string): Promise<string> {
+        const filePath = path.join(tempRootDir, 'sdd', 'tasks', name);
+        await fsp.mkdir(path.dirname(filePath), { recursive: true });
+        await fsp.writeFile(filePath, content, 'utf-8');
+        return filePath;
+      }
+
+      it('appends the reminder when a task under sdd/tasks/ has design: pending', async () => {
+        const filePath = await writeTask('003-signup-ui.md', TASK_PENDING);
+        const result = await read({ file_path: filePath });
+        expect(result.llmContent).toContain('SDD design gate');
+        expect(result.llmContent).toContain('<system-reminder>');
+      });
+
+      it('does not append the reminder once design is resolved', async () => {
+        const filePath = await writeTask(
+          '003-signup-ui.md',
+          TASK_PENDING.replace('design: pending', 'design: designs/app.pen#signup'),
+        );
+        const result = await read({ file_path: filePath });
+        expect(result.llmContent).not.toContain('SDD design gate');
+      });
+
+      it('does not append the reminder for tasks without a design field', async () => {
+        const filePath = await writeTask(
+          '003-schema.md',
+          TASK_PENDING.replace('design: pending\n', ''),
+        );
+        const result = await read({ file_path: filePath });
+        expect(result.llmContent).not.toContain('SDD design gate');
+      });
+
+      it('ignores design: pending in files outside sdd/tasks/', async () => {
+        const filePath = path.join(tempRootDir, 'notes.md');
+        await fsp.writeFile(filePath, TASK_PENDING, 'utf-8');
+        const result = await read({ file_path: filePath });
+        expect(result.llmContent).not.toContain('SDD design gate');
+      });
+
+      it('re-emits content + reminder on a second read (no file_unchanged placeholder)', async () => {
+        const filePath = await writeTask('003-signup-ui.md', TASK_PENDING);
+        await read({ file_path: filePath });
+        const second = await read({ file_path: filePath });
+        expect(second.llmContent).not.toMatch(/unchanged since/);
+        expect(second.llmContent).toContain('SDD design gate');
+      });
+    });
+
     describe('with FileReadCache', () => {
       // Helper to build + execute a Read in one shot.
       async function read(

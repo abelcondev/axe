@@ -33,6 +33,33 @@ import { createDebugLogger } from '../utils/debugLogger.js';
 const debugLogger = createDebugLogger('READ_FILE_CACHE');
 
 /**
+ * SDD design gate (deterministic layer). Task files under `sdd/tasks/` whose
+ * frontmatter still says `design: pending` get a `<system-reminder>` appended
+ * to every read, so the gate instruction arrives at zero distance from the
+ * moment the model reads the ticket — models that lose long-range system
+ * prompt instructions still see it. Matching is frontmatter-shaped
+ * (line-anchored) rather than a YAML parse; a task body mentioning the
+ * literal at column 0 is not a realistic false positive.
+ */
+const SDD_DESIGN_PENDING_RE = /^design:\s*pending\b/m;
+
+const SDD_DESIGN_GATE_REMINDER = `
+
+<system-reminder>SDD design gate: this task has user-facing UI and its design is unresolved (\`design: pending\`). Before writing any production code for it, ask the user how to handle design: design the screens together first (e.g. in Pencil), pull an existing design they already have (e.g. a Figma link via the connected MCP), or skip design. Record the outcome in this task's \`design:\` frontmatter field — a design reference (\`designs/app.pen#frame\`, Figma URL) or \`skipped (user, YYYY-MM-DD)\`. Do NOT write production code for this task while \`design:\` is \`pending\`.</system-reminder>`;
+
+/** True when absPath is a markdown task file under `<projectRoot>/sdd/tasks/`. */
+function isSddTaskPath(absPath: string, projectRoot: string): boolean {
+  const rel = path.relative(projectRoot, absPath);
+  const parts = rel.split(path.sep);
+  return (
+    parts.length === 3 &&
+    parts[0] === 'sdd' &&
+    parts[1] === 'tasks' &&
+    parts[2].endsWith('.md')
+  );
+}
+
+/**
  * Parameters for the ReadFile tool
  */
 export interface ReadFileToolParams {
@@ -154,8 +181,13 @@ class ReadFileToolInvocation extends BaseToolInvocation<
     // never serve the file_unchanged placeholder — those files own a
     // per-read freshness `<system-reminder>` that must be re-emitted
     // on every read.
+    // SDD task files are excluded from the fast path for the same reason as
+    // auto-memory files: reads with `design: pending` own a per-read design
+    // gate `<system-reminder>` that must be re-emitted, and the
+    // file_unchanged placeholder would drop it. Task files are tiny.
+    const isSddTask = isSddTaskPath(absPath, projectRoot);
     const cacheEnabled = !this.config.getFileReadCacheDisabled();
-    const useFastPath = cacheEnabled && !isAutoMem;
+    const useFastPath = cacheEnabled && !isAutoMem && !isSddTask;
     const cache = this.config.getFileReadCache();
     // A request-level "full" Read asks for the whole file: no offset,
     // no limit, no PDF page range. The cache entry is only marked as
@@ -305,6 +337,17 @@ class ReadFileToolInvocation extends BaseToolInvocation<
       } catch {
         // Best-effort — if stat fails, omit the note silently.
       }
+    }
+
+    // SDD design gate: append the reminder to task files whose design is
+    // still unresolved. Appended (not prepended) so it sits closest to the
+    // model's continuation point.
+    if (
+      typeof llmContent === 'string' &&
+      isSddTask &&
+      SDD_DESIGN_PENDING_RE.test(llmContent)
+    ) {
+      llmContent += SDD_DESIGN_GATE_REMINDER;
     }
 
     const lines =
