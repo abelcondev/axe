@@ -6,6 +6,7 @@
 
 import { Text } from 'ink';
 import React from 'react';
+import type { ReferenceEntry } from '@axe/core';
 import type {
   CommandContext,
   SlashCommand,
@@ -15,6 +16,22 @@ import { CommandKind } from './types.js';
 
 function mb(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function statusRow(entry: ReferenceEntry | undefined): {
+  mark: string;
+  detail: string;
+} {
+  if (entry?.status === 'indexed') {
+    return {
+      mark: '✓',
+      detail: `${entry.fileCount} files · ${mb(entry.size)} · ${entry.source}`,
+    };
+  }
+  if (entry?.status === 'error') {
+    return { mark: '✗', detail: entry.error ?? 'error' };
+  }
+  return { mark: '○', detail: 'pending' };
 }
 
 /**
@@ -50,30 +67,44 @@ async function renderStatus(
   const manifest = service.getManifest();
   const lines: string[] = [];
   let indexed = 0;
+  let total = active.length;
   let totalBytes = 0;
 
   for (const pkg of active) {
     const entry = manifest[`${pkg.name}@${pkg.version}`];
-    let mark: string;
-    let detail: string;
     if (entry?.status === 'indexed') {
       indexed++;
       totalBytes += entry.size;
-      mark = '✓';
-      detail = `${entry.fileCount} files · ${mb(entry.size)} · ${entry.source}`;
-    } else if (entry?.status === 'error') {
-      mark = '✗';
-      detail = entry.error ?? 'error';
-    } else {
-      mark = '○';
-      detail = 'pending';
     }
+    const { mark, detail } = statusRow(entry);
     lines.push(`  ${mark} ${pkg.name}@${pkg.version} — ${detail}`);
+  }
+
+  // Transitive deps indexed on demand (e.g. via `/references refresh <pkg>`
+  // or a Reference tool search) live only in the manifest. The cache is
+  // shared across projects, so list only entries that resolve to this
+  // project's node_modules at the same version.
+  const activeKeys = new Set(active.map((p) => `${p.name}@${p.version}`));
+  for (const [key, entry] of Object.entries(manifest)) {
+    if (activeKeys.has(key)) {
+      continue;
+    }
+    const installed = await service.resolveInstalled(entry.package);
+    if (!installed || installed.version !== entry.version) {
+      continue;
+    }
+    total++;
+    if (entry.status === 'indexed') {
+      indexed++;
+      totalBytes += entry.size;
+    }
+    const { mark, detail } = statusRow(entry);
+    lines.push(`  ${mark} ${key} — ${detail} · on-demand`);
   }
 
   lines.push('');
   lines.push(
-    `${indexed}/${active.length} indexed · ${mb(totalBytes)} · cache: ~/.axe/references`,
+    `${indexed}/${total} indexed · ${mb(totalBytes)} · cache: ~/.axe/references`,
   );
   lines.push('');
   lines.push('Use `/references refresh [pkg]` to (re)index, `/references clear [pkg]` to remove.');
