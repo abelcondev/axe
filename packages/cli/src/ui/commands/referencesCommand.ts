@@ -110,16 +110,26 @@ const refreshCommand: SlashCommand = {
     // scaffold / npm install) before resolving targets.
     await service.rescan();
     const pkgArg = args.trim();
-    const targets = pkgArg
+    let targets = pkgArg
       ? service.getActivePackages().filter((p) => p.name === pkgArg || p.installName === pkgArg)
       : service.getActivePackages();
+
+    // Not a direct dependency: fall back to the node_modules lookup so
+    // transitive deps (e.g. `@instantdb/core` behind `@instantdb/svelte`)
+    // can be pre-indexed by name, matching the Reference tool's behavior.
+    if (pkgArg && targets.length === 0) {
+      const transitive = await service.resolveInstalled(pkgArg);
+      if (transitive) {
+        targets = [transitive];
+      }
+    }
 
     if (targets.length === 0) {
       return {
         type: 'message',
         messageType: 'error',
         content: pkgArg
-          ? `"${pkgArg}" is not a production dependency of this project.`
+          ? `"${pkgArg}" is not installed in this project (checked package.json dependencies and node_modules).`
           : 'No production dependencies to index.',
       };
     }

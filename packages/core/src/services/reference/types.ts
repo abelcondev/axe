@@ -123,6 +123,12 @@ export interface IReferenceService {
     options?: { force?: boolean },
   ): Promise<ReferenceEntry | null>;
   /**
+   * Resolves an installed package by name — an active dependency or a
+   * transitive one found in node_modules — without indexing it. Null when
+   * the package is not installed.
+   */
+  resolveInstalled(packageName: string): Promise<ActivePackage | null>;
+  /**
    * Searches an indexed package's source for `query`. Indexes it on demand if
    * needed.
    */

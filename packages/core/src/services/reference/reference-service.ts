@@ -421,6 +421,10 @@ ${lines.join('\n')}`;
     return task;
   }
 
+  async resolveInstalled(packageName: string): Promise<ActivePackage | null> {
+    return this.resolvePackage(packageName);
+  }
+
   private resolveActive(packageName: string): ActivePackage | null {
     const match = (p: ActivePackage) =>
       p.installName === packageName || p.name === packageName;
