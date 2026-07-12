@@ -1081,8 +1081,14 @@ describe('DiscoveredMCPTool', () => {
       const invocation = truncTool.build({ param: 'test' });
       const result = await invocation.execute(new AbortController().signal);
 
-      // Without config, should return untouched
-      expect(result.llmContent).toEqual([{ text: largeText }]);
+      // Without config, the text is untouched; large results additionally
+      // carry the model-only summary nudge as a trailing part.
+      const parts = result.llmContent as Array<{ text?: string }>;
+      expect(parts[0]).toEqual({ text: largeText });
+      expect(parts).toHaveLength(2);
+      expect(parts[1].text).toContain('<system-reminder>');
+      // The nudge is model-facing only — it must not leak into the display.
+      expect(result.returnDisplay).not.toContain('system-reminder');
     });
   });
 

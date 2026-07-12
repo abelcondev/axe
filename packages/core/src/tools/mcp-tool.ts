@@ -405,7 +405,7 @@ class DiscoveredMCPToolInvocation extends BaseToolInvocation<
       const truncatedParts = await this.truncateTextParts(transformedParts);
 
       return {
-        llmContent: truncatedParts,
+        llmContent: this.withSummaryNudge(truncatedParts),
         returnDisplay: getDisplayFromParts(truncatedParts),
       };
     } catch (error) {
@@ -484,12 +484,37 @@ class DiscoveredMCPToolInvocation extends BaseToolInvocation<
       const truncatedParts = await this.truncateTextParts(transformedParts);
 
       return {
-        llmContent: truncatedParts,
+        llmContent: this.withSummaryNudge(truncatedParts),
         returnDisplay: getDisplayFromParts(truncatedParts),
       };
     } catch (error) {
       return this.handleReconnectOnError(error, signal);
     }
+  }
+
+  // Results at or above this many text lines collapse to a one-line summary
+  // in the terminal (ui.toolOutputMaxLines), so the user never sees them.
+  private static readonly SUMMARY_NUDGE_MIN_LINES = 10;
+
+  /**
+   * Appends a model-only reminder to narrate the outcome of a large MCP
+   * result the user cannot see. Callers must derive `returnDisplay` from the
+   * parts BEFORE this is applied so the reminder never renders in the UI.
+   */
+  private withSummaryNudge(parts: Part[]): Part[] {
+    const lineCount = parts.reduce(
+      (n, p) => (p.text ? n + p.text.split('\n').length : n),
+      0,
+    );
+    if (lineCount < DiscoveredMCPToolInvocation.SUMMARY_NUDGE_MIN_LINES) {
+      return parts;
+    }
+    return [
+      ...parts,
+      {
+        text: '<system-reminder>The user\'s terminal collapses this MCP result to a single line, so they have NOT seen its content. In your next message, briefly state (1-2 sentences) what this call found or did before continuing.</system-reminder>',
+      },
+    ];
   }
 
   /**
@@ -524,8 +549,17 @@ class DiscoveredMCPToolInvocation extends BaseToolInvocation<
     return result;
   }
 
+  // The stringified params render inline next to the tool name in the
+  // transcript; payload-style params (design scripts, documents) run to
+  // thousands of chars and drown the conversation.
+  private static readonly MAX_DESCRIPTION_CHARS = 200;
+
   getDescription(): string {
-    return safeJsonStringify(this.params);
+    const json = safeJsonStringify(this.params);
+    const max = DiscoveredMCPToolInvocation.MAX_DESCRIPTION_CHARS;
+    return json.length > max
+      ? `${json.slice(0, max)}… (+${json.length - max} chars)`
+      : json;
   }
 }
 
