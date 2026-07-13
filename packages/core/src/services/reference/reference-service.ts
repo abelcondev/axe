@@ -18,7 +18,15 @@ import {
   getActiveWorkspace,
 } from '../../project/detect.js';
 import { parseDependencies } from '../../project/dependencies.js';
+import { getEmbedder, EMBEDDING_MODEL } from './embeddings.js';
 import { buildExportIndex } from './export-index.js';
+import {
+  buildSemanticIndex,
+  loadSemanticIndex,
+  saveSemanticIndex,
+  searchSemanticIndex,
+} from './semantic-index.js';
+import type { SemanticIndex } from './semantic-index.js';
 import type {
   ActivePackage,
   IReferenceService,
@@ -203,6 +211,8 @@ export class ReferenceService implements IReferenceService {
   private readonly inFlight = new Map<string, Promise<ReferenceEntry>>();
   /** Session cache of extracted export tables, keyed by `"<pkg>@<ver>"`. */
   private readonly exportsCache = new Map<string, ReferenceExport[]>();
+  /** Session cache of loaded/built semantic indexes, keyed like the above. */
+  private readonly semanticCache = new Map<string, SemanticIndex>();
   private warmupPromise: Promise<void> | null = null;
 
   static createStandalone(): ReferenceService {
@@ -323,6 +333,8 @@ export class ReferenceService implements IReferenceService {
       }
       delete this.manifest.references[key];
       this.exportsCache.delete(key);
+      this.semanticCache.delete(key);
+      await rmrf(this.semanticIndexPath(key));
     }
 
     if (keys.length > 0) {
@@ -510,9 +522,19 @@ ${lines.join('\n')}`;
     return null;
   }
 
+  /** Sidecar path (outside `cachePath`, so ripgrep never indexes it). */
+  private semanticIndexPath(key: string): string {
+    return path.join(
+      this.referencesDir,
+      `${keyToDirName(key)}.embeddings.json`,
+    );
+  }
+
   private async indexPackage(pkg: ActivePackage): Promise<ReferenceEntry> {
     const key = refKey(pkg.name, pkg.version);
     this.exportsCache.delete(key);
+    this.semanticCache.delete(key);
+    await rmrf(this.semanticIndexPath(key));
     const cachePath = path.join(this.referencesDir, keyToDirName(key));
     await rmrf(cachePath);
     await fsp.mkdir(this.referencesDir, { recursive: true });
@@ -846,7 +868,70 @@ ${lines.join('\n')}`;
       queryTokens(trimmed),
       MAX_SEARCH_RESULTS,
     );
+    if (results.length === 0) {
+      // Vocabulary mismatch is the common zero-result cause: the caller
+      // described intent without knowing the identifier. Fall back to
+      // semantic neighbors from docs + export signatures.
+      const semantic = await this.searchSemantic(trimmed, entry, signal);
+      if (semantic && semantic.length > 0) {
+        return { results, semantic, entry };
+      }
+    }
     return { results, entry };
+  }
+
+  /**
+   * Semantic fallback search. Returns undefined when the embedding runtime
+   * is unavailable; never throws (semantic search must degrade, not break).
+   */
+  private async searchSemantic(
+    query: string,
+    entry: ReferenceEntry & { cachePath?: string },
+    signal?: AbortSignal,
+  ): Promise<ReferenceSearchResult[] | undefined> {
+    if (!entry.cachePath) {
+      return undefined;
+    }
+    try {
+      const embedder = await getEmbedder();
+      if (!embedder) {
+        return undefined;
+      }
+      const key = refKey(entry.package, entry.version);
+      let index = this.semanticCache.get(key) ?? null;
+      if (!index) {
+        index = await loadSemanticIndex(
+          this.semanticIndexPath(key),
+          EMBEDDING_MODEL,
+        );
+      }
+      if (!index) {
+        const { exports } = await this.getExports(entry.package, signal);
+        index = await buildSemanticIndex(
+          entry.cachePath,
+          exports,
+          embedder,
+          EMBEDDING_MODEL,
+          signal,
+        );
+        await saveSemanticIndex(this.semanticIndexPath(key), index);
+      }
+      this.semanticCache.set(key, index);
+      if (index.chunks.length === 0) {
+        return undefined;
+      }
+      return searchSemanticIndex(index, await embedder.embedQuery(query));
+    } catch (err) {
+      if (signal?.aborted) {
+        throw err;
+      }
+      debugLogger.warn(
+        `Semantic reference search failed: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+      return undefined;
+    }
   }
 
   async getExports(

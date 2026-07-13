@@ -157,6 +157,7 @@
     "simple-git": "^3.36.0"
   },
   "optionalDependencies": {
+    "@huggingface/transformers": "^4.2.0",
     "@lydell/node-pty": "1.2.0-beta.10",
     "@lydell/node-pty-darwin-arm64": "1.2.0-beta.10",
     "@lydell/node-pty-darwin-x64": "1.2.0-beta.10",

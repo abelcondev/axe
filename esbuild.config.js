@@ -71,6 +71,10 @@ const external = [
   '@teddyzhu/clipboard-linux-arm64-gnu',
   '@teddyzhu/clipboard-win32-x64-msvc',
   '@teddyzhu/clipboard-win32-arm64-msvc',
+  // Semantic reference search: ships native onnxruntime binaries that cannot
+  // live inside a single-file bundle. Lazy-imported; absence degrades to
+  // keyword-only search (see services/reference/embeddings.ts).
+  '@huggingface/transformers',
 ];
 
 // Name of the directory under `dist/` that esbuild emits shared chunks into.

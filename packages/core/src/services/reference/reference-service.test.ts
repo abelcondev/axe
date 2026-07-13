@@ -22,6 +22,16 @@ vi.mock('../../utils/ripgrepUtils.js', () => ({
   runRipgrep,
 }));
 
+// Semantic search is disabled by default (no embedding runtime); individual
+// tests install a fake embedder through this ref.
+const embedderRef = vi.hoisted(() => ({
+  current: null as import('./embeddings.js').Embedder | null,
+}));
+vi.mock('./embeddings.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./embeddings.js')>()),
+  getEmbedder: async () => embedderRef.current,
+}));
+
 // Imported after the mocks are registered.
 const { ReferenceService, buildSearchPattern, escapeRegExp, normalizeGitUrl } =
   await import('./reference-service.js');
@@ -100,6 +110,7 @@ describe('ReferenceService', () => {
     process.env['AXE_HOME'] = homeDir;
     execCommand.mockClear();
     runRipgrep.mockClear();
+    embedderRef.current = null;
   });
 
   afterEach(async () => {
@@ -470,6 +481,83 @@ describe('ReferenceService', () => {
     const again = await svc.getExports('foo');
     expect(again.exports).toEqual(outcome.exports);
     expect(runRipgrep.mock.calls.length).toBe(rgCalls);
+  });
+
+  it('falls back to semantic results when the keyword search matches nothing', async () => {
+    await scaffoldProject();
+    // Docs land in the indexed cache via the local-copy strategy.
+    await writeFile(
+      path.join(projectDir, 'node_modules', 'foo', 'README.md'),
+      '## Auth\nSubscribe to auth state changes with subscribeAuth.',
+    );
+    embedderRef.current = {
+      async embedDocuments(texts) {
+        return texts.map((t) =>
+          t.toLowerCase().includes('auth')
+            ? new Float32Array([1, 0])
+            : new Float32Array([0, 1]),
+        );
+      },
+      async embedQuery(text) {
+        return text.toLowerCase().includes('auth')
+          ? new Float32Array([1, 0])
+          : new Float32Array([0, 1]);
+      },
+    };
+
+    const svc = new ReferenceService();
+    await svc.initialize(projectDir);
+    await svc.ensureIndexed('foo');
+
+    const root = path.join(homeDir, 'references', 'foo@1.2.3');
+    runRipgrep
+      // Keyword search: no matches.
+      .mockResolvedValueOnce({ stdout: '', truncated: false })
+      // Export extraction feeding the semantic index build.
+      .mockResolvedValueOnce({
+        stdout: JSON.stringify({
+          type: 'match',
+          data: {
+            path: { text: path.join(root, 'index.d.ts') },
+            line_number: 1,
+            lines: {
+              text: 'export declare function subscribeAuth(cb: AuthCb): Unsubscribe;\n',
+            },
+          },
+        }),
+        truncated: false,
+      });
+
+    const outcome = await svc.search('foo', 'listen for auth changes');
+    expect(outcome.results).toHaveLength(0);
+    expect(outcome.semantic?.length).toBeGreaterThan(0);
+    expect(outcome.semantic![0].snippet.toLowerCase()).toContain('auth');
+
+    // The built index is persisted as a sidecar for future sessions.
+    const sidecar = path.join(
+      homeDir,
+      'references',
+      'foo@1.2.3.embeddings.json',
+    );
+    await expect(fs.stat(sidecar)).resolves.toBeDefined();
+
+    // A repeat zero-result search reuses the session cache: only the keyword
+    // ripgrep pass runs, no rebuild.
+    const rgCalls = runRipgrep.mock.calls.length;
+    const again = await svc.search('foo', 'listen for auth changes');
+    expect(again.semantic?.length).toBeGreaterThan(0);
+    expect(runRipgrep.mock.calls.length).toBe(rgCalls + 1);
+  });
+
+  it('omits semantic results when the embedding runtime is unavailable', async () => {
+    await scaffoldProject();
+    const svc = new ReferenceService();
+    await svc.initialize(projectDir);
+    await svc.ensureIndexed('foo');
+
+    const outcome = await svc.search('foo', 'listen for auth changes');
+    expect(outcome.results).toHaveLength(0);
+    expect(outcome.semantic).toBeUndefined();
   });
 
   it('getExports reports not-a-dependency for unknown packages', async () => {

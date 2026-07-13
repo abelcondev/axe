@@ -22,7 +22,9 @@ Use this before calling into a third-party library whose API you are unsure of: 
 - \`package\`: any package installed under \`node_modules\` (e.g. \`react\`, \`@tanstack/react-query\`). Direct dependencies are pre-indexed; transitive dependencies (e.g. the core package behind a framework adapter) are indexed on demand — if an API seems to live in a sub-dependency, search that package directly by name.
 - \`query\` (optional): ONE exact identifier per call (e.g. \`LinkDef\`, \`sendMagicCode\`, \`createToken\`). A single term is a ripgrep regex — it finds every occurrence and returns surrounding context. Multi-word queries OR-match whole words and dilute relevance. DO NOT write phrases, descriptions, or lists of terms. OMIT the query entirely to list the package's exported API surface (every export with its signature) — do this FIRST when you don't know the exact identifier.
 
-**Pivot rule**: if a search finds nothing, DO NOT retry with synonyms — the index is keyword-based. Instead:
+When a search matches nothing exactly, the result automatically includes semantically related content (doc sections and export signatures), so a descriptive query still surfaces the right identifier to search next.
+
+**Pivot rule**: if a search finds nothing useful, DO NOT retry with synonyms — the keyword index won't match them. Instead:
 1. Call this tool with only \`package\` (no query) to browse its exports, then search the exact name you find.
 2. If the export list doesn't contain what you need, read the \`.d.ts\` entry point (\`node_modules/pkg/dist/index.d.ts\`) or grep the dist directly.
 
@@ -114,9 +116,19 @@ class ReferenceToolInvocation extends BaseToolInvocation<
     }
 
     if (outcome.results.length === 0) {
-      let msg = `No matches for "${query}" in ${this.params.package}@${
+      let msg = `No exact matches for "${query}" in ${this.params.package}@${
         outcome.entry?.version ?? '?'
       } source.`;
+      if (outcome.semantic && outcome.semantic.length > 0) {
+        const blocks = outcome.semantic
+          .map((r) => `${r.file}:${r.line}:\n${r.snippet}`)
+          .join('\n\n');
+        msg += `\nSemantically related content (docs and API surface):\n\n${blocks}`;
+        return {
+          llmContent: msg,
+          returnDisplay: `${msg.split('\n')[0]}\nSemantically related content (docs and API surface):\n\n\`\`\`\n${blocks}\n\`\`\``,
+        };
+      }
       const { exports } = await service.getExports(this.params.package, signal);
       const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
       const near = exports.filter((e) =>

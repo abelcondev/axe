@@ -105,6 +105,12 @@ export interface ReferenceSearchResult {
 /** Outcome of a {@link IReferenceService.search} call. */
 export interface ReferenceSearchOutcome {
   results: ReferenceSearchResult[];
+  /**
+   * Semantic neighbors (doc sections and export signatures) found when the
+   * keyword search matched nothing. Absent when keyword results exist or the
+   * embedding runtime is unavailable.
+   */
+  semantic?: ReferenceSearchResult[];
   /** The resolved manifest entry, when the package is (or became) indexed. */
   entry?: ReferenceEntry;
   /**
