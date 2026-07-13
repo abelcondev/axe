@@ -8,10 +8,11 @@ import type { ToolInvocation, ToolResult } from './tools.js';
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
 import { ToolNames, ToolDisplayNames } from './tool-names.js';
 import type { Config } from '../config/config.js';
+import type { IReferenceService } from '../services/reference/types.js';
 
 export interface ReferenceToolParams {
   package: string;
-  query: string;
+  query?: string;
 }
 
 const DESCRIPTION = `Searches the REAL source code of an installed dependency — the exact version resolved in this project — instead of relying on memory or guessing an API.
@@ -19,12 +20,11 @@ const DESCRIPTION = `Searches the REAL source code of an installed dependency �
 Use this before calling into a third-party library whose API you are unsure of: search its actual source for the function, class, type, or option you need. Results are match blocks with surrounding context lines, ranked so type definitions and hand-written source come before compiled output and docs.
 
 - \`package\`: any package installed under \`node_modules\` (e.g. \`react\`, \`@tanstack/react-query\`). Direct dependencies are pre-indexed; transitive dependencies (e.g. the core package behind a framework adapter) are indexed on demand — if an API seems to live in a sub-dependency, search that package directly by name.
-- \`query\`: ONE exact identifier per call (e.g. \`LinkDef\`, \`sendMagicCode\`, \`createToken\`). A single term is a ripgrep regex — it finds every occurrence and returns surrounding context. Multi-word queries OR-match whole words and dilute relevance. DO NOT write phrases, descriptions, or lists of terms.
+- \`query\` (optional): ONE exact identifier per call (e.g. \`LinkDef\`, \`sendMagicCode\`, \`createToken\`). A single term is a ripgrep regex — it finds every occurrence and returns surrounding context. Multi-word queries OR-match whole words and dilute relevance. DO NOT write phrases, descriptions, or lists of terms. OMIT the query entirely to list the package's exported API surface (every export with its signature) — do this FIRST when you don't know the exact identifier.
 
-**Pivot rule**: if after 2 Reference searches you have not found the type/function you need, STOP searching and switch strategies:
-1. Grep the dist directly: \`grep -r 'TypeName' node_modules/pkg/dist/esm/ | head -20\`
-2. Read the \`.d.ts\` entry point: \`node_modules/pkg/dist/index.d.ts\`
-Repeating the same concept with different keywords rarely helps — the index is keyword-based and you already have the full package source.
+**Pivot rule**: if a search finds nothing, DO NOT retry with synonyms — the index is keyword-based. Instead:
+1. Call this tool with only \`package\` (no query) to browse its exports, then search the exact name you find.
+2. If the export list doesn't contain what you need, read the \`.d.ts\` entry point (\`node_modules/pkg/dist/index.d.ts\`) or grep the dist directly.
 
 After each search, state in one sentence what you found (or did not find) before deciding whether to search again.
 
@@ -42,7 +42,57 @@ class ReferenceToolInvocation extends BaseToolInvocation<
   }
 
   getDescription(): string {
-    return `Search ${this.params.package} source: "${this.params.query}"`;
+    const query = this.params.query?.trim();
+    return query
+      ? `Search ${this.params.package} source: "${query}"`
+      : `List ${this.params.package} exported API`;
+  }
+
+  private renderReason(
+    service: IReferenceService,
+    reason: 'not-a-dependency' | 'pending' | 'errored',
+    detail?: string,
+  ): ToolResult {
+    let msg: string;
+    if (reason === 'not-a-dependency') {
+      const active = service
+        .getActivePackages()
+        .map((p) => p.name)
+        .join(', ');
+      msg = `"${this.params.package}" was not found in this project's dependencies or node_modules.${
+        active ? ` Pre-indexed packages: ${active}.` : ''
+      } Transitive dependencies can be searched by their exact package name.`;
+    } else if (reason === 'errored') {
+      msg = `Source for "${this.params.package}" could not be indexed: ${
+        detail ?? 'unknown error'
+      }. Fall back to your own knowledge, and verify against the running code.`;
+    } else {
+      msg = `Source for "${this.params.package}" is still being indexed. Try again shortly, or proceed carefully without it.`;
+    }
+    return { llmContent: msg, returnDisplay: msg };
+  }
+
+  private async listExports(
+    service: IReferenceService,
+    signal: AbortSignal,
+  ): Promise<ToolResult> {
+    const outcome = await service.getExports(this.params.package, signal);
+    if (outcome.reason) {
+      return this.renderReason(service, outcome.reason, outcome.detail);
+    }
+    const pkgVersion = `${this.params.package}@${outcome.entry?.version ?? '?'}`;
+    if (outcome.exports.length === 0) {
+      const msg = `No exported symbols were detected in ${pkgVersion} source. Read its \`.d.ts\` entry point directly.`;
+      return { llmContent: msg, returnDisplay: msg };
+    }
+    const body = outcome.exports
+      .map((e) => `- ${e.signature} — ${e.file}`)
+      .join('\n');
+    const header = `Exported API surface of ${pkgVersion} (${outcome.exports.length} symbols). Search an exact name for full context:`;
+    return {
+      llmContent: `${header}\n${body}`,
+      returnDisplay: `${header}\n\n${body}`,
+    };
   }
 
   async execute(signal: AbortSignal): Promise<ToolResult> {
@@ -52,37 +102,35 @@ class ReferenceToolInvocation extends BaseToolInvocation<
       return { llmContent: msg, returnDisplay: msg };
     }
 
-    const outcome = await service.search(
-      this.params.package,
-      this.params.query,
-      signal,
-    );
+    const query = this.params.query?.trim();
+    if (!query) {
+      return this.listExports(service, signal);
+    }
 
-    if (outcome.reason === 'not-a-dependency') {
-      const active = service
-        .getActivePackages()
-        .map((p) => p.name)
-        .join(', ');
-      const msg = `"${this.params.package}" was not found in this project's dependencies or node_modules.${
-        active ? ` Pre-indexed packages: ${active}.` : ''
-      } Transitive dependencies can be searched by their exact package name.`;
-      return { llmContent: msg, returnDisplay: msg };
-    }
-    if (outcome.reason === 'errored') {
-      const msg = `Source for "${this.params.package}" could not be indexed: ${
-        outcome.detail ?? 'unknown error'
-      }. Fall back to your own knowledge, and verify against the running code.`;
-      return { llmContent: msg, returnDisplay: msg };
-    }
-    if (outcome.reason === 'pending') {
-      const msg = `Source for "${this.params.package}" is still being indexed. Try again shortly, or proceed carefully without it.`;
-      return { llmContent: msg, returnDisplay: msg };
+    const outcome = await service.search(this.params.package, query, signal);
+
+    if (outcome.reason) {
+      return this.renderReason(service, outcome.reason, outcome.detail);
     }
 
     if (outcome.results.length === 0) {
-      const msg = `No matches for "${this.params.query}" in ${this.params.package}@${
+      let msg = `No matches for "${query}" in ${this.params.package}@${
         outcome.entry?.version ?? '?'
       } source.`;
+      const { exports } = await service.getExports(this.params.package, signal);
+      const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+      const near = exports.filter((e) =>
+        tokens.some((t) => e.name.toLowerCase().includes(t)),
+      );
+      if (near.length > 0) {
+        const suggestions = near
+          .slice(0, 10)
+          .map((e) => `- ${e.signature} — ${e.file}`)
+          .join('\n');
+        msg += `\nExported symbols with similar names:\n${suggestions}`;
+      } else if (exports.length > 0) {
+        msg += ` The package exports ${exports.length} symbols — call this tool with only \`package\` (no query) to browse its API surface.`;
+      }
       return { llmContent: msg, returnDisplay: msg };
     }
 
@@ -125,10 +173,10 @@ export class ReferenceTool extends BaseDeclarativeTool<
           query: {
             type: 'string',
             description:
-              'Prefer one exact identifier per call (single term = regex). Multiple words OR-match as whole words and are relevance-ranked; avoid natural-language phrases.',
+              'Optional. Omit to list the package exported API surface. Otherwise prefer one exact identifier per call (single term = regex). Multiple words OR-match as whole words and are relevance-ranked; avoid natural-language phrases.',
           },
         },
-        required: ['package', 'query'],
+        required: ['package'],
       },
     );
   }
@@ -138,9 +186,6 @@ export class ReferenceTool extends BaseDeclarativeTool<
   ): string | null {
     if (!params.package || params.package.trim() === '') {
       return "The 'package' parameter cannot be empty.";
-    }
-    if (!params.query || params.query.trim() === '') {
-      return "The 'query' parameter cannot be empty.";
     }
     return null;
   }

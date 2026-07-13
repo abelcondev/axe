@@ -18,10 +18,13 @@ import {
   getActiveWorkspace,
 } from '../../project/detect.js';
 import { parseDependencies } from '../../project/dependencies.js';
+import { buildExportIndex } from './export-index.js';
 import type {
   ActivePackage,
   IReferenceService,
   ReferenceEntry,
+  ReferenceExport,
+  ReferenceExportsOutcome,
   ReferenceManifest,
   ReferenceSearchOutcome,
   ReferenceSearchResult,
@@ -198,6 +201,8 @@ export class ReferenceService implements IReferenceService {
     references: {},
   };
   private readonly inFlight = new Map<string, Promise<ReferenceEntry>>();
+  /** Session cache of extracted export tables, keyed by `"<pkg>@<ver>"`. */
+  private readonly exportsCache = new Map<string, ReferenceExport[]>();
   private warmupPromise: Promise<void> | null = null;
 
   static createStandalone(): ReferenceService {
@@ -317,6 +322,7 @@ export class ReferenceService implements IReferenceService {
         await rmrf(path.join(this.referencesDir, keyToDirName(key)));
       }
       delete this.manifest.references[key];
+      this.exportsCache.delete(key);
     }
 
     if (keys.length > 0) {
@@ -381,7 +387,7 @@ export class ReferenceService implements IReferenceService {
 
     return `# Dependency source references
 
-These installed dependencies have their real source indexed under \`~/.axe/references\` (or are being indexed now). Use the '${ToolNames.REFERENCE}' tool to search a package's ACTUAL source for the exact installed version instead of relying on memory or guessing its API. Transitive dependencies not listed below (packages inside node_modules, e.g. the core package behind a framework adapter) can also be searched by exact name — they are indexed on demand.
+These installed dependencies have their real source indexed under \`~/.axe/references\` (or are being indexed now). Use the '${ToolNames.REFERENCE}' tool to search a package's ACTUAL source for the exact installed version instead of relying on memory or guessing its API. Call it with only a package name (no query) to list that package's exported API surface — do this first when you don't know the exact identifier. Transitive dependencies not listed below (packages inside node_modules, e.g. the core package behind a framework adapter) can also be searched by exact name — they are indexed on demand.
 
 ${lines.join('\n')}`;
   }
@@ -506,6 +512,7 @@ ${lines.join('\n')}`;
 
   private async indexPackage(pkg: ActivePackage): Promise<ReferenceEntry> {
     const key = refKey(pkg.name, pkg.version);
+    this.exportsCache.delete(key);
     const cachePath = path.join(this.referencesDir, keyToDirName(key));
     await rmrf(cachePath);
     await fsp.mkdir(this.referencesDir, { recursive: true });
@@ -756,11 +763,16 @@ ${lines.join('\n')}`;
     }
   }
 
-  async search(
-    packageName: string,
-    query: string,
-    signal?: AbortSignal,
-  ): Promise<ReferenceSearchOutcome> {
+  /**
+   * Resolves a package (rescanning a stale startup scan if needed) and
+   * ensures it is indexed, mapping every failure mode to a `reason`.
+   */
+  private async ensureSearchable(packageName: string): Promise<{
+    pkg?: ActivePackage;
+    entry?: ReferenceEntry;
+    reason?: 'not-a-dependency' | 'pending' | 'errored';
+    detail?: string;
+  }> {
     let pkg = this.resolveActive(packageName);
     if (!pkg) {
       // The startup scan may be stale (dependency installed mid-session):
@@ -770,22 +782,33 @@ ${lines.join('\n')}`;
       pkg = await this.resolvePackage(packageName);
     }
     if (!pkg) {
-      return { results: [], reason: 'not-a-dependency' };
+      return { reason: 'not-a-dependency' };
     }
+    const entry = await this.ensureIndexed(pkg.installName);
+    if (!entry) {
+      return { reason: 'not-a-dependency' };
+    }
+    if (entry.status === 'error') {
+      return { pkg, entry, reason: 'errored', detail: entry.error };
+    }
+    if (entry.status !== 'indexed' || !entry.cachePath) {
+      return { pkg, entry, reason: 'pending' };
+    }
+    return { pkg, entry };
+  }
+
+  async search(
+    packageName: string,
+    query: string,
+    signal?: AbortSignal,
+  ): Promise<ReferenceSearchOutcome> {
     const trimmed = query.trim();
     if (!trimmed) {
       return { results: [], reason: 'pending' };
     }
-
-    const entry = await this.ensureIndexed(pkg.installName);
-    if (!entry) {
-      return { results: [], reason: 'not-a-dependency' };
-    }
-    if (entry.status === 'error') {
-      return { results: [], entry, reason: 'errored', detail: entry.error };
-    }
-    if (entry.status !== 'indexed' || !entry.cachePath) {
-      return { results: [], entry, reason: 'pending' };
+    const { entry, reason, detail } = await this.ensureSearchable(packageName);
+    if (reason || !entry?.cachePath) {
+      return { results: [], entry, reason: reason ?? 'pending', detail };
     }
 
     const pattern = buildSearchPattern(trimmed);
@@ -824,6 +847,48 @@ ${lines.join('\n')}`;
       MAX_SEARCH_RESULTS,
     );
     return { results, entry };
+  }
+
+  async getExports(
+    packageName: string,
+    signal?: AbortSignal,
+  ): Promise<ReferenceExportsOutcome> {
+    const { pkg, entry, reason, detail } =
+      await this.ensureSearchable(packageName);
+    if (reason || !pkg || !entry?.cachePath) {
+      return { exports: [], entry, reason: reason ?? 'pending', detail };
+    }
+
+    const key = refKey(pkg.name, pkg.version);
+    const cached = this.exportsCache.get(key);
+    if (cached) {
+      return { exports: cached, entry };
+    }
+
+    const { stdout } = await runRipgrep(
+      [
+        '--json',
+        '-e',
+        String.raw`^\s*export\b`,
+        '-g',
+        '*.{ts,tsx,mts,cts,js,mjs}',
+        '-g',
+        '!*.min.*',
+        '-g',
+        '!*.test.*',
+        '-g',
+        '!*.spec.*',
+        '-g',
+        '!__tests__',
+        entry.cachePath,
+      ],
+      signal,
+    );
+    const exports = buildExportIndex(
+      parseRipgrepLines(stdout, entry.cachePath),
+    );
+    this.exportsCache.set(key, exports);
+    return { exports, entry };
   }
 
   private async loadManifest(): Promise<void> {

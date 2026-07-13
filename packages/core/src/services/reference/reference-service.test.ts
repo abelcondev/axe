@@ -427,6 +427,60 @@ describe('ReferenceService', () => {
     expect(outcome.results[1].file).toBe('README.md');
   });
 
+  it('lists exported symbols via getExports and caches per session', async () => {
+    await scaffoldProject();
+    const svc = new ReferenceService();
+    await svc.initialize(projectDir);
+
+    const root = path.join(homeDir, 'references', 'foo@1.2.3');
+    runRipgrep.mockResolvedValueOnce({
+      stdout: [
+        JSON.stringify({
+          type: 'match',
+          data: {
+            path: { text: path.join(root, 'index.d.ts') },
+            line_number: 1,
+            lines: {
+              text: 'export declare function createFoo(): number;\n',
+            },
+          },
+        }),
+        JSON.stringify({
+          type: 'match',
+          data: {
+            path: { text: path.join(root, 'index.d.ts') },
+            line_number: 2,
+            lines: { text: 'export type FooConfig = { debug: boolean };\n' },
+          },
+        }),
+      ].join('\n'),
+      truncated: false,
+    });
+
+    const outcome = await svc.getExports('foo');
+    expect(outcome.reason).toBeUndefined();
+    expect(outcome.exports.map((e) => e.name)).toEqual([
+      'createFoo',
+      'FooConfig',
+    ]);
+    expect(outcome.exports[0].signature).toBe('function createFoo(): number');
+
+    // A second call serves the session cache — no new ripgrep run.
+    const rgCalls = runRipgrep.mock.calls.length;
+    const again = await svc.getExports('foo');
+    expect(again.exports).toEqual(outcome.exports);
+    expect(runRipgrep.mock.calls.length).toBe(rgCalls);
+  });
+
+  it('getExports reports not-a-dependency for unknown packages', async () => {
+    await scaffoldProject();
+    const svc = new ReferenceService();
+    await svc.initialize(projectDir);
+    const outcome = await svc.getExports('nope');
+    expect(outcome.reason).toBe('not-a-dependency');
+    expect(outcome.exports).toEqual([]);
+  });
+
   it('clears cached references', async () => {
     await scaffoldProject();
     const svc = new ReferenceService();

@@ -55,6 +55,43 @@ export interface ReferenceManifest {
   references: Record<string, ReferenceEntry>;
 }
 
+/** Kind of an exported symbol (let/var declarations are folded into const). */
+export type ReferenceExportKind =
+  | 'function'
+  | 'class'
+  | 'interface'
+  | 'type'
+  | 'enum'
+  | 'const'
+  | 'namespace'
+  | 'default'
+  | 'reexport';
+
+/** One exported symbol extracted from a package's indexed source. */
+export interface ReferenceExport {
+  /** Public exported name. */
+  name: string;
+  kind: ReferenceExportKind;
+  /** Path relative to the package's indexed source root. */
+  file: string;
+  /**
+   * The declaration line with the `export (declare)` prefix stripped
+   * (e.g. `function sendMagicCode(params: P): Promise<R>`); the bare name
+   * for re-exports.
+   */
+  signature: string;
+}
+
+/** Outcome of a {@link IReferenceService.getExports} call. */
+export interface ReferenceExportsOutcome {
+  exports: ReferenceExport[];
+  /** The resolved manifest entry, when the package is (or became) indexed. */
+  entry?: ReferenceEntry;
+  /** Same semantics as {@link ReferenceSearchOutcome.reason}. */
+  reason?: 'not-a-dependency' | 'pending' | 'errored';
+  detail?: string;
+}
+
 /** A ranked match block returned by {@link IReferenceService.search}. */
 export interface ReferenceSearchResult {
   /** Path relative to the package's indexed source root. */
@@ -137,4 +174,13 @@ export interface IReferenceService {
     query: string,
     signal?: AbortSignal,
   ): Promise<ReferenceSearchOutcome>;
+  /**
+   * Lists the exported API surface of an indexed package (extracted from its
+   * source on first call, cached for the session). Indexes on demand if
+   * needed.
+   */
+  getExports(
+    packageName: string,
+    signal?: AbortSignal,
+  ): Promise<ReferenceExportsOutcome>;
 }
