@@ -20,13 +20,12 @@ const DESCRIPTION = `Searches the REAL source code of an installed dependency �
 Use this before calling into a third-party library whose API you are unsure of: search its actual source for the function, class, type, or option you need. Results are match blocks with surrounding context lines, ranked so type definitions and hand-written source come before compiled output and docs.
 
 - \`package\`: any package installed under \`node_modules\` (e.g. \`react\`, \`@tanstack/react-query\`). Direct dependencies are pre-indexed; transitive dependencies (e.g. the core package behind a framework adapter) are indexed on demand — if an API seems to live in a sub-dependency, search that package directly by name.
-- \`query\` (optional): ONE exact identifier per call (e.g. \`LinkDef\`, \`sendMagicCode\`, \`createToken\`). A single term is a ripgrep regex — it finds every occurrence and returns surrounding context. Multi-word queries OR-match whole words and dilute relevance. DO NOT write phrases, descriptions, or lists of terms. OMIT the query entirely to list the package's exported API surface (every export with its signature) — do this FIRST when you don't know the exact identifier.
+- \`query\` (optional): an exact identifier (\`sendMagicCode\`, \`LinkDef\`) OR a natural-language description of what you need ("subscribe to auth state changes"). Identifiers return every exact occurrence with surrounding context; descriptions are answered by semantic search over the package's docs and API surface (a "Related (semantic)" section). OMIT the query entirely to list the package's exported API surface (every export with its signature).
 
-When a search matches nothing exactly, the result automatically includes semantically related content (doc sections and export signatures), so a descriptive query still surfaces the right identifier to search next.
-
-**Pivot rule**: if a search finds nothing useful, DO NOT retry with synonyms — the keyword index won't match them. Instead:
-1. Call this tool with only \`package\` (no query) to browse its exports, then search the exact name you find.
-2. If the export list doesn't contain what you need, read the \`.d.ts\` entry point (\`node_modules/pkg/dist/index.d.ts\`) or grep the dist directly.
+**Pivot rule**: if a search finds nothing useful, DO NOT retry with keyword synonyms. Instead:
+1. Re-query describing the INTENT in natural language — semantic search maps it to the right identifiers.
+2. Call this tool with only \`package\` (no query) to browse its exports, then search the exact name you find.
+3. Last resort: read the \`.d.ts\` entry point (\`node_modules/pkg/dist/index.d.ts\`) or grep the dist directly.
 
 After each search, state in one sentence what you found (or did not find) before deciding whether to search again.
 
@@ -155,9 +154,16 @@ class ReferenceToolInvocation extends BaseToolInvocation<
     const header = `Found ${outcome.results.length} match(es) in ${this.params.package}@${
       outcome.entry?.version ?? '?'
     } source:`;
+    let semanticSection = '';
+    if (outcome.semantic && outcome.semantic.length > 0) {
+      const related = outcome.semantic
+        .map((r) => `${r.file}:${r.line}:\n${r.snippet}`)
+        .join('\n\n');
+      semanticSection = `\n\nRelated (semantic):\n${related}`;
+    }
     return {
-      llmContent: `${header}\n${body}`,
-      returnDisplay: `${header}\n\n\`\`\`\n${body}\n\`\`\``,
+      llmContent: `${header}\n${body}${semanticSection}`,
+      returnDisplay: `${header}\n\n\`\`\`\n${body}${semanticSection}\n\`\`\``,
     };
   }
 }

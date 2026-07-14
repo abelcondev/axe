@@ -868,26 +868,31 @@ ${lines.join('\n')}`;
       queryTokens(trimmed),
       MAX_SEARCH_RESULTS,
     );
-    if (results.length === 0) {
-      // Vocabulary mismatch is the common zero-result cause: the caller
-      // described intent without knowing the identifier. Fall back to
-      // semantic neighbors from docs + export signatures.
-      const semantic = await this.searchSemantic(trimmed, entry, signal);
-      if (semantic && semantic.length > 0) {
-        return { results, semantic, entry };
-      }
+    // Semantic search is first-class: it always enriches the outcome when
+    // the embedding runtime is ready. Building a package's index costs
+    // seconds, so it only blocks the call when the keyword results are too
+    // weak to act on — otherwise it builds in the background for next time.
+    const semantic = await this.searchSemantic(trimmed, entry, signal, {
+      buildIfMissing: results.length < 3,
+    });
+    if (semantic && semantic.length > 0) {
+      const cap = results.length > 0 ? 4 : 8;
+      return { results, semantic: semantic.slice(0, cap), entry };
     }
     return { results, entry };
   }
 
   /**
-   * Semantic fallback search. Returns undefined when the embedding runtime
-   * is unavailable; never throws (semantic search must degrade, not break).
+   * Semantic search over a package's docs + export signatures. Returns
+   * undefined when the embedding runtime is unavailable or the index is not
+   * built yet (and `buildIfMissing` is false); never throws — semantic
+   * search must degrade, not break.
    */
   private async searchSemantic(
     query: string,
     entry: ReferenceEntry & { cachePath?: string },
-    signal?: AbortSignal,
+    signal: AbortSignal | undefined,
+    opts: { buildIfMissing: boolean },
   ): Promise<ReferenceSearchResult[] | undefined> {
     if (!entry.cachePath) {
       return undefined;
@@ -904,19 +909,19 @@ ${lines.join('\n')}`;
           this.semanticIndexPath(key),
           EMBEDDING_MODEL,
         );
+        if (index) {
+          this.semanticCache.set(key, index);
+        }
       }
       if (!index) {
-        const { exports } = await this.getExports(entry.package, signal);
-        index = await buildSemanticIndex(
-          entry.cachePath,
-          exports,
-          embedder,
-          EMBEDDING_MODEL,
-          signal,
-        );
-        await saveSemanticIndex(this.semanticIndexPath(key), index);
+        if (!opts.buildIfMissing) {
+          // Keyword already produced usable results — pay the build cost in
+          // the background (untied to this call's signal) for next time.
+          this.buildSemantic(key, entry, embedder, undefined).catch(() => {});
+          return undefined;
+        }
+        index = await this.buildSemantic(key, entry, embedder, signal);
       }
-      this.semanticCache.set(key, index);
       if (index.chunks.length === 0) {
         return undefined;
       }
@@ -932,6 +937,37 @@ ${lines.join('\n')}`;
       );
       return undefined;
     }
+  }
+
+  /** In-flight semantic index builds, deduplicating concurrent callers. */
+  private readonly semanticBuilds = new Map<string, Promise<SemanticIndex>>();
+
+  private buildSemantic(
+    key: string,
+    entry: ReferenceEntry & { cachePath?: string },
+    embedder: NonNullable<Awaited<ReturnType<typeof getEmbedder>>>,
+    signal?: AbortSignal,
+  ): Promise<SemanticIndex> {
+    let build = this.semanticBuilds.get(key);
+    if (!build) {
+      build = (async () => {
+        const { exports } = await this.getExports(entry.package, signal);
+        const index = await buildSemanticIndex(
+          entry.cachePath!,
+          exports,
+          embedder,
+          EMBEDDING_MODEL,
+          signal,
+        );
+        await saveSemanticIndex(this.semanticIndexPath(key), index);
+        this.semanticCache.set(key, index);
+        return index;
+      })().finally(() => {
+        this.semanticBuilds.delete(key);
+      });
+      this.semanticBuilds.set(key, build);
+    }
+    return build;
   }
 
   async getExports(

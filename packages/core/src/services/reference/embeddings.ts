@@ -7,6 +7,15 @@
 import * as path from 'node:path';
 import { Storage } from '../../config/storage.js';
 import { createDebugLogger } from '../../utils/debugLogger.js';
+import {
+  ensureRuntimeInstalled,
+  getSemanticSearchStatus,
+  getStoredHfToken,
+  isValidHfToken,
+  maskToken,
+  resolveTransformers,
+  setStoredHfToken,
+} from './embedding-runtime.js';
 
 const debugLogger = createDebugLogger('ReferenceEmbeddings');
 
@@ -26,35 +35,85 @@ export interface Embedder {
   embedQuery(text: string): Promise<Float32Array>;
 }
 
-let embedderPromise: Promise<Embedder | null> | null = null;
+let cached: Embedder | null = null;
+let loading: Promise<Embedder | null> | null = null;
+/** Pipeline construction failed (e.g. model download) — don't retry-loop. */
+let sessionDisabled = false;
+let provisioning: Promise<void> | null = null;
 
 /**
- * Lazily loads the embedding pipeline. `@huggingface/transformers` is an
- * optional dependency carrying native onnxruntime binaries — when it is not
- * installed (or fails to load on this platform), semantic search silently
- * degrades to keyword-only. The model (~34MB) is downloaded to
- * `~/.axe/models/` on first use and cached from then on.
+ * Returns the embedding pipeline, lazily loaded. When the runtime module is
+ * missing (bundle install channel), a background `npm install` into
+ * `~/.axe/runtime` is kicked off ONCE and this call returns null — semantic
+ * search degrades to keyword for now and activates when the install lands.
+ * Never throws.
  */
-export function getEmbedder(): Promise<Embedder | null> {
-  embedderPromise ??= loadEmbedder();
-  return embedderPromise;
+export async function getEmbedder(): Promise<Embedder | null> {
+  if (cached) {
+    return cached;
+  }
+  if (sessionDisabled) {
+    return null;
+  }
+  loading ??= load();
+  return loading;
 }
 
-/** Test hook: clears the memoized pipeline. */
+/** Clears all memoized state (used by tests and by explicit re-setup). */
 export function resetEmbedderForTesting(): void {
-  embedderPromise = null;
+  cached = null;
+  loading = null;
+  sessionDisabled = false;
+  provisioning = null;
 }
 
-async function loadEmbedder(): Promise<Embedder | null> {
-  let extractor: (
+async function load(): Promise<Embedder | null> {
+  const resolved = await resolveTransformers();
+  if (!resolved) {
+    // Auto-provision in the background; subsequent getEmbedder() calls
+    // retry the (cheap) resolution until the install settles.
+    provisioning ??= ensureRuntimeInstalled().then((ok) => {
+      if (!ok) {
+        sessionDisabled = true;
+        debugLogger.warn(
+          'Embedding runtime could not be provisioned — semantic reference search disabled for this session.',
+        );
+      }
+    });
+    loading = null;
+    return null;
+  }
+  try {
+    cached = await buildEmbedder(resolved.specifier);
+    return cached;
+  } catch (err) {
+    sessionDisabled = true;
+    debugLogger.warn(
+      `Embedding pipeline unavailable, semantic reference search disabled: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    );
+    return null;
+  }
+}
+
+async function buildEmbedder(specifier: string): Promise<Embedder> {
+  // The stored token unlocks HF's anonymous CDN rate limit for the model
+  // download; an explicitly exported HF_TOKEN always wins.
+  const storedToken = await getStoredHfToken();
+  if (storedToken && !process.env['HF_TOKEN']) {
+    process.env['HF_TOKEN'] = storedToken;
+  }
+
+  const { pipeline, env } = await import(specifier);
+  env.cacheDir = path.join(Storage.getGlobalQwenDir(), 'models');
+  const extractor: (
     texts: string[],
     options: { pooling: 'mean'; normalize: boolean },
-  ) => Promise<{ data: Float32Array; dims: number[] }>;
-  try {
-    const specifier = '@huggingface/transformers';
-    const { pipeline, env } = await import(specifier);
-    env.cacheDir = path.join(Storage.getGlobalQwenDir(), 'models');
-    extractor = await pipeline('feature-extraction', EMBEDDING_MODEL, {
+  ) => Promise<{ data: Float32Array; dims: number[] }> = await pipeline(
+    'feature-extraction',
+    EMBEDDING_MODEL,
+    {
       dtype: 'q8',
       progress_callback: (p: { status?: string; progress?: number }) => {
         if (p.status === 'progress' && typeof p.progress === 'number') {
@@ -63,15 +122,8 @@ async function loadEmbedder(): Promise<Embedder | null> {
           );
         }
       },
-    });
-  } catch (err) {
-    debugLogger.warn(
-      `Embedding runtime unavailable, semantic reference search disabled: ${
-        err instanceof Error ? err.message : String(err)
-      }`,
-    );
-    return null;
-  }
+    },
+  );
 
   const embedBatch = async (texts: string[]): Promise<Float32Array[]> => {
     const output = await extractor(texts, {
@@ -100,6 +152,102 @@ async function loadEmbedder(): Promise<Embedder | null> {
       return vector;
     },
   };
+}
+
+export interface ProvisionStep {
+  step: 'token' | 'runtime' | 'model' | 'verify';
+  ok: boolean;
+  detail: string;
+}
+
+/**
+ * Eager, observable provisioning for `/references setup`: stores the token,
+ * installs the runtime, downloads the model, and verifies with a test
+ * embedding. Reports each step as it settles; stops at the first hard
+ * failure (a missing token is not one — it is only needed when HF rate
+ * limits the anonymous download).
+ */
+export async function provisionSemanticSearch(options?: {
+  token?: string;
+  onStep?: (step: ProvisionStep) => void;
+}): Promise<ProvisionStep[]> {
+  const steps: ProvisionStep[] = [];
+  const report = (step: ProvisionStep): void => {
+    steps.push(step);
+    options?.onStep?.(step);
+  };
+
+  if (options?.token) {
+    if (!isValidHfToken(options.token)) {
+      report({
+        step: 'token',
+        ok: false,
+        detail: 'Invalid token — expected the hf_… format.',
+      });
+      return steps;
+    }
+    await setStoredHfToken(options.token);
+    report({
+      step: 'token',
+      ok: true,
+      detail: `saved (${maskToken(options.token)})`,
+    });
+  } else {
+    const status = await getSemanticSearchStatus(EMBEDDING_MODEL);
+    report({
+      step: 'token',
+      ok: true,
+      detail: status.token.set
+        ? `already set via ${status.token.source} (${status.token.masked})`
+        : 'not set — optional, needed only if the HF download is rate-limited',
+    });
+  }
+
+  const runtimeOk = await ensureRuntimeInstalled();
+  report({
+    step: 'runtime',
+    ok: runtimeOk,
+    detail: runtimeOk
+      ? 'installed'
+      : 'npm install failed — is npm on your PATH? Re-run with debug logs for details.',
+  });
+  if (!runtimeOk) {
+    return steps;
+  }
+
+  const hadModel = (await getSemanticSearchStatus(EMBEDDING_MODEL)).model
+    .downloaded;
+  resetEmbedderForTesting();
+  const embedder = await getEmbedder();
+  report({
+    step: 'model',
+    ok: embedder !== null,
+    detail: embedder
+      ? hadModel
+        ? `${EMBEDDING_MODEL} already cached`
+        : `${EMBEDDING_MODEL} downloaded to ~/.axe/models`
+      : 'model download failed — set an HF token (`/references token hf_…`) and retry.',
+  });
+  if (!embedder) {
+    return steps;
+  }
+
+  try {
+    const start = Date.now();
+    const vector = await embedder.embedQuery('verification probe');
+    report({
+      step: 'verify',
+      ok: true,
+      detail: `test embedding OK (${vector.length} dims, ${Date.now() - start}ms)`,
+    });
+  } catch (err) {
+    report({
+      step: 'verify',
+      ok: false,
+      detail: err instanceof Error ? err.message : String(err),
+    });
+  }
+  return steps;
 }
 
 /**

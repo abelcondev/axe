@@ -549,6 +549,47 @@ describe('ReferenceService', () => {
     expect(runRipgrep.mock.calls.length).toBe(rgCalls + 1);
   });
 
+  it('enriches keyword matches with a semantic section when the index exists', async () => {
+    await scaffoldProject();
+    await writeFile(
+      path.join(projectDir, 'node_modules', 'foo', 'README.md'),
+      '## Auth\nSubscribe to auth state changes with subscribeAuth.',
+    );
+    embedderRef.current = {
+      async embedDocuments(texts) {
+        return texts.map(() => new Float32Array([1, 0]));
+      },
+      async embedQuery() {
+        return new Float32Array([1, 0]);
+      },
+    };
+
+    const svc = new ReferenceService();
+    await svc.initialize(projectDir);
+    await svc.ensureIndexed('foo');
+
+    const root = path.join(homeDir, 'references', 'foo@1.2.3');
+    const keywordMatch = JSON.stringify({
+      type: 'match',
+      data: {
+        path: { text: path.join(root, 'index.js') },
+        line_number: 1,
+        lines: { text: 'export function createFoo() { return 42; }\n' },
+      },
+    });
+    runRipgrep
+      // Keyword search: one match (< 3 → semantic index builds in-line).
+      .mockResolvedValueOnce({ stdout: keywordMatch, truncated: false })
+      // Export extraction feeding the semantic index build.
+      .mockResolvedValueOnce({ stdout: '', truncated: false });
+
+    const outcome = await svc.search('foo', 'createFoo');
+    expect(outcome.results).toHaveLength(1);
+    expect(outcome.semantic?.length).toBeGreaterThan(0);
+    // With keyword results present, the semantic section is capped at 4.
+    expect(outcome.semantic!.length).toBeLessThanOrEqual(4);
+  });
+
   it('omits semantic results when the embedding runtime is unavailable', async () => {
     await scaffoldProject();
     const svc = new ReferenceService();

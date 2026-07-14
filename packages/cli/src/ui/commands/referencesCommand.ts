@@ -7,6 +7,16 @@
 import { Text } from 'ink';
 import React from 'react';
 import type { ReferenceEntry } from '@axe/core';
+import {
+  EMBEDDING_MODEL,
+  clearStoredHfToken,
+  getSemanticSearchStatus,
+  getStoredHfToken,
+  isValidHfToken,
+  maskToken,
+  provisionSemanticSearch,
+  setStoredHfToken,
+} from '@axe/core';
 import type {
   CommandContext,
   SlashCommand,
@@ -106,8 +116,28 @@ async function renderStatus(
   lines.push(
     `${indexed}/${total} indexed · ${mb(totalBytes)} · cache: ~/.axe/references`,
   );
+
+  const semantic = await getSemanticSearchStatus(EMBEDDING_MODEL);
   lines.push('');
-  lines.push('Use `/references refresh [pkg]` to (re)index, `/references clear [pkg]` to remove.');
+  lines.push('Semantic search');
+  lines.push(
+    `  runtime: ${semantic.runtime.installed ? '✓ installed' : '○ not installed'}   model: ${
+      semantic.model.downloaded ? '✓ downloaded' : '○ not downloaded'
+    }   token: ${semantic.token.set ? `✓ ${semantic.token.masked}` : '○ not set'}`,
+  );
+  if (semantic.indexes.count > 0) {
+    lines.push(
+      `  semantic indexes: ${semantic.indexes.count} package(s) · ${mb(semantic.indexes.bytes)}`,
+    );
+  }
+  if (!semantic.runtime.installed || !semantic.model.downloaded) {
+    lines.push('  Run `/references setup [hf_token]` to provision.');
+  }
+
+  lines.push('');
+  lines.push(
+    'Use `/references refresh [pkg]` to (re)index, `/references clear [pkg]` to remove.',
+  );
 
   return {
     type: 'message',
@@ -142,7 +172,9 @@ const refreshCommand: SlashCommand = {
     await service.rescan();
     const pkgArg = args.trim();
     let targets = pkgArg
-      ? service.getActivePackages().filter((p) => p.name === pkgArg || p.installName === pkgArg)
+      ? service
+          .getActivePackages()
+          .filter((p) => p.name === pkgArg || p.installName === pkgArg)
       : service.getActivePackages();
 
     // Not a direct dependency: fall back to the node_modules lookup so
@@ -254,6 +286,136 @@ const clearCommand: SlashCommand = {
   },
 };
 
+const tokenCommand: SlashCommand = {
+  name: 'token',
+  get description() {
+    return 'Show, set, or clear the Hugging Face token used for embedding model downloads.';
+  },
+  kind: CommandKind.BUILT_IN,
+  supportedModes: ['interactive', 'non_interactive', 'acp'] as const,
+  action: async (
+    _context: CommandContext,
+    args: string,
+  ): Promise<SlashCommandActionReturn> => {
+    const arg = args.trim();
+    if (!arg) {
+      const envToken = process.env['HF_TOKEN']?.trim();
+      const stored = await getStoredHfToken();
+      const state = envToken
+        ? `set via HF_TOKEN env var (${maskToken(envToken)})`
+        : stored
+          ? `set (${maskToken(stored)}, stored in ~/.axe/hf-token)`
+          : 'not set. Get a free read token at huggingface.co/settings/tokens, then run `/references token hf_…`.';
+      return {
+        type: 'message',
+        messageType: 'info',
+        content: `Hugging Face token: ${state}`,
+      };
+    }
+    if (arg === 'clear') {
+      const removed = await clearStoredHfToken();
+      return {
+        type: 'message',
+        messageType: 'info',
+        content: removed
+          ? 'Hugging Face token removed.'
+          : 'No stored token to remove.',
+      };
+    }
+    if (!isValidHfToken(arg)) {
+      return {
+        type: 'message',
+        messageType: 'error',
+        content: 'Invalid token — expected the `hf_…` format.',
+      };
+    }
+    await setStoredHfToken(arg);
+    return {
+      type: 'message',
+      messageType: 'info',
+      content: `Hugging Face token saved (${maskToken(arg)}).`,
+    };
+  },
+};
+
+const STEP_LABELS: Record<string, string> = {
+  token: 'token',
+  runtime: 'embedding runtime',
+  model: 'model',
+  verify: 'verification',
+};
+
+const setupCommand: SlashCommand = {
+  name: 'setup',
+  get description() {
+    return 'Provision semantic search: HF token, embedding runtime, and model.';
+  },
+  kind: CommandKind.BUILT_IN,
+  supportedModes: ['interactive'] as const,
+  action: async (
+    context: CommandContext,
+    args: string,
+  ): Promise<SlashCommandActionReturn> => {
+    const token = args.trim() || undefined;
+    if (token && !isValidHfToken(token)) {
+      return {
+        type: 'message',
+        messageType: 'error',
+        content: 'Invalid token — expected the `hf_…` format.',
+      };
+    }
+
+    // Installing the runtime and downloading the model are network
+    // operations — confirm first, like refresh does.
+    if (!context.overwriteConfirmed) {
+      return {
+        type: 'confirm_action',
+        prompt: React.createElement(
+          Text,
+          null,
+          'Set up semantic search? This may install the embedding runtime (~100 MB into ~/.axe/runtime) and download the model (~34 MB into ~/.axe/models).',
+        ),
+        originalInvocation: {
+          raw: context.invocation?.raw || '/references setup',
+        },
+      };
+    }
+
+    const { addItem } = context.ui;
+    void (async () => {
+      const steps = await provisionSemanticSearch({
+        token,
+        onStep: (step) => {
+          addItem(
+            {
+              type: step.ok ? 'info' : 'error',
+              text: `Semantic setup: ${step.ok ? '✓' : '✗'} ${STEP_LABELS[step.step]} — ${step.detail}`,
+            },
+            Date.now(),
+          );
+        },
+      });
+      const failed = steps.some((s) => !s.ok);
+      addItem(
+        {
+          type: failed ? 'warning' : 'info',
+          text: failed
+            ? 'Semantic search setup did not complete. Fix the failed step above and re-run `/references setup`.'
+            : 'Semantic search is ready. Reference searches now include semantically related docs and API signatures.',
+        },
+        Date.now(),
+      );
+    })();
+
+    return {
+      type: 'message',
+      messageType: 'info',
+      content:
+        'Setting up semantic search… Each step reports here as it completes.',
+    };
+  },
+};
+
 export const referencesCommand: SlashCommand = {
   name: 'references',
   get description() {
@@ -265,5 +427,5 @@ export const referencesCommand: SlashCommand = {
     context: CommandContext,
     _args: string,
   ): Promise<SlashCommandActionReturn> => renderStatus(context),
-  subCommands: [refreshCommand, clearCommand],
+  subCommands: [refreshCommand, clearCommand, setupCommand, tokenCommand],
 };

@@ -106,9 +106,9 @@ export interface ReferenceSearchResult {
 export interface ReferenceSearchOutcome {
   results: ReferenceSearchResult[];
   /**
-   * Semantic neighbors (doc sections and export signatures) found when the
-   * keyword search matched nothing. Absent when keyword results exist or the
-   * embedding runtime is unavailable.
+   * Semantic neighbors (doc sections and export signatures) ranked against
+   * the query. Present whenever the embedding runtime is ready and the
+   * package's semantic index exists (built on demand); absent otherwise.
    */
   semantic?: ReferenceSearchResult[];
   /** The resolved manifest entry, when the package is (or became) indexed. */
