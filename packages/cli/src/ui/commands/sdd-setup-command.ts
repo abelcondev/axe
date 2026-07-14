@@ -23,8 +23,9 @@ Open Knowledge Format (OKF). It is read first at the start of every session.
 - \`tasks/\` — units of work with Gherkin acceptance criteria.
 - \`log.md\` — append-only history of what happened and when.
 
-UI designs are NOT stored here: they live in \`designs/\` at the project root
-and are referenced from decisions via \`resource\` as file + frame name.
+UI designs are NOT stored in the repository: they live in the design tool
+(e.g. Penpot or Figma) and are referenced from decisions (\`resource\`) or
+tasks by URL.
 
 Everything here is written in English regardless of conversation language.
 `;
@@ -80,9 +81,9 @@ decision: decisions/NNN-name.md
 tags: []
 status: pending
 # design: pending — required on tasks with user-facing UI; the design gate
-# resolves it to a design reference (designs/app.pen#frame, Figma URL with
-# node-id), a YAML list with one reference per view when the task spans
-# several (steps, modals, sheets, states), or "skipped (user, YYYY-MM-DD)".
+# resolves it to a design URL (Penpot page/board URL, Figma URL with
+# node-id), a YAML list with one URL per view when the task spans several
+# (steps, modals, sheets, states), or "skipped (user, YYYY-MM-DD)".
 timestamp: ${new Date().toISOString()}
 ---
 
@@ -98,21 +99,6 @@ Scenario: <describe the behavior>
 # Dependencies
 
 List any tasks or decisions this depends on.
-`;
-
-const DESIGNS_README = `# Designs
-
-UI design files for this project (e.g. Pencil \`.pen\` files), versioned with
-the code. A single shared file with one top-level page/frame per feature works
-well (e.g. \`app.pen\`, frame \`login\`).
-
-Approved designs are referenced from \`sdd/decisions/*.md\` (\`resource\`) or
-their tasks as file + frame name (\`designs/app.pen#signup-form\`). The
-\`#frame\` suffix is reference notation, not a path — the file on disk is just
-\`app.pen\`; never create a file whose name contains \`#\`. Design apps
-typically cannot create files — create the file in the app (File → Save As)
-into this folder before designing, so the design never lives in an
-unversioned scratch document.
 `;
 
 interface ScaffoldFile {
@@ -215,18 +201,6 @@ export const sddSetupCommand: SlashCommand = {
         }
         fs.writeFileSync(full, file.content, 'utf8');
         created.push(path.join('sdd', file.rel));
-      }
-      // designs/ lives at the project root, NOT inside sdd/ — design files
-      // are working artifacts versioned like code. Scaffold it here so the
-      // SDD design gate has a target from day one and designs don't end up
-      // in the design app's unversioned scratch documents.
-      const designsReadme = path.join(targetDir, 'designs', 'README.md');
-      fs.mkdirSync(path.dirname(designsReadme), { recursive: true });
-      if (fs.existsSync(designsReadme)) {
-        skipped.push(path.join('designs', 'README.md'));
-      } else {
-        fs.writeFileSync(designsReadme, DESIGNS_README, 'utf8');
-        created.push(path.join('designs', 'README.md'));
       }
     } catch (err) {
       return {

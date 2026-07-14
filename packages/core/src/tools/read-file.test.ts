@@ -739,7 +739,10 @@ describe('ReadFileTool', () => {
       it('does not append the reminder once design is resolved', async () => {
         const filePath = await writeTask(
           '003-signup-ui.md',
-          TASK_PENDING.replace('design: pending', 'design: designs/app.pen#signup'),
+          TASK_PENDING.replace(
+            'design: pending',
+            'design: https://design.penpot.app/#/workspace?file-id=abc&page-id=def',
+          ),
         );
         const result = await read({ file_path: filePath });
         expect(result.llmContent).not.toContain('SDD design gate');
@@ -752,8 +755,8 @@ describe('ReadFileTool', () => {
             'design: pending',
             [
               'design:',
-              '  - designs/app.pen#signup-form',
-              '  - designs/app.pen#signup-success',
+              '  - https://design.penpot.app/#/workspace?file-id=abc&page-id=def (signup form)',
+              '  - https://design.penpot.app/#/workspace?file-id=abc&page-id=ghi (signup success)',
               '  - https://figma.com/design/xxx?node-id=12-345 (plan picker sheet)',
             ].join('\n'),
           ),
@@ -974,9 +977,8 @@ describe('ReadFileTool', () => {
         const previousLocal = process.env['QWEN_CODE_MEMORY_LOCAL'];
         process.env['QWEN_CODE_MEMORY_LOCAL'] = '1';
         try {
-          const { getAutoMemoryRoot, clearAutoMemoryRootCache } = await import(
-            '../memory/paths.js'
-          );
+          const { getAutoMemoryRoot, clearAutoMemoryRootCache } =
+            await import('../memory/paths.js');
           clearAutoMemoryRootCache();
           const memRoot = getAutoMemoryRoot(tempRootDir);
           await fsp.mkdir(memRoot, { recursive: true });
